@@ -3,33 +3,39 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+function Dropzone(){
+  const [file, setFile] = useState(null)
+  const [message, setMessage] = useState("Solte sua imagem aqui!")
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+  const drag = (e) => {
+    e.preventDefault()
+    e.currentTarget.classList.add("dragover")
+  }
+
+  const dragLeave = (e) => {
+    e.currentTarget.classList.remove("dragover")
+  }
+
+  const drop = (e) => {
+    e.preventDefault()
+    const droppedFile = e.dataTransfer.files[0]
+    if (!droppedFile.type.startsWith('image/')){
+      setMessage("Apenas imagens são permitidas!")
+      return
+    }
+    setFile(droppedFile)
+    setMessage("Imagem adicionada: " + droppedFile.name)
+
+    setTimeout(() => {
+      setMessage("Solte sua imagem aqui!")
+    }, 3000)
+  }
+
+  return <div id="dropzone-container" onDragOver={drag} onDragLeave={dragLeave} onDrop={drop}>{message}</div>
+}
+
+function App() {
+  return <><Dropzone /></>
 }
 
 export default App
