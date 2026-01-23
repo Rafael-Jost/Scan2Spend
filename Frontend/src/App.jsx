@@ -3,6 +3,17 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
+function CardSemLink({titulo, descricao}) {
+  return (
+    <div className="card-sem-link">
+      <h2>{titulo}</h2>
+      <div className="descricao-card">
+        <p>{descricao}</p>
+      </div>
+    </div>
+  )
+}
+
 function Dropzone(){
   const [file, setFile] = useState(null)
   const [message, setMessage] = useState("Solte sua imagem aqui!")
@@ -35,7 +46,12 @@ function Dropzone(){
 }
 
 function App() {
-  return <><Dropzone /></>
+  return (
+    <>
+      <CardSemLink titulo="Bem-vindo ao Scan2Spend!" descricao="Faça upload dos seus recibos, rastreie seus gastos e receba dicas de economia." />
+      <Dropzone />
+    </>
+  );
 }
 
 export default App
