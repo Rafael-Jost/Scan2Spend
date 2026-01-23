@@ -14,7 +14,7 @@ function CardSemLink({titulo, descricao}) {
   )
 }
 
-function Dropzone(){
+function Dropzone({imagemOut}){
   const [file, setFile] = useState(null)
   const [message, setMessage] = useState("Solte sua imagem aqui!")
 
@@ -30,6 +30,9 @@ function Dropzone(){
   const drop = (e) => {
     e.preventDefault()
     const droppedFile = e.dataTransfer.files[0]
+
+    imagemOut(droppedFile)
+
     if (!droppedFile.type.startsWith('image/')){
       setMessage("Apenas imagens são permitidas!")
       return
@@ -45,11 +48,26 @@ function Dropzone(){
   return <div id="dropzone-container" onDragOver={drag} onDragLeave={dragLeave} onDrop={drop}>{message}</div>
 }
 
+function PainelDeInformacoesDaImagem({imagem}){
+  if (!imagem){
+    return 
+  }
+  return <div id="painel-de-informacoes-da-imagem">
+    <h5>Informações da Imagem:</h5>
+    <p>Nome: {imagem.name}</p>
+    <p>Tamanho: {imagem.size} bytes</p>
+    <p>Tipo: {imagem.type}</p>
+  </div>
+}
+
 function App() {
+  const [arquivo, setArquivo] = useState(null)
+
   return (
     <>
       <CardSemLink titulo="Bem-vindo ao Scan2Spend!" descricao="Faça upload dos seus recibos, rastreie seus gastos e receba dicas de economia." />
-      <Dropzone />
+      <Dropzone imagemOut={setArquivo}/>
+      <PainelDeInformacoesDaImagem imagem={arquivo} />
     </>
   );
 }
