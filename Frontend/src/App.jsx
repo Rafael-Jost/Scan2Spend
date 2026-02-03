@@ -48,26 +48,54 @@ function Dropzone({imagemOut}){
   return <div id="dropzone-container" onDragOver={drag} onDragLeave={dragLeave} onDrop={drop}>{message}</div>
 }
 
-function PainelDeInformacoesDaImagem({imagem}){
-  if (!imagem){
-    return 
-  }
+function PainelDeInformacoesDaImagem({nome}, {tamanho}, {tipo}){
   return <div id="painel-de-informacoes-da-imagem">
     <h5>Informações da Imagem:</h5>
-    <p>Nome: {imagem.name}</p>
-    <p>Tamanho: {imagem.size} bytes</p>
-    <p>Tipo: {imagem.type}</p>
+    <p>Nome: {nome}</p>
+    <p>Tamanho: {tamanho} bytes</p>
+    <p>Tipo: {tipo}</p>
   </div>
+}
+
+function BotaoSimples({texto, onClick}){
+  return <button onClick={onClick}>{texto}</button>
 }
 
 function App() {
   const [arquivo, setArquivo] = useState(null)
+  const[dadosAnalisados, setDadosAnalisados] = useState(null)
+  const [textoBotao, setTextoBotao] = useState("Analisar Recibo")
+
+  const uploadArquivo = async () => {
+    if (!arquivo) {
+      setTextoBotao("Nenhum arquivo selecionado")
+      return
+    }
+
+    setTextoBotao("Enviando...")
+
+    const formData = new FormData()
+    formData.append('file', arquivo)
+
+    const response = await fetch('https://scan2spend-fastapi.onrender.com/upreceipt/', {
+      method: 'POST',
+      body: formData
+    })
+    if (response.ok) {
+      const data = await response.json()
+      setDadosAnalisados(data)
+      console.log(data)
+      setTextoBotao("Análise Completa!")
+    } else {
+      setTextoBotao("Erro ao enviar arquivo")
+    }
+  }
 
   return (
     <>
       <CardSemLink titulo="Bem-vindo ao Scan2Spend!" descricao="Faça upload dos seus recibos, rastreie seus gastos e receba dicas de economia." />
       <Dropzone imagemOut={setArquivo}/>
-      <PainelDeInformacoesDaImagem imagem={arquivo} />
+      <BotaoSimples texto={textoBotao} onClick={uploadArquivo}/>
     </>
   );
 }
