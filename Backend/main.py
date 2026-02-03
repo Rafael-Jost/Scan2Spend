@@ -14,6 +14,11 @@ def root():
 
 @app.post("/upreceipt/", response_model=ReceiptInfo)
 async def upload_receipt(receipt: UploadFile):
-    file = await receipt.read()
-    file_lenght = len(file)
-    return {"filename": receipt.filename, "size": file_lenght, "content": file_content}
+    file_bytes = await receipt.read()
+    file_length = len(file_bytes)
+
+    return {
+        "filename": receipt.filename,
+        "size": file_length,
+        "content": receipt.content_type
+    }
