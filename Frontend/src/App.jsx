@@ -75,7 +75,7 @@ function App() {
     setTextoBotao("Enviando...")
 
     const formData = new FormData()
-    formData.append('file', arquivo)
+    formData.append('receipt', arquivo)
 
     const response = await fetch('https://scan2spend-fastapi.onrender.com/upreceipt/', {
       method: 'POST',
