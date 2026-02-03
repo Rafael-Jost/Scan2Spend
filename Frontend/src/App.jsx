@@ -16,7 +16,7 @@ function CardSemLink({titulo, descricao}) {
 
 function Dropzone({imagemOut}){
   const [file, setFile] = useState(null)
-  const [message, setMessage] = useState("Solte sua imagem aqui!")
+  const [message, setMessage] = useState("Solte seu arquivo aqui!")
 
   const drag = (e) => {
     e.preventDefault()
@@ -41,7 +41,7 @@ function Dropzone({imagemOut}){
     setMessage("Imagem adicionada: " + droppedFile.name)
 
     setTimeout(() => {
-      setMessage("Solte sua imagem aqui!")
+      setMessage("Solte seu arquivo aqui!")
     }, 3000)
   }
 
@@ -57,14 +57,15 @@ function PainelDeInformacoesDaImagem({nome}, {tamanho}, {tipo}){
   </div>
 }
 
-function BotaoSimples({texto, onClick}){
-  return <button onClick={onClick}>{texto}</button>
+function BotaoSimples({texto, onClick, className}){
+  return <button id="botao-upload" className={className} onClick={onClick}>{texto}</button>
 }
 
 function App() {
   const [arquivo, setArquivo] = useState(null)
   const[dadosAnalisados, setDadosAnalisados] = useState(null)
   const [textoBotao, setTextoBotao] = useState("Analisar Recibo")
+  const [classeBotao, setClasseBotao] = useState(null)
 
   const uploadArquivo = async () => {
     if (!arquivo) {
@@ -81,21 +82,30 @@ function App() {
       method: 'POST',
       body: formData
     })
+
     if (response.ok) {
       const data = await response.json()
       setDadosAnalisados(data)
       console.log(data)
+      setClasseBotao("botao-sucesso")
       setTextoBotao("Análise Completa!")
+
     } else {
+      setClasseBotao("botao-erro")
       setTextoBotao("Erro ao enviar arquivo")
     }
+
+    setTimeout(() => {
+      setTextoBotao("Analisar Recibo")
+      setClasseBotao(null)
+    }, 3000)
   }
 
   return (
     <>
       <CardSemLink titulo="Bem-vindo ao Scan2Spend!" descricao="Faça upload dos seus recibos, rastreie seus gastos e receba dicas de economia." />
       <Dropzone imagemOut={setArquivo}/>
-      <BotaoSimples texto={textoBotao} onClick={uploadArquivo}/>
+      <BotaoSimples texto={textoBotao} onClick={uploadArquivo} className={classeBotao} />
     </>
   );
 }

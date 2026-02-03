@@ -9,11 +9,11 @@
   border: 2px dashed;
   padding: 40px;
   border-radius: 15px;
+
 }
 
 #dropzone-container.dragover{
   border-color: rgba(0, 0, 0, 0.445);
-  color: rgba(0, 0, 0, 0.76);
   background-color: rgba(0, 0, 0, 0.096);
 }
 
@@ -31,4 +31,18 @@
   text-align: center;
   width: 60%;
   margin-bottom: 10px;
+}
+
+#botao-upload {
+  margin-top: 20px;
+}
+
+#botao-upload.botao-sucesso {
+  background-color: #4CAF50; /* Green */
+  color: white;
+}
+
+#botao-upload.botao-erro {
+  background-color: #f44336; /* Red */
+  color: white;
 }
