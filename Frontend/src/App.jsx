@@ -48,13 +48,28 @@ function Dropzone({imagemOut}){
   return <div id="dropzone-container" onDragOver={drag} onDragLeave={dragLeave} onDrop={drop}>{message}</div>
 }
 
-function PainelDeInformacoesDaImagem({nome}, {tamanho}, {tipo}){
-  return <div id="painel-de-informacoes-da-imagem">
-    <h5>Informações da Imagem:</h5>
-    <p>Nome: {nome}</p>
-    <p>Tamanho: {tamanho} bytes</p>
-    <p>Tipo: {tipo}</p>
-  </div>
+function PopUpDeInformacoesDaImagem({nome, tamanho, tipo}){
+
+    return (
+    <div id="popup-informacoes">
+      <div id="painel-de-informacoes-da-imagem">
+        <h4 style={{ margin: 0, marginBottom: 8 }}>Informações da Imagem:</h4>
+        <p>Nome: {nome}</p>
+        <p>Tamanho: {tamanho} bytes</p>
+        <p>Tipo: {tipo}</p>
+        <button
+          style={{ marginTop: '20px' }}
+          onClick={() => {
+            const popup = document.getElementById('popup-informacoes')
+            if(popup) popup.style.display = 'none';
+          }}
+        >
+          Fechar
+        </button>
+      </div>
+    </div>
+  );
+  
 }
 
 function BotaoSimples({texto, onClick, className}){
@@ -74,6 +89,7 @@ function App() {
     }
 
     setTextoBotao("Enviando...")
+    setClasseBotao("botao-enviando")
 
     const formData = new FormData()
     formData.append('receipt', arquivo)
@@ -89,23 +105,36 @@ function App() {
       console.log(data)
       setClasseBotao("botao-sucesso")
       setTextoBotao("Análise Completa!")
+      setTimeout(() => {
+        setTextoBotao("Visualizar Informações")
+        setClasseBotao(null)
+      }, 3000)
+      setTimeout(() => {
+            const popup = document.getElementById('popup-informacoes')
+            if(popup) popup.style.display = 'flex';
+          }
+      , 1000)
 
     } else {
       setClasseBotao("botao-erro")
       setTextoBotao("Erro ao enviar arquivo")
     }
 
-    setTimeout(() => {
-      setTextoBotao("Analisar Recibo")
-      setClasseBotao(null)
-    }, 3000)
   }
 
   return (
     <>
       <CardSemLink titulo="Bem-vindo ao Scan2Spend!" descricao="Faça upload dos seus recibos, rastreie seus gastos e receba dicas de economia." />
       <Dropzone imagemOut={setArquivo}/>
-      <BotaoSimples texto={textoBotao} onClick={uploadArquivo} className={classeBotao} />
+      <BotaoSimples texto={textoBotao} onClick={() => {
+        if (dadosAnalisados) {
+          const popup = document.getElementById('popup-informacoes')
+          if(popup) popup.style.display = 'flex';
+        } else {
+          uploadArquivo()
+        }
+      }} className={classeBotao} />
+      <PopUpDeInformacoesDaImagem nome={dadosAnalisados?.filename} tamanho={dadosAnalisados?.size} tipo={dadosAnalisados?.content} />
     </>
   );
 }

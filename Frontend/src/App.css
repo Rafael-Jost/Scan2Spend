@@ -46,3 +46,27 @@
   background-color: #f44336; /* Red */
   color: white;
 }
+#botao-upload.botao-enviando {
+  background-color: #008CBA; /* Blue */
+  color: white;
+  pointer-events: none;
+}
+
+#popup-informacoes {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  display: none; 
+}
+
+#painel-de-informacoes-da-imagem {
+  background: #fff;
+  color: #000;
+  padding: 50px;
+  border-radius: 8px;
+  margin: 30px;
+  width: fit-content;
+}
