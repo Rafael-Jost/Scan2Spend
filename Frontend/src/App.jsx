@@ -48,15 +48,16 @@ function Dropzone({imagemOut}){
   return <div id="dropzone-container" onDragOver={drag} onDragLeave={dragLeave} onDrop={drop}>{message}</div>
 }
 
-function PopUpDeInformacoesDaImagem({nome, tamanho, tipo}){
+function PopUpDeInformacoesDaImagem({dados}){
 
     return (
     <div id="popup-informacoes">
       <div id="painel-de-informacoes-da-imagem">
         <h4 style={{ margin: 0, marginBottom: 8 }}>Informações da Imagem:</h4>
-        <p>Nome: {nome}</p>
-        <p>Tamanho: {tamanho} bytes</p>
-        <p>Tipo: {tipo}</p>
+        <p>Nome: {dados?.filename}</p>
+        <p>Tamanho: {dados?.size} bytes</p>
+        <p>Tipo: {dados?.content}</p>
+        <p>Texto: {dados?.text}</p>
         <button
           style={{ marginTop: '20px' }}
           onClick={() => {
@@ -94,7 +95,7 @@ function App() {
     const formData = new FormData()
     formData.append('receipt', arquivo)
 
-    const response = await fetch('https://scan2spend-fastapi.onrender.com/upreceipt/', {
+    const response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/upreceipt/', {
       method: 'POST',
       body: formData
     })
@@ -134,7 +135,7 @@ function App() {
           uploadArquivo()
         }
       }} className={classeBotao} />
-      <PopUpDeInformacoesDaImagem nome={dadosAnalisados?.filename} tamanho={dadosAnalisados?.size} tipo={dadosAnalisados?.content} />
+      <PopUpDeInformacoesDaImagem dados={dadosAnalisados} />
     </>
   );
 }
