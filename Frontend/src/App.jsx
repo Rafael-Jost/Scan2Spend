@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
+import QrScanner from './components/QrScanner.jsx'
 import './App.css'
 
 function CardSemLink({titulo, descricao}) {
@@ -126,7 +127,8 @@ function App() {
   return (
     <>
       <CardSemLink titulo="Bem-vindo ao Scan2Spend!" descricao="Faça upload dos seus recibos, rastreie seus gastos e receba dicas de economia." />
-      <Dropzone imagemOut={setArquivo}/>
+      <QrScanner />
+      {/* <Dropzone imagemOut={setArquivo}/>
       <BotaoSimples texto={textoBotao} onClick={() => {
         if (dadosAnalisados) {
           const popup = document.getElementById('popup-informacoes')
@@ -135,7 +137,7 @@ function App() {
           uploadArquivo()
         }
       }} className={classeBotao} />
-      <PopUpDeInformacoesDaImagem dados={dadosAnalisados} />
+      <PopUpDeInformacoesDaImagem dados={dadosAnalisados} /> */}
     </>
   );
 }
