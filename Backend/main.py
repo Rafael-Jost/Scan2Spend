@@ -4,12 +4,18 @@ from pydantic import BaseModel
 from pytesseract import pytesseract
 from PIL import Image
 import io
+import requests
+from bs4 import BeautifulSoup
+
 
 class ReceiptInfo(BaseModel):
     filename: str = None
     content: str = None
     size: int = 0
     text: str = "Nenhum texto extraído"
+
+class ReceiptExpenses(BaseModel):
+    text: str = "Nenhuma informação extraída da nota fiscal"
 
 app = FastAPI()
 
@@ -43,4 +49,15 @@ async def upload_receipt(receipt: UploadFile):
         "size": file_length,
         "content": receipt.content_type,
         "text": text
+    }
+
+@app.get("/receiptExpenses/", response_model=ReceiptExpenses)
+async def analyze_receipt(QRurl: str):
+
+    response = requests.get(QRurl)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    receipt_text = soup.get_text()
+
+    return{
+        "text": receipt_text
     }
