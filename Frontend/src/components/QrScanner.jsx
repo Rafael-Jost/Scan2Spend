@@ -1,8 +1,8 @@
 import { Html5QrcodeScanner, Html5QrcodeScanType } from "html5-qrcode";
 import { useEffect, useState } from "react";
 
-export default function QrScanner() {
-    const [url, setUrl] = useState(null);
+export default function QrScanner({ funcAnalisarRecibo }) {
+    // const [url, setUrl] = useState(null);
     
     useEffect(() => {
         const scanner = new Html5QrcodeScanner("reader", {
@@ -22,7 +22,10 @@ export default function QrScanner() {
 
         function success(result) {
             scanner.clear();
-            setUrl(result);
+            const url = result;
+            console.log("URL escaneada: ", url);
+            // setUrl(result);
+            funcAnalisarRecibo(url);
         }
 
         function error(err) {
@@ -34,12 +37,13 @@ export default function QrScanner() {
     }, []);
 
     return (
+
         <div>
             <h3>Escaneie o QR da sua nota fiscal</h3>
             <div id="reader"></div>
-            <div>
+            {/* <div>
                 {url && <p>URL escaneada: {url}</p>}
-            </div>
+            </div> */}
         </div>
     );
 }

@@ -49,16 +49,13 @@ function Dropzone({imagemOut}){
   return <div id="dropzone-container" onDragOver={drag} onDragLeave={dragLeave} onDrop={drop}>{message}</div>
 }
 
-function PopUpDeInformacoesDaImagem({dados}){
+function PopUpDeInformacoes({conteudo}){
 
     return (
     <div id="popup-informacoes">
       <div id="painel-de-informacoes-da-imagem">
-        <h4 style={{ margin: 0, marginBottom: 8 }}>Informações da Imagem:</h4>
-        <p>Nome: {dados?.filename}</p>
-        <p>Tamanho: {dados?.size} bytes</p>
-        <p>Tipo: {dados?.content}</p>
-        <p>Texto: {dados?.text}</p>
+        <h4 style={{ margin: 0, marginBottom: 8 }}>Informações:</h4>
+        {conteudo}
         <button
           style={{ marginTop: '20px' }}
           onClick={() => {
@@ -83,6 +80,7 @@ function App() {
   const[dadosAnalisados, setDadosAnalisados] = useState(null)
   const [textoBotao, setTextoBotao] = useState("Analisar Recibo")
   const [classeBotao, setClasseBotao] = useState(null)
+  const [textoRecibo, setTextoRecibo] = useState(null)
 
   const uploadArquivo = async () => {
     if (!arquivo) {
@@ -124,20 +122,38 @@ function App() {
 
   }
 
+  const AnalisarRecibo = async (url) => {
+    if (!url) {
+      console.error("URL vazia/undefined em AnalisarRecibo");
+      return;
+    }
+    const formData = new FormData()
+      formData.append('QRurl', url)
+
+      const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/receiptExpenses/?QRurl=${encodeURIComponent(url)}`, {
+        method: 'GET'
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+          setTextoRecibo(data.text)
+          console.log(data.text)
+
+        setTimeout(() => {
+            const popup = document.getElementById('popup-informacoes')
+            if(popup) popup.style.display = 'flex';
+          }
+      , 1000)
+      }else {
+          setTextoRecibo("Erro ao analisar recibo")
+      }
+  }
+
   return (
     <>
       <CardSemLink titulo="Bem-vindo ao Scan2Spend!" descricao="Faça upload dos seus recibos, rastreie seus gastos e receba dicas de economia." />
-      <QrScanner />
-      {/* <Dropzone imagemOut={setArquivo}/>
-      <BotaoSimples texto={textoBotao} onClick={() => {
-        if (dadosAnalisados) {
-          const popup = document.getElementById('popup-informacoes')
-          if(popup) popup.style.display = 'flex';
-        } else {
-          uploadArquivo()
-        }
-      }} className={classeBotao} />
-      <PopUpDeInformacoesDaImagem dados={dadosAnalisados} /> */}
+      <QrScanner funcAnalisarRecibo={AnalisarRecibo} />
+      <PopUpDeInformacoes conteudo={<div id="texto-recibo">{textoRecibo && <p>TEXTO RECIBO: {textoRecibo}</p>}</div>} />
     </>
   );
 }
