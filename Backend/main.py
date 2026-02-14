@@ -6,7 +6,9 @@ from PIL import Image
 import io
 import requests
 from bs4 import BeautifulSoup
+from openai import OpenAI
 
+client = OpenAI()
 
 class ReceiptInfo(BaseModel):
     filename: str = None
@@ -58,6 +60,50 @@ async def analyze_receipt(QRurl: str):
     soup = BeautifulSoup(response.text, 'html.parser')
     receipt_text = soup.get_text()
 
+    prompt = """
+    Com base no seguinte texto extraído de uma nota fiscal, extraia as seguintes informações: 
+    - Nome do produto
+    - Quantidade
+    - Preço unitário
+    - preço total
+    - desconto (se houver)
+    - Data da compra
+    - Preço final pago
+
+    Informações adicionais:
+    - Gostaria que as informações fossem apresentadas em formato JSON, seguindo o exemplo abaixo :
+
+    {
+        "data_compra": "2026-02-10",
+        "itens": [
+            {
+                "nome_produto": "Leite Integral 1L",
+                "quantidade": 3,
+                "preco_unitario": 4.50,
+                "preco_total": 13.50,
+                "desconto": 1.50
+            },
+            {
+                "nome_produto": "Pão Francês",
+                "quantidade": 5,
+                "preco_unitario": 0.80,
+                "preco_total": 4.00,
+                "desconto": 0.00
+            }
+        ],
+        "preco_final_pago": 16.00
+    }
+
+    Texto da nota fiscal:
+    """
+
+    prompt = prompt + receipt_text
+
+    response = client.responses.create(
+        model="gpt-4o-mini",
+        input= prompt
+    )
+
     return{
-        "text": receipt_text
+        "text": response.output_text
     }
