@@ -78,6 +78,7 @@ async def analyze_receipt(QRurl: str):
         "itens": [
             {
                 "nome_produto": "Leite Integral 1L",
+                "unidade_medida": "UN",
                 "quantidade": 3,
                 "preco_unitario": 4.50,
                 "preco_total": 13.50,
@@ -85,14 +86,19 @@ async def analyze_receipt(QRurl: str):
             },
             {
                 "nome_produto": "Pão Francês",
+                "unidade_medida": "KG",
                 "quantidade": 5,
                 "preco_unitario": 0.80,
                 "preco_total": 4.00,
-                "desconto": 0.00
+                "desconto": null
             }
         ],
         "preco_final_pago": 16.00
     }
+
+    - Me devolva apenas o JSON, sem explicações ou texto adicional, sem quebras de linhas e nenhum outro caractere adicional antes ou depois.
+    - O nome do produto deve ser o nome de algo comprável, e não nome de uma pessoa, empresa ou números. 
+    - Se o texto da nota fiscal não contiver informações suficientes para extrair um campo específico, por favor, deixe esse campo como null no JSON.
 
     Texto da nota fiscal:
     """
