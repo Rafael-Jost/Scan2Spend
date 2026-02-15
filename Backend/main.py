@@ -38,20 +38,6 @@ app.add_middleware(
 def root():
     return {"Scan2Spend"}
 
-@app.post("/upreceipt/", response_model=ReceiptInfo)
-async def upload_receipt(receipt: UploadFile):
-    file_bytes = await receipt.read()
-    file_length = len(file_bytes)
-
-    image = Image.open(io.BytesIO(file_bytes))
-    text = pytesseract.image_to_string(image)
-
-    return {
-        "filename": receipt.filename,
-        "size": file_length,
-        "content": receipt.content_type,
-        "text": text
-    }
 
 @app.get("/receiptExpenses/", response_model=ReceiptExpenses)
 async def analyze_receipt(QRurl: str):
