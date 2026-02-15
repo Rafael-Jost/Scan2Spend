@@ -52,6 +52,36 @@
   pointer-events: none;
 }
 
+#mensagem-status {
+  margin-top: 20px;
+  padding: 10px;
+  border-radius: 5px;
+  max-width: 50%;
+  flex: 1;
+}
+
+#mensagem-status.oculto {
+  display: none;
+}
+
+#mensagem-status.sucesso {
+  background-color: #4CAF50; /* Green */
+  color: white;
+  display: block;
+}
+
+#mensagem-status.erro {
+  background-color: #f44336; /* Red */
+  color: white;
+  display: block;
+}
+#mensagem-status.carregando {
+  background-color: #008CBA; /* Blue */
+  color: white;
+  display: block;
+}
+
+
 #popup-informacoes {
   position: fixed;
   top: 0; right: 0; bottom: 0; left: 0;

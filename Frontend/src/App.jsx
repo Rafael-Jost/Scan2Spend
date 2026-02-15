@@ -75,16 +75,25 @@ function BotaoSimples({texto, onClick, className}){
   return <button id="botao-upload" className={className} onClick={onClick}>{texto}</button>
 }
 
+function MensagemDeStatus({texto, className}){
+  return (
+  <div style={{display: 'flex', marginTop: '20px', justifyContent: 'center'}}>
+    <span id="mensagem-status" className={className}>{texto}</span>
+  </div>
+  )
+  }
+
 function App() {
   const [arquivo, setArquivo] = useState(null)
   const[dadosAnalisados, setDadosAnalisados] = useState(null)
-  const [textoBotao, setTextoBotao] = useState("Analisar Recibo")
-  const [classeBotao, setClasseBotao] = useState(null)
+  const [textoMensagem, setTextoMensagem] = useState(null)
+  const [classeMensagem, setClasseMensagem] = useState('oculto')
   const [textoRecibo, setTextoRecibo] = useState(null)
 
   const uploadArquivo = async () => {
     if (!arquivo) {
-      setTextoBotao("Nenhum arquivo selecionado")
+      setTextoMensagem("Nenhum arquivo selecionado")
+      setClasseMensagem("erro")
       return
     }
 
@@ -116,8 +125,8 @@ function App() {
       , 1000)
 
     } else {
-      setClasseBotao("botao-erro")
-      setTextoBotao("Erro ao enviar arquivo")
+      setClasseMensagem("erro")
+      setTextoMensagem("Erro ao enviar arquivo")
     }
 
   }
@@ -130,6 +139,9 @@ function App() {
     const formData = new FormData()
       formData.append('QRurl', url)
 
+      setClasseMensagem("carregando")
+      setTextoMensagem("Analisando...")
+
       const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/receiptExpenses/?QRurl=${encodeURIComponent(url)}`, {
         method: 'GET'
       })
@@ -137,7 +149,8 @@ function App() {
       if (response.ok) {
         const data = await response.json()
           setTextoRecibo(data.text)
-          console.log(data.text)
+          setClasseMensagem("sucesso")
+          setTextoMensagem("Análise Completa!")
 
         setTimeout(() => {
             const popup = document.getElementById('popup-informacoes')
@@ -146,6 +159,8 @@ function App() {
       , 1000)
       }else {
           setTextoRecibo("Erro ao analisar recibo")
+          setClasseMensagem("erro")
+          setTextoMensagem("Erro ao analisar")
       }
   }
 
@@ -154,6 +169,7 @@ function App() {
       <CardSemLink titulo="Bem-vindo ao Scan2Spend!" descricao="Faça upload dos seus recibos, rastreie seus gastos e receba dicas de economia." />
       <QrScanner funcAnalisarRecibo={AnalisarRecibo} />
       <PopUpDeInformacoes conteudo={<div id="texto-recibo">{textoRecibo && <p>TEXTO RECIBO: {textoRecibo}</p>}</div>} />
+      <MensagemDeStatus texto={textoMensagem} className={classeMensagem} />
     </>
   );
 }
