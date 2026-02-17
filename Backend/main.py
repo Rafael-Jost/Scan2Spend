@@ -60,7 +60,7 @@ async def analyze_receipt(QRurl: str):
     - Gostaria que as informações fossem apresentadas em formato JSON, seguindo o exemplo abaixo :
 
     {
-        "data_compra": "2026-02-10",
+        "data_compra": "15/09/2023",
         "itens": [
             {
                 "nome_produto": "Leite Integral 1L",
