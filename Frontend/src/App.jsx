@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import QrScanner from './components/QrScanner.jsx'
+import CardEdicao from './components/CardsEdicao.jsx'
 import './App.css'
 
 function CardSemLink({titulo, descricao}) {
@@ -18,7 +19,6 @@ function PopUpDeInformacoes({conteudo}){
     return (
     <div id="popup-informacoes">
       <div id="painel-de-informacoes">
-        <h4 style={{ margin: 0, marginBottom: 8 }}>Informações:</h4>
         {conteudo}
         <button
           style={{ marginTop: '20px' }}
@@ -46,6 +46,24 @@ function MensagemDeStatus({texto, className}){
   </div>
   )
   }
+
+function parseRecibo(textoRecibo) {
+    if (!textoRecibo) return 'texto nao recebido';
+
+    try {
+        let parsed = JSON.parse(textoRecibo);
+
+        // se ainda for string, era JSON duplo
+        if (typeof parsed === 'string') {
+            parsed = JSON.parse(parsed);
+        }
+
+        return parsed;
+    } catch (e) {
+        console.error('Erro ao fazer parse:', e);
+        return 'texto nao recebido';
+    }
+}
 
 function App() {
   const [textoMensagem, setTextoMensagem] = useState(null)
@@ -90,7 +108,8 @@ function App() {
     <>
       <CardSemLink titulo="Bem-vindo ao Scan2Spend!" descricao="Faça upload dos seus recibos, rastreie seus gastos e receba dicas de economia." />
       <QrScanner funcAnalisarRecibo={AnalisarRecibo} />
-      <PopUpDeInformacoes conteudo={<div id="texto-recibo">{textoRecibo && <p>TEXTO RECIBO: {textoRecibo}</p>}</div>} />
+      <PopUpDeInformacoes conteudo={<CardEdicao json={parseRecibo(textoRecibo)} />}></PopUpDeInformacoes>
+        {/* <PopUpDeInformacoes conteudo={<p>Texto recebido: {textoRecibo}</p>}></PopUpDeInformacoes> */}
       <MensagemDeStatus texto={textoMensagem} className={classeMensagem} />
     </>
   );

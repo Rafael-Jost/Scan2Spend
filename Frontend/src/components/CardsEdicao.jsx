@@ -1,0 +1,34 @@
+export default function CardEdicao(json) {
+    
+    if (json === null) {
+        return (
+            <div className="cards-edicao-container">
+                <h2>Dados da Nota Fiscal</h2>
+                <p>Nenhum dado disponível.</p>
+            </div>
+        )
+    }
+    console.log("Dados recebidos para edição: ", json);
+    const payload = json.json; 
+    const items = payload.itens ?? [];
+    console.log("Itens extraídos: ", items);
+
+    return(
+        <>
+        <h2>Dados da Nota Fiscal</h2>
+        <p> Data da compra: {payload.data_compra}</p>
+        <p>Preço Total: R$ {payload.preco_final_pago ? payload.preco_final_pago.toFixed(2) : 0}</p>
+        <div id="cards-edicao-container">
+            {items.map(({nome_produto, unidade_medida, quantidade, preco_unitario, preco_total, desconto}) => (
+                <div className="card-edicao" key={nome_produto}>
+                    <h3><input type="text" defaultValue={nome_produto}></input></h3>
+                    <p>Quantidade: <input type="number" defaultValue={quantidade}></input> ({unidade_medida})</p>
+                    <p>Preço Unitário: R$ <input type="number" defaultValue={preco_unitario ? preco_unitario.toFixed(2) : 0}></input></p>
+                    <p>Desconto: R$ <input type="number" defaultValue={desconto ? desconto.toFixed(2) : 0}></input></p>
+                    <p>Preço Total: R$ <input type="number" defaultValue={preco_total ? preco_total.toFixed(2) : 0}></input></p>
+                </div>
+            ))}
+        </div>
+        </>
+    )
+}

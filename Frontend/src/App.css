@@ -87,3 +87,36 @@
   margin: 30px;
   width: fit-content;
 }
+
+#cards-edicao-container{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  overflow-y: auto;
+  height: 65vh;
+  width: 60vw;
+  max-width: 1250px;
+  margin: 0 auto;
+}
+
+.card-edicao {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: left;
+  box-shadow: 5px 10px 8px rgba(0,0,0,0.1);
+}
+
+/* Scrollbar */
+#cards-edicao-container::-webkit-scrollbar {
+    width: 5px;
+}
+ 
+#cards-edicao-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+ 
+#cards-edicao-container::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.322);
+    border-radius: 10px;
+}

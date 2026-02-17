@@ -29,7 +29,6 @@ export default function QrScanner({ funcAnalisarRecibo }) {
         }
 
         function error(err) {
-            setScaneando(false);
             console.warn(err);
             console.log('teste')
         }
