@@ -39,14 +39,6 @@ function BotaoSimples({texto, onClick, className}){
   return <button id="botao-upload" className={className} onClick={onClick}>{texto}</button>
 }
 
-function MensagemDeStatus({texto, className}){
-  return (
-  <div style={{display: 'flex', marginTop: '20px', justifyContent: 'center'}}>
-    <span id="mensagem-status" className={className}>{texto}</span>
-  </div>
-  )
-  }
-
 function parseRecibo(textoRecibo) {
     if (!textoRecibo) return 'texto nao recebido';
 
@@ -109,8 +101,10 @@ function App() {
       <CardSemLink titulo="Bem-vindo ao Scan2Spend!" descricao="Faça upload dos seus recibos, rastreie seus gastos e receba dicas de economia." />
       <QrScanner funcAnalisarRecibo={AnalisarRecibo} />
       <PopUpDeInformacoes conteudo={<CardEdicao json={parseRecibo(textoRecibo)} />}></PopUpDeInformacoes>
-        {/* <PopUpDeInformacoes conteudo={<p>Texto recebido: {textoRecibo}</p>}></PopUpDeInformacoes> */}
-      <MensagemDeStatus texto={textoMensagem} className={classeMensagem} />
+      <BotaoSimples texto={textoMensagem} className={classeMensagem} onClick={() => {
+        const popup = document.getElementById('popup-informacoes')
+        if(popup) popup.style.display = 'flex';
+      }} />
     </>
   );
 }
