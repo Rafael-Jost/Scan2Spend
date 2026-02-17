@@ -21,14 +21,35 @@ export default function CardEdicao(json) {
         <div id="cards-edicao-container">
             {items.map(({nome_produto, unidade_medida, quantidade, preco_unitario, preco_total, desconto}) => (
                 <div className="card-edicao" key={nome_produto}>
-                    <h3><input type="text" defaultValue={nome_produto}></input></h3>
-                    <p>Quantidade: <input type="number" defaultValue={quantidade}></input> ({unidade_medida})</p>
-                    <p>Preço Unitário: R$ <input type="number" defaultValue={preco_unitario ? preco_unitario.toFixed(2) : 0}></input></p>
-                    <p>Desconto: R$ <input type="number" defaultValue={desconto ? desconto.toFixed(2) : 0}></input></p>
-                    <p>Preço Total: R$ <input type="number" defaultValue={preco_total ? preco_total.toFixed(2) : 0}></input></p>
+                    <p><input className="nome-produto-input" type="text" defaultValue={nome_produto}></input></p>
+                    <p>Quantidade: <input className="quantidade-input" type="number" defaultValue={quantidade}></input> ({unidade_medida})</p>
+                    <p>Preço Unitário: R$ <input className="input-preco_unitario" type="number" defaultValue={preco_unitario ? preco_unitario.toFixed(2) : 0}></input></p>
+                    <p>Desconto: R$ <input className="input-desconto" type="number" defaultValue={desconto ? desconto.toFixed(2) : 0}></input></p>
+                    <p>Preço Total: R$ <input className="input-preco_total" type="number" defaultValue={preco_total ? preco_total.toFixed(2) : 0}></input></p>
                 </div>
             ))}
         </div>
         </>
     )
+}
+
+export function SalvarPayload(){
+    const nomeProdutoInputs = document.querySelectorAll('.nome-produto-input');
+    const quantidadeInputs = document.querySelectorAll('.quantidade-input');
+    const precoUnitarioInputs = document.querySelectorAll('.input-preco_unitario');
+    const descontoInputs = document.querySelectorAll('.input-desconto');
+    const precoTotalInputs = document.querySelectorAll('.input-preco_total');
+
+    const produtos = [];
+    
+    for (let i = 0; i < nomeProdutoInputs.length; i++) {
+        produtos.push({
+            nome_produto: nomeProdutoInputs[i].value,
+            quantidade: parseFloat(quantidadeInputs[i].value),
+            preco_unitario: parseFloat(precoUnitarioInputs[i].value),
+            desconto: parseFloat(descontoInputs[i].value),
+            preco_total: parseFloat(precoTotalInputs[i].value)
+        });
+    }
+    console.log("Produtos coletados para salvamento:", produtos);
 }

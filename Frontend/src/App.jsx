@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import QrScanner from './components/QrScanner.jsx'
-import CardEdicao from './components/CardsEdicao.jsx'
+import CardEdicao, { SalvarPayload }from './components/CardsEdicao.jsx'
 import './App.css'
 
 function CardSemLink({titulo, descricao}) {
@@ -28,6 +28,13 @@ function PopUpDeInformacoes({conteudo}){
           }}
         >
           Fechar
+        </button>
+        <button
+          style={{ marginTop: '20px', marginLeft: '10px', backgroundColor: '#4CAF50', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '5px' }}
+          onClick={() => {
+            SalvarPayload();
+          }}>
+          Salvar
         </button>
       </div>
     </div>
