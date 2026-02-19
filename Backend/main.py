@@ -47,46 +47,71 @@ async def analyze_receipt(QRurl: str):
     receipt_text = soup.get_text()
 
     prompt = """
-    Com base no seguinte texto extraído de uma nota fiscal, extraia as seguintes informações: 
-    - Nome do produto
-    - Quantidade
-    - Preço unitário
-    - preço total
-    - desconto (se houver)
-    - Data da compra
-    - Preço final pago
+    CVocê está analisando o TEXTO BRUTO de uma nota fiscal brasileira obtido extraindo o texto de um html.
+    O texto contém cabeçalho, dados do cliente, rodapé e linhas de itens misturados.
 
-    Informações adicionais:
-    - Gostaria que as informações fossem apresentadas em formato JSON, seguindo o exemplo abaixo :
+    TAREFA:
+    Extraia APENAS as informações reais de itens comprados.
 
-    {
-        "data_compra": "15/09/2023",
+    IMPORTANTE:
+    Considere como PRODUTO somente textos que representem mercadorias.
+    Ignore completamente qualquer informação institucional.
+
+    NÃO SÃO PRODUTOS:
+    - Nome do cliente
+    - CPF/CNPJ
+    - Endereço
+    - Telefones
+    - "Cliente", "Consumidor", "Operador", "Caixa"
+    - Nome da loja ou empresa
+    - Datas isoladas
+    - QR Code / protocolo / chave NF
+    - Totais gerais (ex: TOTAL, SUBTOTAL)
+    - Linhas sem quantidade ou valor monetário
+    - Qualquer texto administrativo
+
+    REGRAS PARA IDENTIFICAR UM ITEM:
+    Uma linha de item geralmente contém:
+    - descrição do produto + quantidade + valor unitário OU valor total
+
+    Se não houver preço ou quantidade → NÃO é item.
+
+    O nome do produto deve:
+    - ser algo fisicamente comprável
+    - não pode ser apenas números
+    - não pode conter palavras como:
+    CLIENTE, CONSUMIDOR, CNPJ, ENDEREÇO, TOTAL, CAIXA, OPERADOR
+
+    FORMATO DE SAÍDA (JSON VÁLIDO):
+    Retorne exatamente:
+
+    {{
+        "data_compra": "...",
         "itens": [
-            {
-                "nome_produto": "Leite Integral 1L",
-                "unidade_medida": "UN",
-                "quantidade": 3,
-                "preco_unitario": 4.50,
-                "preco_total": 13.50,
-                "desconto": 1.50
-            },
-            {
-                "nome_produto": "Pão Francês",
-                "unidade_medida": "KG",
-                "quantidade": 5,
-                "preco_unitario": 0.80,
-                "preco_total": 4.00,
-                "desconto": null
-            }
+            {{
+                "nome_produto": "...",
+                "unidade_medida": "...",
+                "quantidade": ...,
+                "preco_unitario": ...,
+                "preco_total": ...,
+                "desconto": ...
+            }}
         ],
-        "preco_final_pago": 16.00
-    }
+        "preco_final_pago": ...
+    }}
 
-    - Me devolva apenas o JSON, sem explicações ou texto adicional, sem quebras de linhas e nenhum outro caractere adicional antes ou depois.
-    - O nome do produto deve ser o nome de algo comprável, e não nome de uma pessoa, empresa ou números. 
-    - Se o texto da nota fiscal não contiver informações suficientes para extrair um campo específico, por favor, deixe esse campo como null no JSON.
+    REGRAS DE PREENCHIMENTO:
+    - Use null quando o campo não existir no texto.
+    - Preserve exatamente o que estiver na linha do item.
 
-    Texto da nota fiscal:
+    SAÍDA:
+    Retorne APENAS o JSON.
+    Sem explicações.
+    Sem markdown.
+    Sem quebras de linha extras.
+    Sem texto antes ou depois.
+
+    TEXTO DA NOTA:
     """
 
     prompt = prompt + receipt_text

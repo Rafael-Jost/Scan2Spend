@@ -10,7 +10,7 @@ export default function QrScanner({ funcAnalisarRecibo }) {
                 width: 250,
                 height: 250,
             },
-            fps: 3,
+            fps: 2,
             rememberLastUsedCamera: false,
             supportedScanTypes: [
                 Html5QrcodeScanType.SCAN_TYPE_CAMERA, 
@@ -30,7 +30,6 @@ export default function QrScanner({ funcAnalisarRecibo }) {
 
         function error(err) {
             console.warn(err);
-            console.log('teste')
         }
 
     }, []);
