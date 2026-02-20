@@ -19,8 +19,9 @@ export default function CardEdicao(json) {
         <p> Data da compra: {payload.data_compra}</p>
         <p>Preço Total: R$ {payload.preco_final_pago ? payload.preco_final_pago.toFixed(2) : 0}</p>
         <div id="cards-edicao-container">
-            {items.map(({nome_produto, unidade_medida, quantidade, preco_unitario, preco_total, desconto}) => (
+            {items.map(({nome_produto, unidade_medida, quantidade, preco_unitario, preco_total, desconto}, index) => (
                 <div className="card-edicao" key={nome_produto}>
+                    <button className="botao-remover" onClick={() => removerItem(index)}>Remover Item</button>
                     <p><input className="nome-produto-input" type="text" defaultValue={nome_produto}></input></p>
                     <p>Quantidade: <input className="quantidade-input" type="number" defaultValue={quantidade}></input> ({unidade_medida})</p>
                     <p>Preço Unitário: R$ <input className="input-preco_unitario" type="number" defaultValue={preco_unitario ? preco_unitario.toFixed(2) : 0}></input></p>
@@ -52,4 +53,9 @@ export function SalvarPayload(){
         });
     }
     console.log("Produtos coletados para salvamento:", produtos);
+}
+
+function removerItem(index) {
+    console.log("Remover item no índice: ", index);
+    document.querySelectorAll('.card-edicao')[index].remove();
 }
