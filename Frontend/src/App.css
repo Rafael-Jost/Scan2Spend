@@ -95,3 +95,10 @@
     background: rgba(0, 0, 0, 0.322);
     border-radius: 10px;
 }
+
+.botao-remover{
+  float: right;
+  background: #e0e0e0;
+  border: none;
+  cursor: pointer;
+}

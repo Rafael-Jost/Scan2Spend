@@ -1,3 +1,5 @@
+import trashIcon from "../assets/trash.png";
+
 export default function CardEdicao(json) {
     
     if (json === null) {
@@ -21,7 +23,7 @@ export default function CardEdicao(json) {
         <div id="cards-edicao-container">
             {items.map(({nome_produto, unidade_medida, quantidade, preco_unitario, preco_total, desconto}, index) => (
                 <div className="card-edicao" key={nome_produto}>
-                    <button className="botao-remover" onClick={() => removerItem(index)}>Remover Item</button>
+                    <button className="botao-remover" onClick={() => removerItem(index)}><img style={{width: 15, height: 15}} src={trashIcon}></img></button>
                     <p><input className="nome-produto-input" type="text" defaultValue={nome_produto}></input></p>
                     <p>Quantidade: <input className="quantidade-input" type="number" defaultValue={quantidade}></input> ({unidade_medida})</p>
                     <p>Preço Unitário: R$ <input className="input-preco_unitario" type="number" defaultValue={preco_unitario ? preco_unitario.toFixed(2) : 0}></input></p>
