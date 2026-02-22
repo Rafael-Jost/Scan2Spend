@@ -15,11 +15,14 @@ export default function CardEdicao(json) {
     const items = payload.itens ?? [];
     console.log("Itens extraídos: ", items);
 
+    const data_sem_horario = payload.data_compra ? payload.data_compra.split(' ')[0] : '';
+    const data_formatada = data_sem_horario ? data_sem_horario.split('/').reverse().join('-') : '';
+
     return(
         <>
         <h2>Dados da Nota Fiscal</h2>
-        <p> Data da compra: {payload.data_compra}</p>
-        <p>Preço Total: R$ {payload.preco_final_pago ? payload.preco_final_pago.toFixed(2) : 0}</p>
+        <p> Data da compra: <input className="input-data-compra" type="date" defaultValue={data_formatada}></input></p>
+        <p>Preço Total: R$ <input className="input-preco-final-pago" type="number" defaultValue={payload.preco_final_pago ? payload.preco_final_pago.toFixed(2) : 0}></input></p>
         <div id="cards-edicao-container">
             {items.map(({nome_produto, unidade_medida, quantidade, preco_unitario, preco_total, desconto}, index) => (
                 <div className="card-edicao" key={nome_produto}>
@@ -42,6 +45,8 @@ export function SalvarPayload(){
     const precoUnitarioInputs = document.querySelectorAll('.input-preco_unitario');
     const descontoInputs = document.querySelectorAll('.input-desconto');
     const precoTotalInputs = document.querySelectorAll('.input-preco_total');
+    const dataCompraInputs = document.querySelectorAll('.input-data-compra');
+    const precoFinalPagoInputs = document.querySelectorAll('.input-preco-final-pago');
 
     const produtos = [];
     
@@ -55,7 +60,16 @@ export function SalvarPayload(){
         });
     }
     console.log("Produtos coletados para salvamento:", produtos);
+
+    const payloadAtualizado = {
+        data_compra: dataCompraInputs[0].value,
+        preco_final_pago: parseFloat(precoFinalPagoInputs[0].value),
+        itens: produtos
+    };
+
+    console.log("Payload atualizado:", payloadAtualizado);
 }
+
 
 function removerItem(index) {
     console.log("Remover item no índice: ", index);
