@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -7,14 +8,29 @@ import io
 import requests
 from bs4 import BeautifulSoup
 from openai import OpenAI
+import oracledb
+from dotenv import load_dotenv
+import json
+from typing import List
+
+load_dotenv()
 
 client = OpenAI()
 
-class ReceiptInfo(BaseModel):
-    filename: str = None
-    content: str = None
-    size: int = 0
-    text: str = "Nenhum texto extraído"
+class InsertItemResponse(BaseModel):
+    text: str = "Nenhum item inserido"
+
+class NotaFiscal(BaseModel):
+    data_compra: str
+    itens: List[ItemNota]
+    preco_final_pago: float
+
+class ItemNota(BaseModel):
+    nome_produto: str
+    quantidade: float
+    preco_unitario: float
+    desconto: float
+    preco_total: float
 
 class ReceiptExpenses(BaseModel):
     text: str = "Nenhuma informação extraída da nota fiscal"
@@ -38,6 +54,44 @@ app.add_middleware(
 def root():
     return {"Scan2Spend"}
 
+@app.post("/insertItem/", response_model=InsertItemResponse)
+async def insert_item(payload: NotaFiscal):
+
+    try:
+
+        dt_compra = payload.data_compra
+        preco_final_pago = payload.preco_final_pago
+
+        connection = oracledb.connect(
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            dsn=os.getenv("DB_SERVICE_NAME"),      
+            config_dir=os.getenv("DB_WALLET_LOCATION"),
+            wallet_location=os.getenv("DB_WALLET_LOCATION"),
+            wallet_password=os.getenv("DB_WALLET_PASSWORD")
+        )
+
+        cursor = connection.cursor()
+        
+        cursor.execute("""
+            INSERT INTO notas_fiscais (data, valor_total, usuario_id)
+            VALUES (to_date(:dt_compra, 'YYYY-MM-DD'), to_number(:preco_final_pago), 1)
+        """, {"dt_compra": dt_compra, "preco_final_pago": preco_final_pago})
+
+        connection.commit()
+        cursor.close()
+        connection.close()
+        
+    except Exception as e:
+        print(f"Erro ao inserir item: {e}")
+        return {"text": f"Erro ao inserir item no banco de dados. {e}"}
+    else:
+        return {"text": "Item inserido com sucesso no banco de dados."}
+
+    
+
+
+
 
 @app.get("/receiptExpenses/", response_model=ReceiptExpenses)
 async def analyze_receipt(QRurl: str):
@@ -47,7 +101,7 @@ async def analyze_receipt(QRurl: str):
     receipt_text = soup.get_text()
 
     prompt = """
-    CVocê está analisando o TEXTO BRUTO de uma nota fiscal brasileira obtido extraindo o texto de um html.
+    Você está analisando o TEXTO BRUTO de uma nota fiscal brasileira obtido extraindo o texto de um html.
     O texto contém cabeçalho, dados do cliente, rodapé e linhas de itens misturados.
 
     TAREFA:
