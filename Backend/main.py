@@ -20,17 +20,19 @@ client = OpenAI()
 class InsertItemResponse(BaseModel):
     text: str = "Nenhum item inserido"
 
-class NotaFiscal(BaseModel):
-    data_compra: str
-    itens: List[ItemNota]
-    preco_final_pago: float
-
 class ItemNota(BaseModel):
     nome_produto: str
     quantidade: float
     preco_unitario: float
     desconto: float
     preco_total: float
+    
+class NotaFiscal(BaseModel):
+    data_compra: str
+    itens: List[ItemNota]
+    preco_final_pago: float
+
+
 
 class ReceiptExpenses(BaseModel):
     text: str = "Nenhuma informação extraída da nota fiscal"
@@ -171,7 +173,7 @@ async def analyze_receipt(QRurl: str):
     LT, LITRO → "LT"
     MIL, ML → "ML"
     UN, UNID, UNIDADE → "UN"
-    
+
     Conversões semânticas (embalagens viram unidade):
     PCT (Pacote) → "UN"
     PC, PÇ → "UN"
