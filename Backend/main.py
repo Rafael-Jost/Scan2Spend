@@ -1,4 +1,5 @@
 import os
+from wsgiref import headers
 from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -108,15 +109,23 @@ async def insert_item(payload: NotaFiscal):
     else:
         return {"text": "Itens inserido com sucesso no banco de dados."}
 
-    
-
-
-
 
 @app.get("/receiptExpenses/", response_model=ReceiptExpenses)
 async def analyze_receipt(QRurl: str):
 
-    response = requests.get(QRurl)
+    try:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml",
+            "Accept-Language": "pt-BR,pt;q=0.9",
+            "Connection": "keep-alive"
+        }
+        response = requests.get(QRurl, headers=headers, timeout=30)
+        response.raise_for_status()
+
+    except requests.exceptions.RequestException as e:
+        return {"text": f"Erro ao acessar portal da NFC-e: {str(e)}"}
+    
     soup = BeautifulSoup(response.text, 'html.parser')
     receipt_text = soup.get_text()
 
