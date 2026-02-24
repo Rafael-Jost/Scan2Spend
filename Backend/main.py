@@ -73,10 +73,17 @@ async def insert_item(payload: NotaFiscal):
 
         cursor = connection.cursor()
         
+        id_var = cursor.var(int)
+
         cursor.execute("""
             INSERT INTO notas_fiscais (data, valor_total, usuario_id)
             VALUES (to_date(:dt_compra, 'YYYY-MM-DD'), to_number(:preco_final_pago), 1)
-        """, {"dt_compra": dt_compra, "preco_final_pago": preco_final_pago})
+            RETURNING nota_fiscal_id INTO :id
+        """, {"dt_compra": dt_compra, "preco_final_pago": preco_final_pago, "id": id_var})
+
+        cursor.execute("""
+            INSERT INTO nota_fiscal_itens
+        """)
 
         connection.commit()
         cursor.close()
