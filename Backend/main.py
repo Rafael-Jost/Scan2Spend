@@ -61,6 +61,7 @@ async def insert_item(payload: NotaFiscal):
 
         dt_compra = payload.data_compra
         preco_final_pago = payload.preco_final_pago
+        
 
         connection = oracledb.connect(
             user=os.getenv("DB_USER"),
@@ -81,19 +82,29 @@ async def insert_item(payload: NotaFiscal):
             RETURNING nota_fiscal_id INTO :id
         """, {"dt_compra": dt_compra, "preco_final_pago": preco_final_pago, "id": id_var})
 
-        cursor.execute("""
-            INSERT INTO nota_fiscal_itens
-        """)
-
+        for produto in payload.itens:
+            cursor.execute("""
+                INSERT INTO nota_fiscal_itens
+                (nota_fiscal_id, produto, valor, quantidade, valor_unitario, valor_desconto, unidade_medida)
+                VALUES (:nota_fiscal_id, :produto, :valor, :quantidade, :valor_unitario, :valor_desconto, :unidade_medida)
+            """, {
+                "nota_fiscal_id": id_var.getvalue()[0],
+                "produto": produto.nome_produto,
+                "valor": float(produto.preco_total) if produto.preco_total else None,
+                "quantidade": float(produto.quantidade) if produto.quantidade else None,
+                "valor_unitario": float(produto.preco_unitario) if produto.preco_unitario else None,
+                "valor_desconto": float(produto.desconto) if produto.desconto else None,
+                "unidade_medida": "un"
+            })
         connection.commit()
         cursor.close()
         connection.close()
         
     except Exception as e:
         print(f"Erro ao inserir item: {e}")
-        return {"text": f"Erro ao inserir item no banco de dados. {e}"}
+        return {"text": f"Erro ao inserir itens no banco de dados. {e}"}
     else:
-        return {"text": "Item inserido com sucesso no banco de dados."}
+        return {"text": "Itens inserido com sucesso no banco de dados."}
 
     
 
