@@ -1,12 +1,13 @@
 import os
+import asyncio
 from wsgiref import headers
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from pytesseract import pytesseract
 from PIL import Image
 import io
-import requests
+from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 from openai import OpenAI
 import oracledb
@@ -114,19 +115,50 @@ async def insert_item(payload: NotaFiscal):
 async def analyze_receipt(QRurl: str):
 
     try:
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0 Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml",
-            "Accept-Language": "pt-BR,pt;q=0.9",
-            "Connection": "keep-alive"
-        }
-        response = requests.get(QRurl, headers=headers, timeout=30)
-        response.raise_for_status()
+        # Usa Playwright sync em thread porque o async pode falhar no Windows/py3.14
+        # com NotImplementedError; assim evitamos conflito com o event loop do FastAPI.
+        def fetch_html_with_playwright(url: str) -> str:
+            with sync_playwright() as p:
+                browser = p.chromium.launch(
+                    headless=True,
+                    args=[
+                        "--no-sandbox",
+                        "--disable-setuid-sandbox",
+                        "--disable-blink-features=AutomationControlled",
+                    ],
+                )
+                context = browser.new_context(
+                    user_agent=(
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                        "AppleWebKit/537.36 (KHTML, like Gecko) "
+                        "Chrome/120.0 Safari/537.36"
+                    ),
+                    locale="pt-BR",
+                )
+                page = context.new_page()
+                response = page.goto(url, wait_until="domcontentloaded", timeout=60000)
+                if response is None:
+                    raise RuntimeError("Navegacao sem resposta")
+                if response.status >= 400:
+                    raise RuntimeError(f"Status {response.status} ao acessar {page.url}")
+                try:
+                    page.wait_for_load_state("networkidle", timeout=15000)
+                except Exception:
+                    pass
+                html = page.content()
+                context.close()
+                browser.close()
+                return html
 
-    except requests.exceptions.RequestException as e:
-        return {"text": f"Erro ao acessar portal da NFC-e: {str(e)}"}
+        receipt_html = await asyncio.to_thread(fetch_html_with_playwright, QRurl)
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Falha ao acessar portal da NFC-e: ({type(e).__name__}) {repr(e)}"
+        )
     
-    soup = BeautifulSoup(response.text, 'html.parser')
+    soup = BeautifulSoup(receipt_html, 'html.parser')
     receipt_text = soup.get_text()
 
     prompt = """
