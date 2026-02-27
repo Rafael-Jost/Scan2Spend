@@ -48,7 +48,7 @@ export default function CardEdicao(json) {
                 <div className="card-edicao" key={nome_produto}>
                     <button className="botao-remover" onClick={() => removerItem(index)}><img style={{width: 15, height: 15}} src={trashIcon}></img></button>
                     <p><input className="nome-produto-input" type="text" defaultValue={nome_produto}></input></p>
-                    <p>Quantidade: <input className="quantidade-input" type="number" defaultValue={quantidade}></input> ({unidade_medida})</p>
+                    <p>Quantidade: <input className="quantidade-input" type="number" defaultValue={quantidade}></input> (<span className='unidade-medida-span'>{unidade_medida}</span>)</p>
                     <p>Preço Unitário: R$ <input className="input-preco_unitario" type="number" defaultValue={preco_unitario ? preco_unitario.toFixed(2) : 0}></input></p>
                     <p>Desconto: R$ <input className="input-desconto" type="number" defaultValue={desconto ? desconto.toFixed(2) : 0}></input></p>
                     <p>Preço Total: R$ <input className="input-preco_total" type="number" defaultValue={preco_total ? preco_total.toFixed(2) : 0}></input></p>
@@ -67,6 +67,7 @@ export function SalvarPayload(){
     const precoTotalInputs = document.querySelectorAll('.input-preco_total');
     const dataCompraInputs = document.querySelectorAll('.input-data-compra');
     const precoFinalPagoInputs = document.querySelectorAll('.input-preco-final-pago');
+    const unidadeMedida = document.querySelectorAll('.unidade-medida-span');
 
     const produtos = [];
     
@@ -76,7 +77,8 @@ export function SalvarPayload(){
             quantidade: parseFloat(quantidadeInputs[i].value),
             preco_unitario: parseFloat(precoUnitarioInputs[i].value),
             desconto: parseFloat(descontoInputs[i].value),
-            preco_total: parseFloat(precoTotalInputs[i].value)
+            preco_total: parseFloat(precoTotalInputs[i].value),
+            unidade_medida: unidadeMedida[i].textContent
         });
     }
     console.log("Produtos coletados para salvamento:", produtos);
