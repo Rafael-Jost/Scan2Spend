@@ -28,6 +28,7 @@ class ItemNota(BaseModel):
     preco_unitario: float
     desconto: float
     preco_total: float
+    unidade_medida: str
     
 class NotaFiscal(BaseModel):
     data_compra: str
@@ -98,7 +99,7 @@ async def insert_item(payload: NotaFiscal):
                 "quantidade": float(produto.quantidade) if produto.quantidade else None,
                 "valor_unitario": float(produto.preco_unitario) if produto.preco_unitario else None,
                 "valor_desconto": float(produto.desconto) if produto.desconto else None,
-                "unidade_medida": "un"
+                "unidade_medida": produto.unidade_medida if produto.unidade_medida and len(produto.unidade_medida) <= 2 else None #char(2)
             })
         connection.commit()
         cursor.close()
