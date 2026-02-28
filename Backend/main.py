@@ -59,8 +59,8 @@ app.add_middleware(
 def root():
     return {"Scan2Spend"}
 
-@app.post("/insertItem/", response_model=InsertItemResponse)
-async def insert_item(payload: NotaFiscal):
+@app.post("/nota_fiscal/", response_model=InsertItemResponse)
+def insert_item(payload: NotaFiscal):
 
     try:
 
