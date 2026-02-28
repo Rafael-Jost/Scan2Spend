@@ -11,6 +11,7 @@ function App() {
   const [textoMensagem, setTextoMensagem] = useState(null)
   const [classeMensagem, setClasseMensagem] = useState('oculto')
   const [textoRecibo, setTextoRecibo] = useState(null)
+  const [popupAberto, setPopupAberto] = useState(false)
 
 
   const AnalisarRecibo = async (url) => {
@@ -35,8 +36,7 @@ function App() {
           setTextoMensagem("Análise Completa!")
 
         setTimeout(() => {
-            const popup = document.getElementById('popup-informacoes')
-            if(popup) popup.style.display = 'flex';
+            setPopupAberto(true)
           }
       , 1000)
       }else {
@@ -50,10 +50,9 @@ function App() {
     <>
       <CardSemLink titulo="Bem-vindo ao Scan2Spend!" descricao="Faça upload dos seus recibos, rastreie seus gastos e receba dicas de economia." />
       <QrScanner funcAnalisarRecibo={AnalisarRecibo} />
-      <PopUpDeInformacoes conteudo={<CardEdicao json={parseRecibo(textoRecibo)} />}></PopUpDeInformacoes>
+      <PopUpDeInformacoes conteudo={<CardEdicao json={parseRecibo(textoRecibo)}  />} popupAberto={popupAberto} setPopupAberto={setPopupAberto} />
       <BotaoSimples texto={textoMensagem} className={classeMensagem} onClick={() => {
-        const popup = document.getElementById('popup-informacoes')
-        if(popup) popup.style.display = 'flex';
+        setPopupAberto(true)
       }} />
     </>
   );
