@@ -1,71 +1,11 @@
 import { useState } from 'react'
 import QrScanner from './components/QrScanner.jsx'
 import CardEdicao, { SalvarPayload }from './components/CardsEdicao.jsx'
+import CardSemLink from './components/CardSemLink.jsx'
+import PopUpDeInformacoes from './components/PopUpDeInformacoes.jsx'
+import BotaoSimples from './components/BotaoSimples.jsx'
+import parseRecibo from './utils/parseRecibo.js'
 import './App.css'
-
-function CardSemLink({titulo, descricao}) {
-  return (
-    <div className="card-sem-link">
-      <h2>{titulo}</h2>
-      <div className="descricao-card">
-        <p>{descricao}</p>
-      </div>
-    </div>
-  )
-}
-
-function PopUpDeInformacoes({conteudo}){
-
-    return (
-    <div id="popup-informacoes">
-      <div id="painel-de-informacoes">
-        {conteudo}
-        <button
-          style={{ marginTop: '20px' }}
-          onClick={() => {
-            const popup = document.getElementById('popup-informacoes')
-            if(popup) popup.style.display = 'none';
-          }}
-        >
-          Fechar
-        </button>
-        <button
-          style={{ marginTop: '20px', marginLeft: '10px', backgroundColor: '#4CAF50', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '5px' }}
-          onClick={async () => {
-            const status_salvamento = await SalvarPayload();
-            alert(status_salvamento);
-            const popup = document.getElementById('popup-informacoes')
-            if(popup) popup.style.display = 'none';
-          }}>
-          Salvar
-        </button>
-      </div>
-    </div>
-  );
-  
-}
-
-function BotaoSimples({texto, onClick, className}){
-  return <button id="botao-upload" className={className} onClick={onClick}>{texto}</button>
-}
-
-function parseRecibo(textoRecibo) {
-    if (!textoRecibo) return 'texto nao recebido';
-
-    try {
-        let parsed = JSON.parse(textoRecibo);
-
-        // se ainda for string, era JSON duplo
-        if (typeof parsed === 'string') {
-            parsed = JSON.parse(parsed);
-        }
-
-        return parsed;
-    } catch (e) {
-        console.error('Erro ao fazer parse:', e);
-        return 'texto nao recebido';
-    }
-}
 
 function App() {
   const [textoMensagem, setTextoMensagem] = useState(null)
