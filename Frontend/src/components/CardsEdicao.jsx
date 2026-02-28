@@ -59,7 +59,7 @@ export default function CardEdicao(json) {
     )
 }
 
-export function SalvarPayload(){
+export async function SalvarPayload(){
     const nomeProdutoInputs = document.querySelectorAll('.nome-produto-input');
     const quantidadeInputs = document.querySelectorAll('.quantidade-input');
     const precoUnitarioInputs = document.querySelectorAll('.input-preco_unitario');
@@ -91,7 +91,18 @@ export function SalvarPayload(){
 
     console.log("Payload atualizado:", payloadAtualizado);
 
-    
+    const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/nota_fiscal/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payloadAtualizado)
+    })
+    if (response.ok) {
+        return 'Dados salvos com sucesso!';
+    } else {
+        return 'Erro ao salvar os dados.';
+    }
 }
 
 

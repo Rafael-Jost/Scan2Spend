@@ -31,8 +31,11 @@ function PopUpDeInformacoes({conteudo}){
         </button>
         <button
           style={{ marginTop: '20px', marginLeft: '10px', backgroundColor: '#4CAF50', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '5px' }}
-          onClick={() => {
-            SalvarPayload();
+          onClick={async () => {
+            const status_salvamento = await SalvarPayload();
+            alert(status_salvamento);
+            const popup = document.getElementById('popup-informacoes')
+            if(popup) popup.style.display = 'none';
           }}>
           Salvar
         </button>
