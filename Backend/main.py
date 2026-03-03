@@ -29,6 +29,7 @@ class ItemNota(BaseModel):
     desconto: float
     preco_total: float
     unidade_medida: str
+    categoria: str
     
 class NotaFiscal(BaseModel):
     data_compra: str
@@ -90,8 +91,8 @@ def insert_item(payload: NotaFiscal):
         for produto in payload.itens:
             cursor.execute("""
                 INSERT INTO nota_fiscal_itens
-                (nota_fiscal_id, produto, valor, quantidade, valor_unitario, valor_desconto, unidade_medida)
-                VALUES (:nota_fiscal_id, :produto, :valor, :quantidade, :valor_unitario, :valor_desconto, :unidade_medida)
+                (nota_fiscal_id, produto, valor, quantidade, valor_unitario, valor_desconto, unidade_medida, categoria)
+                VALUES (:nota_fiscal_id, :produto, :valor, :quantidade, :valor_unitario, :valor_desconto, :unidade_medida, :categoria)
             """, {
                 "nota_fiscal_id": id_var.getvalue()[0],
                 "produto": produto.nome_produto,
@@ -99,7 +100,8 @@ def insert_item(payload: NotaFiscal):
                 "quantidade": float(produto.quantidade) if produto.quantidade else None,
                 "valor_unitario": float(produto.preco_unitario) if produto.preco_unitario else None,
                 "valor_desconto": float(produto.desconto) if produto.desconto else None,
-                "unidade_medida": produto.unidade_medida if produto.unidade_medida and len(produto.unidade_medida) <= 2 else None #char(2)
+                "unidade_medida": produto.unidade_medida if produto.unidade_medida and len(produto.unidade_medida) <= 2 else None, #char(2)
+                "categoria": produto.categoria if produto.categoria else None
             })
         connection.commit()
         cursor.close()

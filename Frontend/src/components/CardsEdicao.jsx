@@ -83,6 +83,7 @@ export async function SalvarPayload(){
     const dataCompraInputs = document.querySelectorAll('.input-data-compra');
     const precoFinalPagoInputs = document.querySelectorAll('.input-preco-final-pago');
     const unidadeMedida = document.querySelectorAll('.unidade-medida-span');
+    const categoriaInputs = document.querySelectorAll('.input-categoria');
 
     const produtos = [];
     
@@ -93,7 +94,8 @@ export async function SalvarPayload(){
             preco_unitario: parseFloat(precoUnitarioInputs[i].value),
             desconto: parseFloat(descontoInputs[i].value),
             preco_total: parseFloat(precoTotalInputs[i].value),
-            unidade_medida: unidadeMedida[i].textContent
+            unidade_medida: unidadeMedida[i].textContent,
+            categoria: categoriaInputs[i].value
         });
     }
     console.log("Produtos coletados para salvamento:", produtos);
