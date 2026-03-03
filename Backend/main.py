@@ -168,13 +168,9 @@ async def analyze_receipt(QRurl: str):
     REGRAS GERAIS
 
     - Considere produto somente se a linha contiver quantidade e valor unitário ou valor total. Caso contrário IGNORE.
-
     - Ignore qualquer texto institucional ou administrativo (nome do cliente, CPF/CNPJ, endereço, telefones, loja, QR, chave, protocolo, TOTAL/ SUBTOTAL que sejam cabeçalho/rodapé, datas soltas, caixas com texto “CLIENTE”, “CONSUMIDOR”, “OPERADOR”, “CAIXA”).
-
    -  Preserve a linha original do produto ao preencher nome_produto, exceto quando a linha terminar com um token de unidade isolado (ex.: KG, G, UN, LT, M, CX). Nesse caso: remova esse token do nome_produto e coloque-o em unidade_medida.
-
     - Se a descrição contiver peso/medida acoplada (ex.: Abacate 1KG, Arroz 5kg), extraia quantidade como número e unidade como unidade_medida quando for claro; se não for claro, preserve a descrição e deixe unidade_medida como null.
-
     - Nomes que sejam somente números ou contenham palavras proibidas (CLIENTE, CNPJ, ENDEREÇO, TOTAL, CAIXA, OPERADOR) não são produtos.
 
     REGRAS DE EXTRAÇÃO DE CAMPOS
@@ -195,14 +191,33 @@ async def analyze_receipt(QRurl: str):
 
     - Quantidade: aceite 1, 1,00, 1 KG, 2x, 2 un — normalize para número (float). Se o token for 2x interpretar como 2.
 
+    - categoria: leia a descrição do produto e classifique em 1 categoria definidas nessa lista (ex.: “Alimentação”, "Lanches & Conveniência", “Limpeza”, “Higiene Pessoal”, “Bebidas”, "Utilidades", "Pets", “Outros”). Utilize somente as categorias que estão na lista e da forma como estão escritas. Não invente categorias.
+    
+    REGRAS PARA CATEGORIA:
+    - Alimentação (Itens que são comida “de verdade” ou ingrediente)
+    - Lanches & Conveniência (Itens prontos para consumo imediato)
+    - Limpeza (Produtos de limpeza doméstica)
+    - Higiene Pessoal (Produtos de cuidado pessoal)
+    - Bebidas (Liquidos para consumo, alcoólicos ou não)
+    - Utilidades (Itens de uso geral que não se encaixam nas outras categorias)
+    - Pets (Produtos para animais de estimação)
+    - Outros (Categoria genérica para itens que não se encaixam claramente em nenhuma das anteriores)
+
+    -- Exemplos de classificação de categoria:
+    - Arroz, feijão, carne, frutas, legumes → Alimentação
+    - Salgados, doces, snacks, refeições congeladas, chocolate, pizza → Lanches & Conveniência
+    - Detergente, desinfetante, esponja, água sanitária → Limpeza
+    - Sabonete, shampoo, papel higiênico, creme dental → Higiene Pessoal
+    - Refrigerante, suco, água, cerveja, vinho → Bebidas
+    - Caneta, pilha, saco de lixo, papel alumínio → Utilidades
+    - Ração, areia para gato, petiscos para cachorro → Pets
+
+
     REGRAS PARA preco_final_pago
 
-    - Procure explicitamente linhas rotuladas TOTAL, TOTAL PAGO, VALOR PAGO, VALOR A PAGAR, TOTAL NOTA FISCAL, VALOR PAGO EM e retorne esse valor.
-
+    - Procure o valor pago por toda a compra e retorne esse valor (Normalmente acompanhado por "Valor Total (R$)"). Não se confunda com valor de desconto total, ou total pago em dinheiro (normalmente números cheios como 100, 50, 20), ou valor de troco. O valor final pago é o que efetivamente saiu do bolso do consumidor.
     - IGNORE valores acompanhados das palavras TROCO, ENTREGUE, DINHEIRO ENTREGUE, RECEBIDO se estiverem claramente relacionados ao pagamento em espécie (ex.: “ENTREGUE 100,00”); não use esses como preco_final_pago.
-
     - Se houver múltiplos “TOTAL”, prefira a linha que contenha PAGO/PAGAMENTO/NOTA ou a que esteja mais próxima da palavra TOTAL seguida de valores; se ainda assim ambíguo, use a ocorrência que aparece após o bloco de itens (ou seja, em direção ao fim do documento).
-
     - Se não houver um TOTAL claramente rotulado, coloque preco_final_pago: null.
 
     NORMALIZAÇÃO OBRIGATÓRIA DE UNIDADE DE MEDIDA
@@ -227,15 +242,10 @@ async def analyze_receipt(QRurl: str):
     EMB, EMBALAGEM → "UN"
 
     Qualquer unidade que represente contagem física deve virar "UN".
-
     Se a unidade não puder ser identificada com segurança, usar "UN" como padrão.
-
     Nunca retornar unidade com mais de 2 caracteres.
-
     Nunca retornar descrição longa como unidade.
-
     Nunca deixar unidade_medida nulo — sempre normalize.
-
     REGRAS PARA DATA
 
     - Busque datas próximas às palavras DATA, EMISSÃO, COMPRA. Aceite DD/MM/AAAA, DD-MM-AAAA, AAAA-MM-DD e variações com hora. Padronize para DD/MM/YYYY como string.
@@ -245,11 +255,8 @@ async def analyze_receipt(QRurl: str):
     VALIDAÇÃO E FORMATO
 
     - Retorne apenas o JSON exatamente neste formato (sem texto extra, sem markdown, sem quebras extras). Use null quando o campo não existir.
-
     - Todos os valores numéricos (quantidade, preco_unitario, preco_total, desconto, preco_final_pago) devem ser números (float) ou null.
-
     - itens deve ser um array; se nenhum item válido for encontrado, itens: [].
-
     - Não faça somas, não invente preços nem altere descrições além das regras de unidade explicadas.
 
     FORMATO DE SAÍDA (EXATO)
@@ -263,7 +270,8 @@ async def analyze_receipt(QRurl: str):
             "quantidade": ...,
             "preco_unitario": ...,
             "preco_total": ...,
-            "desconto": ...
+            "desconto": ...,
+            "categoria": "..." 
             }
         ],
         "preco_final_pago": ...
@@ -272,7 +280,6 @@ async def analyze_receipt(QRurl: str):
     EXTRA
 
     - Se uma linha contiver apenas descrição e preço mas sem quantidade explícita (ex.: “Pão 1,50”), considere não ser item.
-
     - Se houver linhas com x entre quantidade e descrição (2 x Pão), parse como quantidade 2.
 
     RETORNE APENAS O JSON. Sem explicações. Sem nada além do JSON.
