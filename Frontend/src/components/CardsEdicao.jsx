@@ -44,14 +44,29 @@ export default function CardEdicao(json) {
         <p> Data da compra: <input className="input-data-compra" type="date" value={dataCompra} onChange={(e) => setDataCompra(e.target.value)}></input></p>
         <p>Preço Total: R$ <input className="input-preco-final-pago" type="number" step="0.01" value={precoFinalPago} onChange={(e) => setPrecoFinalPago(Number(e.target.value))}></input></p>
         <div id="cards-edicao-container">
-            {items.map(({nome_produto, unidade_medida, quantidade, preco_unitario, preco_total, desconto}, index) => (
-                <div className="card-edicao" key={nome_produto}>
-                    <button className="botao-remover" onClick={() => removerItem(index)}><img style={{width: 15, height: 15}} src={trashIcon}></img></button>
-                    <p><input className="nome-produto-input" type="text" defaultValue={nome_produto}></input></p>
-                    <p>Quantidade: <input className="quantidade-input" type="number" defaultValue={quantidade}></input> (<span className='unidade-medida-span'>{unidade_medida}</span>)</p>
-                    <p>Preço Unitário: R$ <input className="input-preco_unitario" type="number" defaultValue={preco_unitario ? preco_unitario.toFixed(2) : 0}></input></p>
-                    <p>Desconto: R$ <input className="input-desconto" type="number" defaultValue={desconto ? desconto.toFixed(2) : 0}></input></p>
-                    <p>Preço Total: R$ <input className="input-preco_total" type="number" defaultValue={preco_total ? preco_total.toFixed(2) : 0}></input></p>
+            {items.map(({nome_produto, unidade_medida, quantidade, preco_unitario, preco_total, desconto, categoria}, index) => (
+                <div>
+                    <div className="card-edicao" key={nome_produto}>
+                        <button className="botao-remover" onClick={() => removerItem(index)}><img style={{width: 15, height: 15}} src={trashIcon}></img></button>
+                        <p><input className="nome-produto-input" type="text" defaultValue={nome_produto}></input></p>
+                        <p>Quantidade: <input className="quantidade-input" type="number" defaultValue={quantidade}></input> (<span className='unidade-medida-span'>{unidade_medida}</span>)</p>
+                        <p>Preço Unitário: R$ <input className="input-preco_unitario" type="number" defaultValue={preco_unitario ? preco_unitario.toFixed(2) : 0}></input></p>
+                        <p>Desconto: R$ <input className="input-desconto" type="number" defaultValue={desconto ? desconto.toFixed(2) : 0}></input></p>
+                        <p>Preço Total: R$ <input className="input-preco_total" type="number" defaultValue={preco_total ? preco_total.toFixed(2) : 0}></input></p>
+                        <p>Categoria: 
+                            <select className="input-categoria" defaultValue={categoria || ""}>
+                                <option value="" disabled>Selecione</option>
+                                <option value="Alimentação">Alimentação</option>
+                                <option value="Bebidas">Bebidas</option>
+                                <option value="Pets">Pets</option>
+                                <option value="Higiene Pessoal">Higiene Pessoal</option>
+                                <option value="Limpeza">Limpeza</option>
+                                <option value="Utilidades">Utilidades</option>
+                                <option value="Lanches & Conveniência">Lanches & Conveniência</option>
+                                <option value="Outros">Outros</option>
+                            </select>
+                        </p>
+                    </div>
                 </div>
             ))}
         </div>
