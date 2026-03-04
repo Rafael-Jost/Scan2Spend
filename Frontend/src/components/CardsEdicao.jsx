@@ -45,8 +45,8 @@ export default function CardEdicao(json) {
         <p>Preço Total: R$ <input className="input-preco-final-pago" type="number" step="0.01" value={precoFinalPago} onChange={(e) => setPrecoFinalPago(Number(e.target.value))}></input></p>
         <div id="cards-edicao-container">
             {items.map(({nome_produto, unidade_medida, quantidade, preco_unitario, preco_total, desconto, categoria}, index) => (
-                <div>
-                    <div className="card-edicao" key={nome_produto}>
+                <div key={index}>
+                    <div className="card-edicao">
                         <button className="botao-remover" onClick={() => removerItem(index)}><img style={{width: 15, height: 15}} src={trashIcon}></img></button>
                         <p><input className="nome-produto-input" type="text" defaultValue={nome_produto}></input></p>
                         <p>Quantidade: <input className="quantidade-input" type="number" defaultValue={quantidade}></input> (<span className='unidade-medida-span'>{unidade_medida}</span>)</p>
