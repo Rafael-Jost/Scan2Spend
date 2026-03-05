@@ -5,6 +5,8 @@ import CardSemLink from './components/CardSemLink.jsx'
 import PopUpDeInformacoes from './components/PopUpDeInformacoes.jsx'
 import BotaoSimples from './components/BotaoSimples.jsx'
 import parseRecibo from './utils/parseRecibo.js'
+import despesasIcon from './assets/despesas.png'
+import paginaInicialIcon from './assets/qr-code.png'
 import './App.css'
 
 function App() {
@@ -12,6 +14,8 @@ function App() {
   const [classeMensagem, setClasseMensagem] = useState('oculto')
   const [textoRecibo, setTextoRecibo] = useState(null)
   const [popupAberto, setPopupAberto] = useState(false)
+  const [exibirPaginaInicial, setExibirPaginaInicial] = useState(true)
+  const [exibirPaginaDespesas, setExibirPaginaDespesas] = useState(false)
 
 
   const AnalisarRecibo = async (url) => {
@@ -46,16 +50,34 @@ function App() {
       }
   }
 
-  return (
-    <>
-      <CardSemLink titulo="Bem-vindo ao Scan2Spend!" descricao="Faça upload dos seus recibos, rastreie seus gastos e receba dicas de economia." />
-      <QrScanner funcAnalisarRecibo={AnalisarRecibo} />
-      <PopUpDeInformacoes conteudo={<CardEdicao json={parseRecibo(textoRecibo)}  />} popupAberto={popupAberto} setPopupAberto={setPopupAberto} />
-      <BotaoSimples texto={textoMensagem} className={classeMensagem} onClick={() => {
-        setPopupAberto(true)
-      }} />
-    </>
-  );
+  if (exibirPaginaInicial) {
+    return (
+      <>
+        <BotaoSimples id="botao-despesas" icone={despesasIcon} onClick={() => {
+          setExibirPaginaInicial(false)
+          setExibirPaginaDespesas(true)
+        }}></BotaoSimples>
+        <CardSemLink titulo="Bem-vindo ao Scan2Spend!" descricao="Faça upload dos seus recibos, rastreie seus gastos e receba dicas de economia." />
+        <QrScanner funcAnalisarRecibo={AnalisarRecibo} />
+        <PopUpDeInformacoes conteudo={<CardEdicao json={parseRecibo(textoRecibo)}  />} popupAberto={popupAberto} setPopupAberto={setPopupAberto} />
+        <BotaoSimples id="botao-upload" texto={textoMensagem} className={classeMensagem} onClick={() => {
+          setPopupAberto(true)
+        }} />
+      </>
+    );
+  }
+  else if (exibirPaginaDespesas) {
+    return (
+      <>
+        <h1>Suas Despesas</h1>
+        <BotaoSimples id="botao-pagina-inicial" icone={paginaInicialIcon} onClick={() => {
+          setExibirPaginaInicial(true)
+          setExibirPaginaDespesas(false)
+        }}></BotaoSimples>
+
+      </>
+    );
+  }
 }
 
 export default App

@@ -1,5 +1,10 @@
-function BotaoSimples({texto, onClick, className}){
-  return <button id="botao-upload" className={className} onClick={onClick}>{texto}</button>
+function BotaoSimples({id, texto, onClick, className, icone}){
+  return <>
+    <button id={id} className={className} onClick={onClick}>
+      {icone ? <img style={{ width: '30px', height: '30px' }} src={icone}/> : null}
+      {texto}
+    </button>
+  </>
 }
 
 export default BotaoSimples
