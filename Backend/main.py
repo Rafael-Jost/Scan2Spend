@@ -19,6 +19,10 @@ load_dotenv()
 
 client = OpenAI()
 
+class DespesasResponse(BaseModel):
+    data: str
+    despesa: float
+
 class InsertItemResponse(BaseModel):
     text: str = "Nenhum item inserido"
 
@@ -35,8 +39,6 @@ class NotaFiscal(BaseModel):
     data_compra: str
     itens: List[ItemNota]
     preco_final_pago: float
-
-
 
 class ReceiptExpenses(BaseModel):
     text: str = "Nenhuma informação extraída da nota fiscal"
@@ -56,9 +58,90 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+def makeDBconnection():
+    try:
+        connection = oracledb.connect(
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            dsn=os.getenv("DB_SERVICE_NAME"),      
+            config_dir=os.getenv("DB_WALLET_LOCATION"),
+            wallet_location=os.getenv("DB_WALLET_LOCATION"),
+            wallet_password=os.getenv("DB_WALLET_PASSWORD")
+        )
+    
+    except Exception as e:
+        return 'Erro ao estabelecer conexão'
+    
+    else:
+        return connection
+    
 @app.get("/")
 def root():
     return {"Scan2Spend"}
+
+
+@app.get('/despesas/', response_model=list[DespesasResponse])
+def busca_despesas(usuario_id: int, dt_inicio: str, dt_fim: str, tipo_agrupamento: str):
+    try:
+        connection = makeDBconnection()
+        if 'Erro' in str(connection):
+            raise Exception(connection)
+        
+        cursor = connection.cursor()
+        cursor.execute("""
+            SELECT
+                CASE
+                    WHEN :tipo_agrupamento = 'ANO' THEN
+                        TRUNC(DATA, 'YYYY')
+                    WHEN :tipo_agrupamento = 'MES' THEN
+                        TRUNC(DATA, 'MM')
+                    WHEN :tipo_agrupamento = 'DIA' THEN
+                        TRUNC(DATA)
+                END AS DATA_DESPESA,
+                SUM(valor_total) AS VALOR_TOTAL
+            FROM
+                notas_fiscais nf
+            WHERE
+                    usuario_id = :usuario_id
+                AND data BETWEEN TO_DATE(:dt_inicio, 'DD/MM/YYYY') AND TO_DATE(:dt_fim, 'DD/MM/YYYY')
+            GROUP BY
+                CASE
+                    WHEN :tipo_agrupamento = 'ANO' THEN
+                        TRUNC(DATA, 'YYYY')
+                    WHEN :tipo_agrupamento = 'MES' THEN
+                        TRUNC(DATA, 'MM')
+                    WHEN :tipo_agrupamento = 'DIA' THEN
+                        TRUNC(DATA)
+                END
+            ORDER BY
+                CASE
+                    WHEN :tipo_agrupamento = 'ANO' THEN
+                        TRUNC(DATA, 'YYYY')
+                    WHEN :tipo_agrupamento = 'MES' THEN
+                        TRUNC(DATA, 'MM')
+                    WHEN :tipo_agrupamento = 'DIA' THEN
+                        TRUNC(DATA)
+                END
+        """, {"dt_inicio": dt_inicio, "dt_fim": dt_fim, "tipo_agrupamento": tipo_agrupamento, "usuario_id": usuario_id})
+
+        result = cursor.fetchall()
+        print(f"DEBUG: Query retornou {len(result)} linhas")
+        cursor.close()
+        connection.close()
+        despesas = []
+        for row in result:
+            despesas.append(DespesasResponse(
+                data= row[0].strftime("%Y") if tipo_agrupamento == 'ANO' else row[0].strftime("%m/%Y") if tipo_agrupamento == 'MES' else row[0].strftime("%d/%m/%Y"),
+                despesa=float(row[1])
+            ))
+        print(f"DEBUG: Despesas processadas: {len(despesas)}")
+        
+    except Exception as e:
+        print(f"Erro ao buscar despesas: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar despesas: {e}")
+    else:
+        return despesas
+
 
 @app.post("/nota_fiscal/", response_model=InsertItemResponse)
 def insert_item(payload: NotaFiscal):
@@ -68,16 +151,10 @@ def insert_item(payload: NotaFiscal):
         dt_compra = payload.data_compra
         preco_final_pago = payload.preco_final_pago
         
-
-        connection = oracledb.connect(
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
-            dsn=os.getenv("DB_SERVICE_NAME"),      
-            config_dir=os.getenv("DB_WALLET_LOCATION"),
-            wallet_location=os.getenv("DB_WALLET_LOCATION"),
-            wallet_password=os.getenv("DB_WALLET_PASSWORD")
-        )
-
+        connection = makeDBconnection()
+        if 'Erro' in str(connection):
+            raise Exception(connection)
+        
         cursor = connection.cursor()
         
         id_var = cursor.var(int)
