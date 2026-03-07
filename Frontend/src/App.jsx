@@ -20,6 +20,7 @@ function App() {
   const [despesasTotais, setDespesasTotais] = useState([])
 
   useEffect(() => {
+
     const buscarDespesas = async () => {
       const params = new URLSearchParams({ 
         usuario_id: 1, 
@@ -44,9 +45,7 @@ function App() {
     }
     
     buscarDespesas();
-  }, [])
 
-  useEffect(() => {
     const root = document.getElementById('root')
     if (!root) return
 
@@ -60,6 +59,7 @@ function App() {
       root.classList.remove('modo-despesas')
     }
   }, [exibirPaginaDespesas])
+
 
 
   const AnalisarRecibo = async (url) => {
@@ -119,7 +119,7 @@ function App() {
           setExibirPaginaInicial(true)
           setExibirPaginaDespesas(false)
         }}></BotaoSimples>
-        <GrafDespesasTotais dados={despesasTotais} />
+        <GrafDespesasTotais dados={despesasTotais} setState={setDespesasTotais}/>
         </div>
       </>
     );
