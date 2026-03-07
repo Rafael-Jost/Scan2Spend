@@ -5,6 +5,19 @@
   text-align: center;
 }
 
+#root.modo-despesas {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  margin: 0;
+  text-align: left;
+  align-self: flex-start
+}
+
+.pagina-despesas {
+  width: 100%;
+}
+
 .card-sem-link {
   text-align: center;
   align-items: center;

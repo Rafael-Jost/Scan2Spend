@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import QrScanner from './components/QrScanner.jsx'
 import CardEdicao, { SalvarPayload }from './components/CardsEdicao.jsx'
 import CardSemLink from './components/CardSemLink.jsx'
@@ -7,6 +7,7 @@ import BotaoSimples from './components/BotaoSimples.jsx'
 import parseRecibo from './utils/parseRecibo.js'
 import despesasIcon from './assets/despesas.png'
 import paginaInicialIcon from './assets/qr-code.png'
+import GrafDespesasTotais from './components/GrafDespesasTotais.jsx'
 import './App.css'
 
 function App() {
@@ -16,6 +17,49 @@ function App() {
   const [popupAberto, setPopupAberto] = useState(false)
   const [exibirPaginaInicial, setExibirPaginaInicial] = useState(true)
   const [exibirPaginaDespesas, setExibirPaginaDespesas] = useState(false)
+  const [despesasTotais, setDespesasTotais] = useState([])
+
+  useEffect(() => {
+    const buscarDespesas = async () => {
+      const params = new URLSearchParams({ 
+        usuario_id: 1, 
+        dt_inicio: '01/01/2026', 
+        dt_fim: '31/12/2026', 
+        tipo_agrupamento: 'MES' 
+      }).toString();
+      
+      const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/despesas/?${params}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      })
+      
+      if (response.ok) {
+        const data = await response.json();
+        setDespesasTotais(data);
+      } else {
+        console.error('Erro ao buscar dados.');
+      }
+    }
+    
+    buscarDespesas();
+  }, [])
+
+  useEffect(() => {
+    const root = document.getElementById('root')
+    if (!root) return
+
+    if (exibirPaginaDespesas) {
+      root.classList.add('modo-despesas')
+    } else {
+      root.classList.remove('modo-despesas')
+    }
+
+    return () => {
+      root.classList.remove('modo-despesas')
+    }
+  }, [exibirPaginaDespesas])
 
 
   const AnalisarRecibo = async (url) => {
@@ -69,12 +113,14 @@ function App() {
   else if (exibirPaginaDespesas) {
     return (
       <>
+        <div className="pagina-despesas">
         <h1>Suas Despesas</h1>
         <BotaoSimples id="botao-pagina-inicial" icone={paginaInicialIcon} onClick={() => {
           setExibirPaginaInicial(true)
           setExibirPaginaDespesas(false)
         }}></BotaoSimples>
-
+        <GrafDespesasTotais dados={despesasTotais} />
+        </div>
       </>
     );
   }
