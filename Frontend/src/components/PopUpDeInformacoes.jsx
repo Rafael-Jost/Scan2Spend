@@ -1,6 +1,6 @@
 import { SalvarPayload } from './CardsEdicao.jsx'
 
-function PopUpDeInformacoes({conteudo, popupAberto, setPopupAberto}) {
+function PopUpDeInformacoes({conteudo, popupAberto, setPopupAberto, atualizarGraficos}) {
 
     return (
     <div id="popup-informacoes" style={{ display: popupAberto ? 'flex' : 'none' }}>
@@ -20,6 +20,7 @@ function PopUpDeInformacoes({conteudo, popupAberto, setPopupAberto}) {
             const status_salvamento = await SalvarPayload();
             alert(status_salvamento);
             setPopupAberto(false);
+            atualizarGraficos();
           }}>
           Salvar
         </button>

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import QrScanner from './components/QrScanner.jsx'
-import CardEdicao, { SalvarPayload }from './components/CardsEdicao.jsx'
+import CardEdicao from './components/CardsEdicao.jsx'
 import CardSemLink from './components/CardSemLink.jsx'
 import PopUpDeInformacoes from './components/PopUpDeInformacoes.jsx'
 import BotaoSimples from './components/BotaoSimples.jsx'
@@ -19,33 +19,32 @@ function App() {
   const [exibirPaginaDespesas, setExibirPaginaDespesas] = useState(false)
   const [despesasTotais, setDespesasTotais] = useState([])
 
-  useEffect(() => {
-
-    const buscarDespesas = async () => {
-      const params = new URLSearchParams({ 
-        usuario_id: 1, 
-        dt_inicio: '01/01/2026', 
-        dt_fim: '31/12/2026', 
-        tipo_agrupamento: 'MES' 
-      }).toString();
-      
-      const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/despesas/?${params}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      })
-      
-      if (response.ok) {
-        const data = await response.json();
-        setDespesasTotais(data);
-      } else {
-        console.error('Erro ao buscar dados.');
-      }
-    }
+  const buscarDespesasTotais = useCallback(async () => {
+    console.log("Buscando despesas totais...");
+    const params = new URLSearchParams({ 
+      usuario_id: 1, 
+      dt_inicio: '01/01/2026', 
+      dt_fim: '31/12/2026', 
+      tipo_agrupamento: 'MES' 
+    }).toString();
     
-    buscarDespesas();
+    const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/despesas/?${params}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    })
+    
+    if (response.ok) {
+      const data = await response.json();
+      setDespesasTotais(data);
+    } else {
+      console.error('Erro ao buscar dados.');
+    }
+  }, []);
 
+
+  useEffect(() => {
     const root = document.getElementById('root')
     if (!root) return
 
@@ -94,6 +93,14 @@ function App() {
       }
   }
 
+  const atualizarGraficos = useCallback(() => {
+    buscarDespesasTotais();
+  }, [buscarDespesasTotais])
+
+  useEffect(() => {
+    atualizarGraficos();
+  }, [atualizarGraficos])
+
   if (exibirPaginaInicial) {
     return (
       <>
@@ -103,7 +110,7 @@ function App() {
         }}></BotaoSimples>
         <CardSemLink titulo="Bem-vindo ao Scan2Spend!" descricao="Faça upload dos seus recibos, rastreie seus gastos e receba dicas de economia." />
         <QrScanner funcAnalisarRecibo={AnalisarRecibo} />
-        <PopUpDeInformacoes conteudo={<CardEdicao json={parseRecibo(textoRecibo)}  />} popupAberto={popupAberto} setPopupAberto={setPopupAberto} />
+        <PopUpDeInformacoes conteudo={<CardEdicao json={parseRecibo(textoRecibo)}  />} popupAberto={popupAberto} setPopupAberto={setPopupAberto} atualizarGraficos={atualizarGraficos}/>
         <BotaoSimples id="botao-upload" texto={textoMensagem} className={classeMensagem} onClick={() => {
           setPopupAberto(true)
         }} />
