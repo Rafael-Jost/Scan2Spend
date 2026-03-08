@@ -19,13 +19,19 @@ function App() {
   const [exibirPaginaDespesas, setExibirPaginaDespesas] = useState(false)
   const [despesasTotais, setDespesasTotais] = useState([])
 
-  const buscarDespesasTotais = useCallback(async () => {
+  const buscarDespesasTotais = useCallback(async (dt_inicio, dt_fim, tipo_agrupamento) => {
+
+    if (!dt_inicio || !dt_fim || !tipo_agrupamento) {
+      dt_inicio = '01/01/' + new Date().getFullYear()
+      dt_fim = '31/12/' + new Date().getFullYear()
+      tipo_agrupamento = 'MES'
+    }
     console.log("Buscando despesas totais...");
     const params = new URLSearchParams({ 
       usuario_id: 1, 
-      dt_inicio: '01/01/2026', 
-      dt_fim: '31/12/2026', 
-      tipo_agrupamento: 'MES' 
+      dt_inicio: dt_inicio, 
+      dt_fim: dt_fim, 
+      tipo_agrupamento: tipo_agrupamento 
     }).toString();
     
     const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/despesas/?${params}`, {
@@ -126,7 +132,7 @@ function App() {
           setExibirPaginaInicial(true)
           setExibirPaginaDespesas(false)
         }}></BotaoSimples>
-        <GrafDespesasTotais dados={despesasTotais} setState={setDespesasTotais}/>
+        <GrafDespesasTotais dados={despesasTotais} buscarDespesasTotais={buscarDespesasTotais} />
         </div>
       </>
     );
