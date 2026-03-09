@@ -11,6 +11,8 @@ PROCESSO (siga mentalmente antes de responder)
 - Normalize valores e unidades.
 - Identifique o valor total pago.
 - Retorne apenas o JSON final.
+- Nao use markdown, nao use crases, nao use ```json.
+- A resposta deve comecar em { e terminar em }.
 
 
 REGRAS PARA IDENTIFICAR ITENS
@@ -200,26 +202,26 @@ VALIDAÇÃO FINAL
 - unidade_medida deve ter exatamente 2 caracteres
 
 
-FORMATO DE SAÍDA (RETORNAR EXATAMENTE)
+FORMATO DE SAÍDA (EXATO)
 
-{
-"data_compra": "...",
-"itens": [
-{
-"nome_produto": "...",
-"unidade_medida": "...",
-"quantidade": ...,
-"preco_unitario": ...,
-"preco_total": ...,
-"desconto": ...,
-"categoria": "..."
-}
-],
-"preco_final_pago": ...
-}
+    Retorne exatamente:
+    {
+        "data_compra": "...",
+        "itens": [
+            {
+            "nome_produto": "...",
+            "unidade_medida": "...",
+            "quantidade": ...,
+            "preco_unitario": ...,
+            "preco_total": ...,
+            "desconto": ...,
+            "categoria": "..." 
+            }
+        ],
+        "preco_final_pago": ...
+        }
 
-
-RETORNE APENAS O JSON.
+ RETORNE APENAS O JSON. Sem explicações. Sem nada além do JSON.
 
 TEXTO BRUTO DA NOTA FISCAL PARA ANÁLISE:
 
