@@ -37,7 +37,7 @@ function GrafDespesasTotais({ dados, buscarDespesasTotais}) {
   }
 
   return (
-    <div style={{ width: '100%', maxWidth: '700px', margin: '0 auto' }}>
+    <div style={{ width: '100%', maxWidth: '875px', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
         <h2>Gráfico de Despesas Totais</h2> 
         <select id="filtro-despesas-totais" defaultValue={"EA"} onChange={(e) => filtraGrafico(e.target.value)}>

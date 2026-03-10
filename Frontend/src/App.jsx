@@ -8,6 +8,7 @@ import parseRecibo from './utils/parseRecibo.js'
 import despesasIcon from './assets/despesas.png'
 import paginaInicialIcon from './assets/qr-code.png'
 import GrafDespesasTotais from './components/GrafDespesasTotais.jsx'
+import GrafDespesasCategorias from './components/GrafDespesasCategorias.jsx'
 import './App.css'
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
   const [exibirPaginaInicial, setExibirPaginaInicial] = useState(true)
   const [exibirPaginaDespesas, setExibirPaginaDespesas] = useState(false)
   const [despesasTotais, setDespesasTotais] = useState([])
+  const [despesasCategorias, setDespesasCategorias] = useState([])
 
   const buscarDespesasTotais = useCallback(async (dt_inicio, dt_fim, tipo_agrupamento) => {
 
@@ -48,6 +50,35 @@ function App() {
       console.error('Erro ao buscar dados.');
     }
   }, []);
+
+
+  const buscarDespesasCategorias = useCallback(async (dt_inicio, dt_fim) => {
+    if (!dt_inicio || !dt_fim || !tipo_agrupamento) {
+      dt_inicio = '01/01/' + new Date().getFullYear()
+      dt_fim = '31/12/' + new Date().getFullYear()
+    }
+    console.log("Buscando despesas totais...");
+    const params = new URLSearchParams({ 
+      usuario_id: 1, 
+      dt_inicio: dt_inicio, 
+      dt_fim: dt_fim
+    }).toString();
+    
+    const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/despesas/categorias?${params}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    })
+    
+    if (response.ok) {
+      const data = await response.json();
+      setDespesasCategorias(data);
+    } else {
+      console.error('Erro ao buscar dados.');
+    }
+
+  }, [])
 
 
   useEffect(() => {
@@ -101,7 +132,8 @@ function App() {
 
   const atualizarGraficos = useCallback(() => {
     buscarDespesasTotais();
-  }, [buscarDespesasTotais])
+    buscarDespesasCategorias();
+  }, [buscarDespesasTotais, buscarDespesasCategorias])
 
   useEffect(() => {
     atualizarGraficos();
@@ -127,12 +159,16 @@ function App() {
     return (
       <>
         <div className="pagina-despesas">
-        <h1>Suas Despesas</h1>
-        <BotaoSimples id="botao-pagina-inicial" icone={paginaInicialIcon} onClick={() => {
-          setExibirPaginaInicial(true)
-          setExibirPaginaDespesas(false)
-        }}></BotaoSimples>
-        <GrafDespesasTotais dados={despesasTotais} buscarDespesasTotais={buscarDespesasTotais} />
+          <h1>Suas Despesas</h1>
+          <BotaoSimples id="botao-pagina-inicial" icone={paginaInicialIcon} onClick={() => {
+            setExibirPaginaInicial(true)
+            setExibirPaginaDespesas(false)
+            atualizarGraficos()
+          }}></BotaoSimples>
+          <div id="graficos-row-1">
+            <GrafDespesasTotais dados={despesasTotais} buscarDespesasTotais={buscarDespesasTotais} />
+            <GrafDespesasCategorias dados={despesasCategorias} buscarDespesasCategorias={buscarDespesasCategorias} />
+          </div>
         </div>
       </>
     );

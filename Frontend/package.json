@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@recharts/devtools": "^0.0.10",
     "html5-qrcode": "^2.3.8",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

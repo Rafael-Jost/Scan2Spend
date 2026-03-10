@@ -148,3 +148,11 @@
 #botao-pagina-inicial:hover {
   background-color: #7a5ed5;
 }
+
+#graficos-row-1 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: stretch;
+}
