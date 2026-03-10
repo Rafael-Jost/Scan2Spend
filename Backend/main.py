@@ -27,6 +27,11 @@ class DespesasResponse(BaseModel):
     data: str
     despesa: float
 
+class DespesasCategoriasResponse(BaseModel):
+    name: str
+    value: float
+    fill: str
+
 class InsertItemResponse(BaseModel):
     text: str = "Nenhum item inserido"
 
@@ -82,6 +87,60 @@ def makeDBconnection():
 @app.get("/")
 def root():
     return {"Scan2Spend"}
+
+
+@app.get('/despesas/categorias', response_model=list[DespesasCategoriasResponse])
+def busca_despesas_categorias(usuario_id: int, dt_inicio: str, dt_fim: str):
+    try:
+        connection = makeDBconnection()
+        if 'Erro' in str(connection):
+            raise Exception(connection)
+        
+        cursor = connection.cursor()
+        cursor.execute("""
+            SELECT
+                categoria  AS name,
+                SUM(valor) AS value,
+                CASE
+                    WHEN CATEGORIA = 'Alimentação' THEN '#E8684A'
+                    WHEN CATEGORIA = 'Bebidas' THEN '#7CC0FF'
+                    WHEN CATEGORIA = 'Higiene Pessoal' THEN '#9270CA'
+                    WHEN CATEGORIA = 'Lanches & Conveniência' THEN '#FF9D4D'
+                    WHEN CATEGORIA = 'Limpeza' THEN '#6DC8A3'
+                    WHEN CATEGORIA = 'Pets' THEN '#F6BD16'
+                    WHEN CATEGORIA = 'Utilidades' THEN '#5B8FF9'
+                    ELSE '#9CA3AF'
+                END AS fill
+            FROM
+                    notas_fiscais nf
+                JOIN nota_fiscal_itens nfi USING ( nota_fiscal_id )
+            WHERE
+                    usuario_id = :usuario_id
+                AND data BETWEEN TO_DATE(:dt_inicio, 'DD/MM/YYYY') AND TO_DATE(:dt_fim, 'DD/MM/YYYY')
+            GROUP BY
+                categoria
+            ORDER BY
+                categoria
+        """, {"dt_inicio": dt_inicio, "dt_fim": dt_fim, "usuario_id": usuario_id})
+
+        result = cursor.fetchall()
+        print(f"DEBUG: Query retornou {len(result)} linhas")
+        cursor.close()
+        connection.close()
+        despesas = []
+        for row in result:
+            despesas.append(DespesasCategoriasResponse(
+                name=row[0],
+                value=float(row[1]),
+                fill=row[2]
+            ))
+        print(f"DEBUG: Despesas processadas: {len(despesas)}")
+        
+    except Exception as e:
+        print(f"Erro ao buscar despesas: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar despesas: {e}")
+    else:
+        return despesas
 
 
 @app.get('/despesas/', response_model=list[DespesasResponse])
