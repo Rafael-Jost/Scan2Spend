@@ -1,16 +1,16 @@
 --------------------------------------------------------
---  Arquivo criado - terça-feira-março-03-2026   
+--  Arquivo criado - quarta-feira-março-11-2026   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Sequence NOTA_FISCAL_ITENS_SEQ
 --------------------------------------------------------
 
-   CREATE SEQUENCE  "SCAN2SPEND"."NOTA_FISCAL_ITENS_SEQ"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 111 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+   CREATE SEQUENCE  "SCAN2SPEND"."NOTA_FISCAL_ITENS_SEQ"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 273 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
 --------------------------------------------------------
 --  DDL for Sequence NOTAS_FISCAIS_SEQ
 --------------------------------------------------------
 
-   CREATE SEQUENCE  "SCAN2SPEND"."NOTAS_FISCAIS_SEQ"  MINVALUE 1 MAXVALUE 999999 INCREMENT BY 1 START WITH 81 CACHE 20 NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+   CREATE SEQUENCE  "SCAN2SPEND"."NOTAS_FISCAIS_SEQ"  MINVALUE 1 MAXVALUE 999999 INCREMENT BY 1 START WITH 101 CACHE 20 NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
 --------------------------------------------------------
 --  DDL for Sequence USUARIOS_SEQ
 --------------------------------------------------------
