@@ -254,8 +254,8 @@ def insert_item(payload: NotaFiscal):
         return {"text": "Itens inserido com sucesso no banco de dados."}
 
 
-@app.get("/receiptExpenses/", response_model=ReceiptExpenses)
-async def analyze_receipt(QRurl: str):
+@app.get("/analisar_nf/", response_model=ReceiptExpenses)
+async def analisar_nf(QRurl: str):
 
     try:
         # Usa Playwright sync em thread porque o async pode falhar no Windows/py3.14

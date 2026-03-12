@@ -10,6 +10,7 @@ PROCESSO (siga mentalmente antes de responder)
 - Extraia os campos do item.
 - Normalize valores e unidades.
 - Identifique o valor total pago.
+- Identifique o desconto total da nota.
 - Retorne apenas o JSON final.
 - Nao use markdown, nao use crases, nao use ```json.
 - A resposta deve comecar em { e terminar em }.
@@ -111,6 +112,42 @@ preco_total
 desconto
 - apenas se aparecer explicitamente na linha
 - caso contrário null
+
+
+DESCONTO_TOTAL
+
+Identifique o desconto total da compra.
+
+Prioridade:
+
+DESCONTO TOTAL  
+VALOR DESCONTO  
+DESC TOTAL  
+TOTAL DE DESCONTOS  
+DESCONTO  
+VL DESC  
+
+Regras:
+
+- Se houver um desconto global/resumo da nota, use esse valor em desconto_total.
+- Nao confunda desconto com troco, credito, cashback ou valor recebido.
+- Se nao houver desconto global claro, calcule desconto_total como a soma dos campos desconto dos itens.
+- Se nenhum desconto for encontrado nem na nota nem nos itens, use 0.
+- desconto_total deve ser float.
+
+Exemplo correto:
+
+DESCONTO TOTAL 5,50  
+
+desconto_total = 5.50
+
+Fallback correto:
+
+item 1 desconto = 1,00  
+item 2 desconto = 0,50  
+item 3 desconto = null  
+
+desconto_total = 1.50
 
 
 CATEGORIZAÇÃO
@@ -218,6 +255,7 @@ FORMATO DE SAÍDA (EXATO)
             "categoria": "..." 
             }
         ],
+        "desconto_total": ...,
         "preco_final_pago": ...
         }
 
