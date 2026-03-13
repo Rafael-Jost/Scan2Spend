@@ -109,7 +109,7 @@ function App() {
       setClasseMensagem("carregando")
       setTextoMensagem("Analisando...")
 
-      const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/receiptExpenses/?QRurl=${encodeURIComponent(url)}`, {
+      const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/analisar_nf/?QRurl=${encodeURIComponent(url)}`, {
         method: 'GET'
       })
 

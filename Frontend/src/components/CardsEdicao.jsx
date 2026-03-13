@@ -4,6 +4,7 @@ import trashIcon from "../assets/trash.png";
 export default function CardEdicao(json) {
 
     const [precoFinalPago, setPrecoFinalPago] = useState(0);
+    const [descontoTotal, setDescontoTotal] = useState(0);
     const [dataCompra, setDataCompra] = useState('');
     const [items, setItems] = useState([]);
     
@@ -34,6 +35,7 @@ export default function CardEdicao(json) {
             }
         }
         setPrecoFinalPago(preco_final_pago);
+        setDescontoTotal(payload.desconto_total || 0);
         setItems(itemsData);
         console.log("preço Total pago: ", preco_final_pago);
     }, [json]);
@@ -42,7 +44,10 @@ export default function CardEdicao(json) {
         <>
         <h2>Dados da Nota Fiscal</h2>
         <p> Data da compra: <input className="input-data-compra" type="date" value={dataCompra} onChange={(e) => setDataCompra(e.target.value)}></input></p>
-        <p>Preço Total: R$ <input className="input-preco-final-pago" type="number" step="0.01" value={precoFinalPago} onChange={(e) => setPrecoFinalPago(Number(e.target.value))}></input></p>
+        <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', alignItems: 'center' }}>            
+            <p>Preço Total: R$ <input className="input-preco-final-pago" type="number" step="0.01" value={precoFinalPago} onChange={(e) => setPrecoFinalPago(Number(e.target.value))}></input></p>
+            <p>Desconto Total: R$ <input className="input-desconto-total" type="number" step="0.01" value={descontoTotal} onChange={(e) => setDescontoTotal(Number(e.target.value))}></input></p>
+        </div>
         <div id="cards-edicao-container">
             {items.map(({nome_produto, unidade_medida, quantidade, preco_unitario, preco_total, desconto, categoria}, index) => (
                 <div key={index}>
@@ -84,6 +89,7 @@ export async function SalvarPayload(){
     const precoFinalPagoInputs = document.querySelectorAll('.input-preco-final-pago');
     const unidadeMedida = document.querySelectorAll('.unidade-medida-span');
     const categoriaInputs = document.querySelectorAll('.input-categoria');
+    const descontoTotalInput = document.querySelector('.input-desconto-total');
 
     const produtos = [];
     
@@ -103,6 +109,7 @@ export async function SalvarPayload(){
     const payloadAtualizado = {
         data_compra: dataCompraInputs[0].value,
         preco_final_pago: parseFloat(precoFinalPagoInputs[0].value),
+        desconto_total: parseFloat(descontoTotalInput.value),
         itens: produtos
     };
 
