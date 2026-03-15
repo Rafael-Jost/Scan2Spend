@@ -9,9 +9,11 @@ import despesasIcon from './assets/despesas.png'
 import paginaInicialIcon from './assets/qr-code.png'
 import GrafDespesasTotais from './components/GrafDespesasTotais.jsx'
 import GrafDespesasCategorias from './components/GrafDespesasCategorias.jsx'
+import Login from './components/Login.jsx'
 import './App.css'
 
 function App() {
+  const [usuarioLogado, setUsuarioLogado] = useState(false)
   const [textoMensagem, setTextoMensagem] = useState(null)
   const [classeMensagem, setClasseMensagem] = useState('oculto')
   const [textoRecibo, setTextoRecibo] = useState(null)
@@ -138,6 +140,10 @@ function App() {
   useEffect(() => {
     atualizarGraficos();
   }, [atualizarGraficos])
+
+  // if (!usuarioLogado) {
+  //   return <Login/>
+  // }
 
   if (exibirPaginaInicial) {
     return (
