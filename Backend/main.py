@@ -62,6 +62,11 @@ class Login(BaseModel):
 class LoginResponse(BaseModel):
     token: str
 
+class MeResponse(BaseModel):
+    nome: str
+    sobrenome: str
+    email: str
+
 app = FastAPI()
 
 origins = [
@@ -108,7 +113,16 @@ def gerar_token_login(usuario_id):
 
     return jwt.encode(payload, SECRET_KEY, algorithm="HS256")
 
+def validar_token_login(token):
 
+    SECRET_KEY = os.getenv("SECRET_KEY")
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        return payload["usuario_id"]
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expirado")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Token inválido")
 
 @app.post('/login', response_model = LoginResponse)
 def login(credenciais: Login):
@@ -124,7 +138,7 @@ def login(credenciais: Login):
         usuario_id_var = cursor.var(int)
         cursor.execute("""
             BEGIN
-                PKG_AUTH.AUTH(
+                PKG_AUTH.auth(
                     p_login => :login,
                     p_senha => :senha,
                     p_usuario_id => :usuario_id
@@ -158,6 +172,52 @@ def login(credenciais: Login):
             connection.close()
 
 
+@app.get('/me', response_model=MeResponse)
+def me(token: str):
+    try:
+        usuario_id = validar_token_login(token)
+
+        connection = makeDBconnection()
+        if 'Erro' in str(connection):
+            raise HTTPException(status_code=503, detail="Erro ao estabelecer conexão com o banco de dados")
+        cursor = connection.cursor()
+
+        nome_var = cursor.var(str)
+        sobrenome_var = cursor.var(str)
+        email_var = cursor.var(str)
+        cursor.execute("""
+            BEGIN
+                PKG_AUTH.post_auth(
+                    p_usuario_id => :usuario_id,
+                    p_nome       => :nome,
+                    p_sobrenome  => :sobrenome,
+                    p_email      => :email
+                );  
+            END;
+        """, 
+        {
+            "usuario_id": usuario_id, 
+            "nome": nome_var,
+            "sobrenome": sobrenome_var,
+            "email": email_var
+        })
+
+        nome = nome_var.getvalue()
+        sobrenome = sobrenome_var.getvalue()
+        email = email_var.getvalue()
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Erro ao buscar informações do usuário: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno ao buscar informações do usuário")
+    else:
+        return MeResponse(nome=nome, sobrenome=sobrenome, email=email)
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
 
 @app.get('/despesas/categorias', response_model=list[DespesasCategoriasResponse])
 def busca_despesas_categorias(usuario_id: int, dt_inicio: str, dt_fim: str):
