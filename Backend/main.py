@@ -15,6 +15,8 @@ import oracledb
 from dotenv import load_dotenv
 import json
 from typing import List
+import jwt
+from datetime import datetime, timedelta, timezone
 
 load_dotenv()
 
@@ -53,6 +55,13 @@ class NotaFiscal(BaseModel):
 class ReceiptExpenses(BaseModel):
     text: str = "Nenhuma informação extraída da nota fiscal"
 
+class Login(BaseModel):
+    login: str
+    senha: str
+
+class LoginResponse(BaseModel):
+    token: str
+
 app = FastAPI()
 
 origins = [
@@ -88,6 +97,66 @@ def makeDBconnection():
 @app.get("/")
 def root():
     return {"Scan2Spend"}
+
+def gerar_token_login(usuario_id):
+
+    SECRET_KEY = os.getenv("SECRET_KEY")
+    payload ={
+        "usuario_id": usuario_id,
+        "exp": datetime.now(timezone.utc) + timedelta(minutes=41)
+    }
+
+    return jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+
+
+
+@app.post('/login', response_model = LoginResponse)
+def login(credenciais: Login):
+
+    connection = None
+    cursor = None
+    try:
+        connection = makeDBconnection()
+        if 'Erro' in str(connection):
+            raise HTTPException(status_code=503, detail="Erro ao estabelecer conexão com o banco de dados")
+        
+        cursor = connection.cursor()
+        usuario_id_var = cursor.var(int)
+        cursor.execute("""
+            BEGIN
+                PKG_AUTH.AUTH(
+                    p_login => :login,
+                    p_senha => :senha,
+                    p_usuario_id => :usuario_id
+                );
+            END;
+        """, {
+            "login": credenciais.login,
+            "senha": credenciais.senha,
+            "usuario_id": usuario_id_var
+        })
+
+        usuario_id = usuario_id_var.getvalue()
+        if usuario_id is None:
+            raise HTTPException(status_code=401, detail="Credenciais inválidas")
+
+    except HTTPException:
+        raise
+    except oracledb.DatabaseError as e:
+        print(f"Erro de banco ao fazer login: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno ao fazer login")
+    except Exception as e:
+        print(f"Erro ao fazer login: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno ao fazer login")
+    else:
+        token = gerar_token_login(usuario_id)
+        return LoginResponse(token=token)
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
 
 
 @app.get('/despesas/categorias', response_model=list[DespesasCategoriasResponse])
