@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  Arquivo criado - domingo-março-15-2026   
+--  Arquivo criado - segunda-feira-março-16-2026   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Sequence NOTA_FISCAL_ITENS_SEQ
@@ -68,7 +68,7 @@
 	"NOME" VARCHAR2(50 BYTE) COLLATE "USING_NLS_COMP", 
 	"SOBRENOME" VARCHAR2(100 BYTE) COLLATE "USING_NLS_COMP", 
 	"EMAIL" VARCHAR2(150 BYTE) COLLATE "USING_NLS_COMP", 
-	"SENHA" VARCHAR2(50 BYTE) COLLATE "USING_NLS_COMP", 
+	"SENHA" VARCHAR2(200 BYTE) COLLATE "USING_NLS_COMP", 
 	"CREATED" DATE DEFAULT SYSDATE, 
 	"UPDATED" DATE, 
 	"ATIVO" CHAR(1 BYTE) COLLATE "USING_NLS_COMP" DEFAULT 'S'
