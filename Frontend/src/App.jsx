@@ -22,6 +22,14 @@ function App() {
   const [exibirPaginaDespesas, setExibirPaginaDespesas] = useState(false)
   const [despesasTotais, setDespesasTotais] = useState([])
   const [despesasCategorias, setDespesasCategorias] = useState([])
+  const [nomeUsuario, setNomeUsuario] = useState('')
+  const [emailUsuario, setEmailUsuario] = useState('')
+
+  const loginUsuario = useCallback((dadosUsuario) => {
+    setUsuarioLogado(true)
+    setNomeUsuario(dadosUsuario.nome + ' ' + dadosUsuario.sobrenome)
+    setEmailUsuario(dadosUsuario.email)
+  }, [])
 
   const buscarDespesasTotais = useCallback(async (dt_inicio, dt_fim, tipo_agrupamento) => {
 
@@ -141,9 +149,9 @@ function App() {
     atualizarGraficos();
   }, [atualizarGraficos])
 
-  // if (!usuarioLogado) {
-  //   return <Login/>
-  // }
+  if (!usuarioLogado) {
+    return <Login funcaoLogin={loginUsuario} />
+  }
 
   if (exibirPaginaInicial) {
     return (

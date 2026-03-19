@@ -2,7 +2,7 @@ import {FaUser, FaLock} from 'react-icons/fa'
 import { useEffect } from 'react'
 import {useState} from 'react'
 
-function Login() {
+function Login({ funcaoLogin }) {
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
     const [token, setToken] = useState('')
@@ -15,7 +15,7 @@ function Login() {
                 method: 'GET'
             })
             // setDadosUsuario(await dados_usuario_response.json())
-            console.log('DADOS DO USUARIO' + await dados_usuario_response.json())
+            funcaoLogin(await dados_usuario_response.json())
         })()
     }, [token])
 
