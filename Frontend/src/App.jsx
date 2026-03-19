@@ -42,7 +42,7 @@ function App() {
     }
     console.log("Buscando despesas totais...");
     const params = new URLSearchParams({ 
-      usuario_id: 1, 
+      usuario_id: usuarioId, 
       dt_inicio: dt_inicio, 
       dt_fim: dt_fim, 
       tipo_agrupamento: tipo_agrupamento 
@@ -71,7 +71,7 @@ function App() {
     }
     console.log("Buscando despesas totais...");
     const params = new URLSearchParams({ 
-      usuario_id: 1, 
+      usuario_id: usuarioId, 
       dt_inicio: dt_inicio, 
       dt_fim: dt_fim
     }).toString();
@@ -164,7 +164,7 @@ function App() {
         }}></BotaoSimples>
         <CardSemLink titulo="Bem-vindo ao Scan2Spend!" descricao="Faça upload dos seus recibos, rastreie seus gastos e receba dicas de economia." />
         <QrScanner funcAnalisarRecibo={AnalisarRecibo} />
-        <PopUpDeInformacoes conteudo={<CardEdicao json={parseRecibo(textoRecibo)}  />} popupAberto={popupAberto} setPopupAberto={setPopupAberto} atualizarGraficos={atualizarGraficos}/>
+        <PopUpDeInformacoes usuarioId={usuarioId} conteudo={<CardEdicao json={parseRecibo(textoRecibo)}  />} popupAberto={popupAberto} setPopupAberto={setPopupAberto} atualizarGraficos={atualizarGraficos}/>
         <BotaoSimples id="botao-upload" texto={textoMensagem} className={classeMensagem} onClick={() => {
           setPopupAberto(true)
         }} />

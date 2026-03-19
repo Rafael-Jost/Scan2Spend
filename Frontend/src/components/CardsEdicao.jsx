@@ -79,7 +79,7 @@ export default function CardEdicao(json) {
     )
 }
 
-export async function SalvarPayload(){
+export async function SalvarPayload(usuarioId){
     const nomeProdutoInputs = document.querySelectorAll('.nome-produto-input');
     const quantidadeInputs = document.querySelectorAll('.quantidade-input');
     const precoUnitarioInputs = document.querySelectorAll('.input-preco_unitario');
@@ -107,6 +107,7 @@ export async function SalvarPayload(){
     console.log("Produtos coletados para salvamento:", produtos);
 
     const payloadAtualizado = {
+        usuario_id: usuarioId,
         data_compra: dataCompraInputs[0].value,
         preco_final_pago: parseFloat(precoFinalPagoInputs[0].value),
         desconto_total: parseFloat(descontoTotalInput.value),

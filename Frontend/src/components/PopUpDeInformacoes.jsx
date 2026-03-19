@@ -1,6 +1,6 @@
 import { SalvarPayload } from './CardsEdicao.jsx'
 
-function PopUpDeInformacoes({conteudo, popupAberto, setPopupAberto, atualizarGraficos}) {
+function PopUpDeInformacoes({conteudo, popupAberto, setPopupAberto, atualizarGraficos, usuarioId}) {
 
     return (
     <div id="popup-informacoes" style={{ display: popupAberto ? 'flex' : 'none' }}>
@@ -17,7 +17,7 @@ function PopUpDeInformacoes({conteudo, popupAberto, setPopupAberto, atualizarGra
         <button
           style={{ marginTop: '20px', marginLeft: '10px', backgroundColor: '#4CAF50', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '5px' }}
           onClick={async () => {
-            const status_salvamento = await SalvarPayload();
+            const status_salvamento = await SalvarPayload(usuarioId);
             alert(status_salvamento);
             setPopupAberto(false);
             atualizarGraficos();

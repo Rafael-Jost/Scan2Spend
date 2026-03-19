@@ -47,6 +47,7 @@ class ItemNota(BaseModel):
     categoria: str
     
 class NotaFiscal(BaseModel):
+    usuario_id: int
     data_compra: str
     itens: List[ItemNota]
     preco_final_pago: float
@@ -342,6 +343,7 @@ def insert_item(payload: NotaFiscal):
 
     try:
 
+        usuario_id = payload.usuario_id
         dt_compra = payload.data_compra
         preco_final_pago = payload.preco_final_pago
         desconto_total = payload.desconto_total
@@ -356,7 +358,7 @@ def insert_item(payload: NotaFiscal):
 
         cursor.execute("""
             INSERT INTO notas_fiscais (data, valor_total, usuario_id, desconto)
-            VALUES (to_date(:dt_compra, 'YYYY-MM-DD'), to_number(:preco_final_pago), 1, to_number(:desconto_total))
+            VALUES (to_date(:dt_compra, 'YYYY-MM-DD'), to_number(:preco_final_pago), :usuario_id, to_number(:desconto_total))
             RETURNING nota_fiscal_id INTO :id
         """, {"dt_compra": dt_compra, "preco_final_pago": preco_final_pago, "id": id_var, "desconto_total": desconto_total})
 
