@@ -44,15 +44,17 @@ function Login({ funcaoLogin }) {
         <div className="pagina-login">
             <form onSubmit={handleSubmit}>
                 <h1>Login</h1>
-                <div> 
-                    <FaUser /> 
+                <div className='input-container'> 
+                    <FaUser className='login-icon' /> 
                     <input 
+                      className='login-input'
                       type="email" 
                       placeholder="Email" 
                       onChange={(e) => setEmail(e.target.value)}></input></div>
-                <div>
-                    <FaLock /> 
+                <div className='input-container'>
+                    <FaLock className='login-icon' /> 
                     <input 
+                      className='login-input'
                       type="password" 
                       placeholder="Senha" 
                       onChange={(e) => setSenha(e.target.value)}/>
