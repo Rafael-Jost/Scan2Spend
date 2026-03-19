@@ -24,11 +24,13 @@ function App() {
   const [despesasCategorias, setDespesasCategorias] = useState([])
   const [nomeUsuario, setNomeUsuario] = useState('')
   const [emailUsuario, setEmailUsuario] = useState('')
+  const [usuarioId, setUsuarioId] = useState(null)
 
   const loginUsuario = useCallback((dadosUsuario) => {
     setUsuarioLogado(true)
     setNomeUsuario(dadosUsuario.nome + ' ' + dadosUsuario.sobrenome)
     setEmailUsuario(dadosUsuario.email)
+    setUsuarioId(dadosUsuario.usuario_id)
   }, [])
 
   const buscarDespesasTotais = useCallback(async (dt_inicio, dt_fim, tipo_agrupamento) => {

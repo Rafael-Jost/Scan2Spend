@@ -66,6 +66,7 @@ class MeResponse(BaseModel):
     nome: str
     sobrenome: str
     email: str
+    usuario_id: int
 
 app = FastAPI()
 
@@ -212,7 +213,7 @@ def me(token: str):
         print(f"Erro ao buscar informações do usuário: {e}")
         raise HTTPException(status_code=500, detail="Erro interno ao buscar informações do usuário")
     else:
-        return MeResponse(nome=nome, sobrenome=sobrenome, email=email)
+        return MeResponse(nome=nome, sobrenome=sobrenome, email=email, usuario_id=usuario_id)
     finally:
         if cursor:
             cursor.close()
