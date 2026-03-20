@@ -360,7 +360,7 @@ def insert_item(payload: NotaFiscal):
             INSERT INTO notas_fiscais (data, valor_total, usuario_id, desconto)
             VALUES (to_date(:dt_compra, 'YYYY-MM-DD'), to_number(:preco_final_pago), :usuario_id, to_number(:desconto_total))
             RETURNING nota_fiscal_id INTO :id
-        """, {"dt_compra": dt_compra, "preco_final_pago": preco_final_pago, "id": id_var, "desconto_total": desconto_total})
+        """, {"dt_compra": dt_compra, "preco_final_pago": preco_final_pago, "id": id_var, "desconto_total": desconto_total, "usuario_id": usuario_id})
 
         for produto in payload.itens:
             cursor.execute("""

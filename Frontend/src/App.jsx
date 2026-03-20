@@ -27,6 +27,7 @@ function App() {
   const [usuarioId, setUsuarioId] = useState(null)
 
   const loginUsuario = useCallback((dadosUsuario) => {
+    console.log("Dados do usuário após login:", dadosUsuario.nome, dadosUsuario.sobrenome, dadosUsuario.email, dadosUsuario.usuario_id);
     setUsuarioLogado(true)
     setNomeUsuario(dadosUsuario.nome + ' ' + dadosUsuario.sobrenome)
     setEmailUsuario(dadosUsuario.email)
@@ -61,7 +62,7 @@ function App() {
     } else {
       console.error('Erro ao buscar dados.');
     }
-  }, []);
+  }, [usuarioId]);
 
 
   const buscarDespesasCategorias = useCallback(async (dt_inicio, dt_fim) => {
@@ -90,7 +91,7 @@ function App() {
       console.error('Erro ao buscar dados.');
     }
 
-  }, [])
+  }, [usuarioId])
 
 
   useEffect(() => {
@@ -148,8 +149,9 @@ function App() {
   }, [buscarDespesasTotais, buscarDespesasCategorias])
 
   useEffect(() => {
+    if (!usuarioLogado){ return }
     atualizarGraficos();
-  }, [atualizarGraficos])
+  }, [atualizarGraficos, usuarioLogado])
 
   if (!usuarioLogado) {
     return <Login funcaoLogin={loginUsuario} />
