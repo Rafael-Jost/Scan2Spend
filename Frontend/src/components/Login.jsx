@@ -6,6 +6,7 @@ function Login({ funcaoLogin }) {
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
     const [token, setToken] = useState('')
+    const [erroLogin, setErroLogin] = useState(null)
 
     useEffect (() =>{
         if (!token) return
@@ -21,6 +22,8 @@ function Login({ funcaoLogin }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+        setErroLogin(null)
+
         const token_response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/login', {
             method: 'POST',
             headers: {
@@ -30,7 +33,9 @@ function Login({ funcaoLogin }) {
         })
 
         if (!token_response.ok) {
-            console.error('Erro no login:', await token_response.json())
+            const erroData = await token_response.json()
+            console.error('Erro no login:', erroData)
+            setErroLogin(erroData?.detail || 'Erro no login!')
             return
         }
 
@@ -60,7 +65,8 @@ function Login({ funcaoLogin }) {
                       onChange={(e) => setSenha(e.target.value)}/>
                 </div>
                 <label> <input type="checkbox" /> Não me esqueça :(</label>
-                <button type="submit">Entrar</button>
+                <span className={erroLogin ? 'span-msg-erro' : 'span-msg-erro oculto'}>{erroLogin}</span>
+                <button id="btn-login" type="submit">Entrar</button>
                 <label>Não tem uma conta? <a href="#">Cadastre-se</a></label>
                 <label><a href="#">Esqueci minha senha</a></label>
             </form>

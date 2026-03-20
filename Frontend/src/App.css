@@ -21,6 +21,7 @@
 .pagina-login form {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 12px;
   width: min(350px, 90vw);
   margin: 0 auto;
@@ -41,6 +42,27 @@
   margin-bottom: 10px;
 }
 
+.span-msg-erro {
+  color: #ff3425;
+  background-color: #ffb6b14d;
+  border-radius: 8px;
+  width: 60%;
+  padding: 5px 5px;
+  font-size: 0.9em;
+}
+
+.span-msg-erro.oculto {
+  display: none;
+}
+
+#btn-login {
+  color: white;
+  padding: 10px 20px;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
 #botao-upload {
   margin-top: 20px;
 }
