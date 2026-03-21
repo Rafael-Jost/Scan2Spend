@@ -7,9 +7,11 @@ import BotaoSimples from './components/BotaoSimples.jsx'
 import parseRecibo from './utils/parseRecibo.js'
 import despesasIcon from './assets/despesas.png'
 import paginaInicialIcon from './assets/qr-code.png'
+import perfilIcon from './assets/perfil.png'
 import GrafDespesasTotais from './components/GrafDespesasTotais.jsx'
 import GrafDespesasCategorias from './components/GrafDespesasCategorias.jsx'
 import Login from './components/Login.jsx'
+import PopUpPerfil from './components/PopUpPerfil.jsx'
 import './App.css'
 
 function App() {
@@ -25,6 +27,7 @@ function App() {
   const [nomeUsuario, setNomeUsuario] = useState('')
   const [emailUsuario, setEmailUsuario] = useState('')
   const [usuarioId, setUsuarioId] = useState(null)
+  const [exibirPopUpPerfil, setExibirPopUpPerfil] = useState(false)
 
   const loginUsuario = useCallback((dadosUsuario) => {
     console.log("Dados do usuário após login:", dadosUsuario.nome, dadosUsuario.sobrenome, dadosUsuario.email, dadosUsuario.usuario_id);
@@ -109,7 +112,22 @@ function App() {
     }
   }, [exibirPaginaDespesas])
 
-
+  function BotaoPerfil() {
+    return (
+      <>
+        <BotaoSimples className="botao-menu perfil" icone={perfilIcon} onClick={() => {
+          setExibirPopUpPerfil((valorAtual) => !valorAtual)
+        }}></BotaoSimples>
+        {exibirPopUpPerfil ? (
+          <PopUpPerfil
+            nomeUsuario={nomeUsuario}
+            emailUsuario={emailUsuario}
+            funcaoFechar={() => setExibirPopUpPerfil(false)}
+          />
+        ) : null}
+      </>
+    )
+  }
 
   const AnalisarRecibo = async (url) => {
     if (!url) {
@@ -160,7 +178,8 @@ function App() {
   if (exibirPaginaInicial) {
     return (
       <>
-        <BotaoSimples id="botao-despesas" icone={despesasIcon} onClick={() => {
+        <BotaoPerfil />
+        <BotaoSimples className="botao-menu despesas" icone={despesasIcon} onClick={() => {
           setExibirPaginaInicial(false)
           setExibirPaginaDespesas(true)
         }}></BotaoSimples>
@@ -176,9 +195,10 @@ function App() {
   else if (exibirPaginaDespesas) {
     return (
       <>
+        <BotaoPerfil />
         <div className="pagina-despesas">
           <h1>Suas Despesas</h1>
-          <BotaoSimples id="botao-pagina-inicial" icone={paginaInicialIcon} onClick={() => {
+          <BotaoSimples className="botao-menu pagina-inicial" icone={paginaInicialIcon} onClick={() => {
             setExibirPaginaInicial(true)
             setExibirPaginaDespesas(false)
             atualizarGraficos()
