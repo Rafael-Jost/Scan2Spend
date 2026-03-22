@@ -1,24 +1,13 @@
 import {FaUser, FaLock} from 'react-icons/fa'
 import { useEffect } from 'react'
 import {useState} from 'react'
+import Cookies from 'js-cookie'
 
-function Login({ funcaoLogin }) {
+function Login({ setToken }) {
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
-    const [token, setToken] = useState('')
+    // const [token, setToken] = useState('')
     const [erroLogin, setErroLogin] = useState(null)
-
-    useEffect (() =>{
-        if (!token) return
-
-        (async () => {
-            const dados_usuario_response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/me?token=${token}`, {
-                method: 'GET'
-            })
-            // setDadosUsuario(await dados_usuario_response.json())
-            funcaoLogin(await dados_usuario_response.json())
-        })()
-    }, [token])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -43,6 +32,8 @@ function Login({ funcaoLogin }) {
         setToken(token_data.token)
 
         console.log('token:' + token_data.token)
+        Cookies.set('token', token_data.token, { expires: 1 }) // Armazena o token em um cookie por 1 dias
+
     }
 
     return <>

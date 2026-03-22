@@ -12,6 +12,7 @@ import GrafDespesasTotais from './components/GrafDespesasTotais.jsx'
 import GrafDespesasCategorias from './components/GrafDespesasCategorias.jsx'
 import Login from './components/Login.jsx'
 import PopUpPerfil from './components/PopUpPerfil.jsx'
+import Cookies from 'js-cookie'
 import './App.css'
 
 function App() {
@@ -27,7 +28,28 @@ function App() {
   const [nomeUsuario, setNomeUsuario] = useState('')
   const [emailUsuario, setEmailUsuario] = useState('')
   const [usuarioId, setUsuarioId] = useState(null)
+  const [token, setToken] = useState('')
   const [exibirPopUpPerfil, setExibirPopUpPerfil] = useState(false)
+
+  useEffect(() => {
+      const token_cookie = Cookies.get('token')
+      if (token_cookie) {
+          setToken(token_cookie)
+          console.log("Token encontrado no cookie:", token_cookie)
+      }
+  }, [])
+
+  useEffect (() =>{
+      if (!token) return
+
+      (async () => {
+          const dados_usuario_response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/me?token=${token}`, {
+              method: 'GET'
+          })
+          // setDadosUsuario(await dados_usuario_response.json())
+          loginUsuario(await dados_usuario_response.json())
+      })()
+  }, [token])
 
   const loginUsuario = useCallback((dadosUsuario) => {
     console.log("Dados do usuário após login:", dadosUsuario.nome, dadosUsuario.sobrenome, dadosUsuario.email, dadosUsuario.usuario_id);
@@ -198,8 +220,8 @@ function App() {
     };
   }, [])
 
-  if (!usuarioLogado) {
-    return <Login funcaoLogin={loginUsuario} />
+  if (!usuarioLogado && !token) {
+    return <Login setToken={setToken} />
   }
 
   if (exibirPaginaInicial) {
