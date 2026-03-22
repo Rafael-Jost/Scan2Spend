@@ -177,6 +177,9 @@ def login(credenciais: Login):
 @app.get('/me', response_model=MeResponse)
 def me(token: str):
     try:
+        connection = None
+        cursor = None
+        
         usuario_id = validar_token_login(token)
 
         connection = makeDBconnection()
@@ -215,7 +218,7 @@ def me(token: str):
         raise HTTPException(status_code=500, detail="Erro interno ao buscar informações do usuário")
     else:
         return MeResponse(nome=nome, sobrenome=sobrenome, email=email, usuario_id=usuario_id)
-    finally:
+    
         if cursor:
             cursor.close()
         if connection:
