@@ -171,6 +171,33 @@ function App() {
     atualizarGraficos();
   }, [atualizarGraficos, usuarioLogado])
 
+  const acordarServidor = async () => {
+    try {
+      console.log('Acordando o servidor...');
+      await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      })
+      console.log('Servidor acordado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao acordar o servidor:', error);
+    }
+  }
+
+  useEffect(() => {
+    acordarServidor();
+
+    const intervaloId = setInterval(() => {
+      acordarServidor();
+    }, 14 * 60 * 1000); // Acorda o servidor a cada 14 minutos
+
+    return () => {
+      clearInterval(intervaloId);
+    };
+  }, [])
+
   if (!usuarioLogado) {
     return <Login funcaoLogin={loginUsuario} />
   }
