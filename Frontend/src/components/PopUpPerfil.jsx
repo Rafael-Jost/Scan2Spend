@@ -1,6 +1,7 @@
 import perfilIcon from '../assets/perfil.png'
 
-function PopUpPerfil({ nomeUsuario, emailUsuario}) {
+function PopUpPerfil({ nomeUsuario, emailUsuario, fncLogout, fncFechar }) {
+
     return (
         <div className="popup-perfil">
             <div className="popup-perfil-content">
@@ -9,6 +10,9 @@ function PopUpPerfil({ nomeUsuario, emailUsuario}) {
                     <span>{nomeUsuario}</span>
                 </div>
                 <p style={{ margin: 0 }}><strong>Email:</strong> <span>{emailUsuario}</span></p>
+                <button style={{width: '100%'}} onClick={fncLogout}>
+                    Sair
+                </button>
             </div>
         </div>
     )

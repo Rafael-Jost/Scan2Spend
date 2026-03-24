@@ -59,6 +59,13 @@ function App() {
     setUsuarioId(dadosUsuario.usuario_id)
   }, [])
 
+  const logoutUsuario = useCallback(() => {
+    setUsuarioLogado(false)
+    setUsuarioId(null)
+    setToken('')
+    Cookies.remove('token')
+  }, [])
+
   const buscarDespesasTotais = useCallback(async (dt_inicio, dt_fim, tipo_agrupamento) => {
 
     if (!dt_inicio || !dt_fim || !tipo_agrupamento) {
@@ -144,7 +151,8 @@ function App() {
           <PopUpPerfil
             nomeUsuario={nomeUsuario}
             emailUsuario={emailUsuario}
-            funcaoFechar={() => setExibirPopUpPerfil(false)}
+            fncLogout={logoutUsuario}
+            fncFechar={() => setExibirPopUpPerfil(false)}
           />
         ) : null}
       </>
