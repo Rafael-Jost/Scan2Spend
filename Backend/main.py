@@ -63,6 +63,15 @@ class Login(BaseModel):
 class LoginResponse(BaseModel):
     token: str
 
+class CadastroUsuario(BaseModel):
+    nome: str
+    sobrenome: str
+    email: str
+    senha: str
+
+class CadastroUsuarioResponse(BaseModel):
+    msg: str
+
 class MeResponse(BaseModel):
     nome: str
     sobrenome: str
@@ -96,7 +105,8 @@ def makeDBconnection():
         )
     
     except Exception as e:
-        return 'Erro ao estabelecer conexão'
+        print(f"Erro ao estabelecer conexão com o banco de dados: {e}")
+        return 'Erro ao estabelecer conexão: ' + str(e)
     
     else:
         return connection
@@ -126,6 +136,40 @@ def validar_token_login(token):
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Token inválido")
 
+
+@app.post('/cadastroUsuario/', response_model = CadastroUsuarioResponse)
+def cadastroUsuario(dados_usuario: CadastroUsuario):
+
+    connection = None
+    cursor = None
+    try:
+        connection = makeDBconnection()
+        if 'Erro' in str(connection):
+            connection = None
+            raise HTTPException(status_code=503, detail="Erro ao estabelecer conexão com o banco de dados")
+
+        cursor = connection.cursor()
+
+        cursor.execute("INSERT INTO usuarios(nome, sobrenome, email, senha) VALUES (:nome, :sobrenome, :email, PKG_AUTH.encrypt_pwd(:senha))", {
+            'nome': dados_usuario.nome.capitalize(),
+            'sobrenome': dados_usuario.sobrenome.capitalize(),
+            'email': dados_usuario.email,
+            'senha': dados_usuario.senha
+        })
+        connection.commit()
+
+    except Exception as e:
+        print(f"Erro ao cadastrar usuário: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno ao cadastrar usuário")
+    else:
+        return CadastroUsuarioResponse(msg="Usuário cadastrado com sucesso")
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
+
 @app.post('/login', response_model = LoginResponse)
 def login(credenciais: Login):
 
@@ -134,8 +178,9 @@ def login(credenciais: Login):
     try:
         connection = makeDBconnection()
         if 'Erro' in str(connection):
+            connection = None
             raise HTTPException(status_code=503, detail="Erro ao estabelecer conexão com o banco de dados")
-        
+
         cursor = connection.cursor()
         usuario_id_var = cursor.var(int)
         cursor.execute("""
@@ -184,6 +229,7 @@ def me(token: str):
 
         connection = makeDBconnection()
         if 'Erro' in str(connection):
+            connection = None
             raise HTTPException(status_code=503, detail="Erro ao estabelecer conexão com o banco de dados")
         cursor = connection.cursor()
 
@@ -229,8 +275,9 @@ def busca_despesas_categorias(usuario_id: int, dt_inicio: str, dt_fim: str):
     try:
         connection = makeDBconnection()
         if 'Erro' in str(connection):
+            connection = None
             raise Exception(connection)
-        
+
         cursor = connection.cursor()
         cursor.execute("""
             SELECT
@@ -283,8 +330,9 @@ def busca_despesas(usuario_id: int, dt_inicio: str, dt_fim: str, tipo_agrupament
     try:
         connection = makeDBconnection()
         if 'Erro' in str(connection):
+            connection = None
             raise Exception(connection)
-        
+
         cursor = connection.cursor()
         cursor.execute("""
             SELECT
@@ -353,10 +401,11 @@ def insert_item(payload: NotaFiscal):
         
         connection = makeDBconnection()
         if 'Erro' in str(connection):
+            connection = None
             raise Exception(connection)
-        
+
         cursor = connection.cursor()
-        
+
         id_var = cursor.var(int)
 
         cursor.execute("""
