@@ -137,7 +137,7 @@ def validar_token_login(token):
         raise HTTPException(status_code=401, detail="Token inválido")
 
 
-@app.post('/cadastroUsuario/', response_model = CadastroUsuarioResponse)
+@app.post('/cadastrarUsuario/', response_model = CadastroUsuarioResponse)
 def cadastroUsuario(dados_usuario: CadastroUsuario):
 
     connection = None

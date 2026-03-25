@@ -5,29 +5,50 @@ import {useState} from 'react'
 import Cookies from 'js-cookie'
 
 function CadastroUsuario({setCadastrandoUsuario}) {
+    const [nome, setNome] = useState('')
+    const [sobrenome, setSobrenome] = useState('')
+    const [email, setEmail] = useState('')
+    const [senha, setSenha] = useState('')
+    const [confirmarSenha, setConfirmarSenha] = useState('')
+    const [erroCadastro, setErroCadastro] = useState('')
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+
+        if (senha && confirmarSenha && senha !== confirmarSenha) {
+            console.log('As senhas digitadas não coincidem!')
+            setErroCadastro('As senhas digitadas não coincidem!')
+        }else{
+            console.log('deu certo')
+            setErroCadastro('')
+        }
+    }
+
+
     return <>
         <div className="pagina-login">
-            <a style={{display: "flex", width: "25px"}} onClick={() => setCadastrandoUsuario(false)}><FaArrowLeft/></a>
+            <a style={{display: "flex", width: "25px",  height:"25px",color: "white"}} onClick={() => setCadastrandoUsuario(false)}><FaArrowLeft/></a>
             <form>
                 <h1>Cadastro</h1>
                 <div className='input-container' style={{gap: "10px"}}>
                     {/* <FaUser className='login-icon' /> */}
-                    <input className='cadastro-input' type='text' placeholder='Nome'/>
-                    <input className='cadastro-input' type='text' placeholder='Sobrenome'/>
+                    <input className='cadastro-input' type='text' placeholder='Nome' onChange={(e) => {setNome(e.target.value)}}/>
+                    <input className='cadastro-input' type='text' placeholder='Sobrenome' onChange={(e) => {setSobrenome(e.target.value)}}/>
                 </div>
                 <div className='input-container'>
                     {/* <IoMdMail className='login-icon' /> */}
-                    <input className='cadastro-input' type='email' placeholder='Email'/>
+                    <input className='cadastro-input' type='email' placeholder='Email' onChange={(e) => {setEmail(e.target.value)}}/>
                 </div>
                 <div className='input-container'>
                     {/* <FaLock className='login-icon' /> */}
-                    <input className='cadastro-input' type='password' placeholder='Senha'/>
+                    <input className='cadastro-input' type='password' placeholder='Senha' onChange={(e) => {setSenha(e.target.value)}}/>
                 </div>
                 <div className='input-container'>
                     {/* <FaLock className='login-icon' /> */}
-                    <input className='cadastro-input' type='password' placeholder='Confirmar Senha'/>
+                    <input className='cadastro-input' type='password' placeholder='Confirmar Senha' onChange={(e) => {setConfirmarSenha(e.target.value)}}/>
                 </div>
-                <button id="btn-cadastro" type="submit">Cadastrar</button>
+                <span className={erroCadastro ? 'span-msg-erro' : 'span-msg-erro oculto'}>{erroCadastro}</span>
+                <button id="btn-cadastro" type="submit" onClick={handleSubmit}>Cadastrar</button>
             </form> 
         </div>
     </>
