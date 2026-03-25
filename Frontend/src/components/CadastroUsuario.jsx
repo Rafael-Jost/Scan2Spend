@@ -10,20 +10,21 @@ function CadastroUsuario({setCadastrandoUsuario}) {
             <a style={{display: "flex", width: "25px"}} onClick={() => setCadastrandoUsuario(false)}><FaArrowLeft/></a>
             <form>
                 <h1>Cadastro</h1>
-                <div className='input-container'>
-                    <FaUser className='login-icon' />
+                <div className='input-container' style={{gap: "10px"}}>
+                    {/* <FaUser className='login-icon' /> */}
                     <input className='cadastro-input' type='text' placeholder='Nome'/>
+                    <input className='cadastro-input' type='text' placeholder='Sobrenome'/>
                 </div>
                 <div className='input-container'>
-                    <IoMdMail className='login-icon' />
+                    {/* <IoMdMail className='login-icon' /> */}
                     <input className='cadastro-input' type='email' placeholder='Email'/>
                 </div>
                 <div className='input-container'>
-                    <FaLock className='login-icon' />
+                    {/* <FaLock className='login-icon' /> */}
                     <input className='cadastro-input' type='password' placeholder='Senha'/>
                 </div>
                 <div className='input-container'>
-                    <FaLock className='login-icon' />
+                    {/* <FaLock className='login-icon' /> */}
                     <input className='cadastro-input' type='password' placeholder='Confirmar Senha'/>
                 </div>
                 <button id="btn-cadastro" type="submit">Cadastrar</button>
