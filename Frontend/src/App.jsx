@@ -11,12 +11,14 @@ import perfilIcon from './assets/perfil.png'
 import GrafDespesasTotais from './components/GrafDespesasTotais.jsx'
 import GrafDespesasCategorias from './components/GrafDespesasCategorias.jsx'
 import Login from './components/Login.jsx'
+import CadastroUsuario from './components/CadastroUsuario.jsx'
 import PopUpPerfil from './components/PopUpPerfil.jsx'
 import Cookies from 'js-cookie'
 import './App.css'
 
 function App() {
   const [usuarioLogado, setUsuarioLogado] = useState(false)
+  const [cadastrandoUsuario, setCadastrandoUsuario] = useState(false)
   const [textoMensagem, setTextoMensagem] = useState(null)
   const [classeMensagem, setClasseMensagem] = useState('oculto')
   const [textoRecibo, setTextoRecibo] = useState(null)
@@ -229,7 +231,11 @@ function App() {
   }, [])
 
   if (!usuarioLogado && !token) {
-    return <Login setToken={setToken} />
+    if (cadastrandoUsuario) {
+      return <CadastroUsuario setCadastrandoUsuario={setCadastrandoUsuario} />
+    }else {
+      return <Login setToken={setToken} setCadastrandoUsuario={setCadastrandoUsuario}/>
+    }
   }
 
   if (exibirPaginaInicial) {

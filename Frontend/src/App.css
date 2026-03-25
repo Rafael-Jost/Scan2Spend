@@ -55,7 +55,8 @@
   display: none;
 }
 
-#btn-login {
+#btn-login, #btn-cadastro {
+  margin-top: 10px;
   color: white;
   padding: 10px 20px;
   width: 100%;
@@ -199,7 +200,7 @@
   color: #888;
 }
 
-.login-input {
+.login-input, .cadastro-input {
   flex: 1 1 auto;
   width: 100%;
   padding: 12px;

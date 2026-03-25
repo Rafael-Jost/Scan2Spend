@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import {useState} from 'react'
 import Cookies from 'js-cookie'
 
-function Login({ setToken }) {
+function Login({ setToken, setCadastrandoUsuario }) {
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
     // const [token, setToken] = useState('')
@@ -58,7 +58,12 @@ function Login({ setToken }) {
                 <label> <input type="checkbox" /> Não me esqueça :(</label>
                 <span className={erroLogin ? 'span-msg-erro' : 'span-msg-erro oculto'}>{erroLogin}</span>
                 <button id="btn-login" type="submit">Entrar</button>
-                <label>Não tem uma conta? <a href="#">Cadastre-se</a></label>
+                <label>Não tem uma conta? 
+                    <a href="#" onClick={(e) => {
+                        e.preventDefault()
+                        setCadastrandoUsuario(true)
+                    }}> Cadastre-se</a>
+                </label>
                 <label><a href="#">Esqueci minha senha</a></label>
             </form>
         </div>
