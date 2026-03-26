@@ -19,12 +19,11 @@ import './App.css'
 function App() {
   const [usuarioLogado, setUsuarioLogado] = useState(false)
   const [cadastrandoUsuario, setCadastrandoUsuario] = useState(false)
+  const [estadoTela, setEstadoTela] = useState('login')
   const [textoMensagem, setTextoMensagem] = useState(null)
   const [classeMensagem, setClasseMensagem] = useState('oculto')
   const [textoRecibo, setTextoRecibo] = useState(null)
   const [popupAberto, setPopupAberto] = useState(false)
-  const [exibirPaginaInicial, setExibirPaginaInicial] = useState(true)
-  const [exibirPaginaDespesas, setExibirPaginaDespesas] = useState(false)
   const [despesasTotais, setDespesasTotais] = useState([])
   const [despesasCategorias, setDespesasCategorias] = useState([])
   const [nomeUsuario, setNomeUsuario] = useState('')
@@ -56,6 +55,7 @@ function App() {
   const loginUsuario = useCallback((dadosUsuario) => {
     console.log("Dados do usuário após login:", dadosUsuario.nome, dadosUsuario.sobrenome, dadosUsuario.email, dadosUsuario.usuario_id);
     setUsuarioLogado(true)
+    setEstadoTela('inicial')
     setNomeUsuario(dadosUsuario.nome + ' ' + dadosUsuario.sobrenome)
     setEmailUsuario(dadosUsuario.email)
     setUsuarioId(dadosUsuario.usuario_id)
@@ -63,6 +63,7 @@ function App() {
 
   const logoutUsuario = useCallback(() => {
     setUsuarioLogado(false)
+    setEstadoTela('login')
     setUsuarioId(null)
     setToken('')
     Cookies.remove('token')
@@ -132,7 +133,7 @@ function App() {
     const root = document.getElementById('root')
     if (!root) return
 
-    if (exibirPaginaDespesas) {
+    if (estadoTela === 'despesas') {
       root.classList.add('modo-despesas')
     } else {
       root.classList.remove('modo-despesas')
@@ -141,7 +142,7 @@ function App() {
     return () => {
       root.classList.remove('modo-despesas')
     }
-  }, [exibirPaginaDespesas])
+  }, [estadoTela])
 
   function BotaoPerfil() {
     return (
@@ -230,7 +231,7 @@ function App() {
     };
   }, [])
 
-  if (!usuarioLogado && !token) {
+  if (estadoTela === 'login') {
     if (cadastrandoUsuario) {
       return <CadastroUsuario setCadastrandoUsuario={setCadastrandoUsuario} />
     }else {
@@ -238,13 +239,12 @@ function App() {
     }
   }
 
-  if (exibirPaginaInicial) {
+  if (estadoTela === 'inicial') {
     return (
       <>
         <BotaoPerfil />
         <BotaoSimples className="botao-menu despesas" icone={despesasIcon} onClick={() => {
-          setExibirPaginaInicial(false)
-          setExibirPaginaDespesas(true)
+          setEstadoTela('despesas')
         }}></BotaoSimples>
         <CardSemLink titulo="Bem-vindo ao Scan2Spend!" descricao="Faça upload dos seus recibos, rastreie seus gastos e receba dicas de economia." />
         <QrScanner funcAnalisarRecibo={AnalisarRecibo} />
@@ -255,15 +255,15 @@ function App() {
       </>
     );
   }
-  else if (exibirPaginaDespesas) {
+
+  if (estadoTela === 'despesas') {
     return (
       <>
         <BotaoPerfil />
         <div className="pagina-despesas">
           <h1>Suas Despesas</h1>
           <BotaoSimples className="botao-menu pagina-inicial" icone={paginaInicialIcon} onClick={() => {
-            setExibirPaginaInicial(true)
-            setExibirPaginaDespesas(false)
+            setEstadoTela('inicial')
             atualizarGraficos()
           }}></BotaoSimples>
           <div id="graficos-row-1">
@@ -274,6 +274,8 @@ function App() {
       </>
     );
   }
+
+  return null
 }
 
 export default App
