@@ -51,8 +51,17 @@
   font-size: 0.9em;
 }
 
-.span-msg-erro.oculto {
+.span-msg-erro.oculto, .span-msg-sucesso.oculto {
   display: none;
+}
+
+.span-msg-sucesso {
+  color: #4CAF50;
+  background-color: #4CAF504d;
+  border-radius: 8px;
+  width: 80%;
+  padding: 5px 5px;
+  font-size: 0.9em;
 }
 
 #btn-login, #btn-cadastro {

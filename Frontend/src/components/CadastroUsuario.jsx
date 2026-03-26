@@ -11,6 +11,7 @@ function CadastroUsuario({setCadastrandoUsuario}) {
     const [senha, setSenha] = useState('')
     const [confirmarSenha, setConfirmarSenha] = useState('')
     const [erroCadastro, setErroCadastro] = useState('')
+    const [sucessoCadastro, setSucessoCadastro] = useState('')
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -21,6 +22,30 @@ function CadastroUsuario({setCadastrandoUsuario}) {
         }else{
             console.log('deu certo')
             setErroCadastro('')
+
+            const response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/cadastrarUsuario/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    nome,
+                    sobrenome,
+                    email,
+                    senha
+                })
+            })
+
+            if (response.ok) {
+                // Cadastro realizado com sucesso
+                setSucessoCadastro('Usuário cadastrado com sucesso!')
+                setInterval(() => {
+                    setCadastrandoUsuario(false)
+                }, 2000)
+            } else {
+                // Tratar erro de cadastro
+                setErroCadastro('Erro ao cadastrar usuário.')
+            }
         }
     }
 
@@ -48,6 +73,7 @@ function CadastroUsuario({setCadastrandoUsuario}) {
                     <input className='cadastro-input' type='password' placeholder='Confirmar Senha' onChange={(e) => {setConfirmarSenha(e.target.value)}}/>
                 </div>
                 <span className={erroCadastro ? 'span-msg-erro' : 'span-msg-erro oculto'}>{erroCadastro}</span>
+                <span className={sucessoCadastro ? 'span-msg-sucesso' : 'span-msg-sucesso oculto'}>{sucessoCadastro}</span>
                 <button id="btn-cadastro" type="submit" onClick={handleSubmit}>Cadastrar</button>
             </form> 
         </div>
