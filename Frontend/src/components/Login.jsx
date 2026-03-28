@@ -1,11 +1,13 @@
 import {FaUser, FaLock} from 'react-icons/fa'
-import { useEffect } from 'react'
+import { use, useEffect } from 'react'
 import {useState} from 'react'
 import Cookies from 'js-cookie'
 
 function Login({ setToken, setCadastrandoUsuario }) {
-    const [email, setEmail] = useState('')
+    const [email, setEmail] = useState(Cookies.get('email') || '')
     const [senha, setSenha] = useState('')
+    const [lembrarMe, setLembrarMe] = useState(Cookies.get('email') ? true : false)
+
     // const [token, setToken] = useState('')
     const [erroLogin, setErroLogin] = useState(null)
 
@@ -31,11 +33,18 @@ function Login({ setToken, setCadastrandoUsuario }) {
         const token_data = await token_response.json()
         setToken(token_data.token)
 
+        if (lembrarMe) {
+            Cookies.set('email', email, { expires: 30 })
+        }else {
+            Cookies.remove('email')
+        }
+
         console.log('token:' + token_data.token)
         Cookies.set('token', token_data.token, { expires: 1 }) // Armazena o token em um cookie por 1 dias
 
     }
-
+    
+    
     return <>
         <div className="pagina-login">
             <form onSubmit={handleSubmit}>
@@ -46,7 +55,9 @@ function Login({ setToken, setCadastrandoUsuario }) {
                       className='login-input'
                       type="email" 
                       placeholder="Email" 
-                      onChange={(e) => setEmail(e.target.value)}></input></div>
+                      onChange={(e) => setEmail(e.target.value)}
+                      defaultValue={email}
+                    ></input></div>
                 <div className='input-container'>
                     <FaLock className='login-icon' /> 
                     <input 
@@ -55,7 +66,7 @@ function Login({ setToken, setCadastrandoUsuario }) {
                       placeholder="Senha" 
                       onChange={(e) => setSenha(e.target.value)}/>
                 </div>
-                <label> <input type="checkbox" /> Não me esqueça :(</label>
+                <label> <input type="checkbox" defaultChecked={lembrarMe} onChange={(e) => {setLembrarMe(e.target.checked ? true : false)}} /> Não me esqueça :(</label>
                 <span className={erroLogin ? 'span-msg-erro' : 'span-msg-erro oculto'}>{erroLogin}</span>
                 <button id="btn-login" type="submit">Entrar</button>
                 <label>Não tem uma conta? 

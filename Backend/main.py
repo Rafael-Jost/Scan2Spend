@@ -46,12 +46,20 @@ class ItemNota(BaseModel):
     unidade_medida: str
     categoria: str
     
-class NotaFiscal(BaseModel):
+class NotaFiscalPost(BaseModel):
     usuario_id: int
     data_compra: str
     itens: List[ItemNota]
     preco_final_pago: float
     desconto_total: float
+
+class NotaFiscalGet(BaseModel):
+    nota_fiscal_id: int
+    data_compra: str
+    quantidade_itens: int
+    preco_final_pago: float
+    desconto_total: float
+
 
 class ReceiptExpenses(BaseModel):
     text: str = "Nenhuma informação extraída da nota fiscal"
@@ -388,9 +396,8 @@ def busca_despesas(usuario_id: int, dt_inicio: str, dt_fim: str, tipo_agrupament
     else:
         return despesas
 
-
 @app.post("/nota_fiscal/", response_model=InsertItemResponse)
-def insert_item(payload: NotaFiscal):
+def insert_item(payload: NotaFiscalPost):
 
     try:
 
@@ -438,6 +445,63 @@ def insert_item(payload: NotaFiscal):
         return {"text": f"Erro ao inserir itens no banco de dados. {e}"}
     else:
         return {"text": "Itens inserido com sucesso no banco de dados."}
+    
+
+
+@app.get("/nota_fiscal/", response_model=list[NotaFiscalGet])
+async def busca_nota_fiscal(usuario_id: int):
+    try:
+        connection = makeDBconnection()
+
+        if 'Erro' in str(connection):
+            connection = None
+            raise Exception(connection)
+
+        cursor = connection.cursor()
+        cursor.execute("""
+            SELECT
+                nota_fiscal_id,
+                nf.data,
+                nf.valor_total,
+                nf.desconto,
+                COUNT(nfi.nota_fiscal_item_id) "QUANTIDADE_ITENS"
+            FROM
+                scan2spend.notas_fiscais nf
+                JOIN scan2spend.nota_fiscal_itens nfi USING (nota_fiscal_id)
+            WHERE
+                nf.usuario_id = :usuario_id
+            GROUP BY
+                nota_fiscal_id,
+                nf.usuario_id,
+                nf.data,
+                nf.valor_total,
+                nf.desconto;
+
+        """, {"usuario_id": usuario_id})
+
+        result = cursor.fetchall()
+        notas_fiscais = []
+
+        for row in result:
+            notas_fiscais.append(NotaFiscalGet(
+                nota_fiscal_id=row[0],
+                data_compra=row[1].strftime("%Y-%m-%d"),
+                preco_final_pago=row[2],
+                desconto_total= row[3] if row[3] else 0.0,
+                quantidade_itens=row[4]
+            ))
+        
+    except Exception as e:
+        print(f"Erro ao estabelecer conexão com o banco de dados: {e}")
+        raise HTTPException(status_code=503, detail="Erro ao buscar notas fiscais")
+    else:
+        return notas_fiscais
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
 
 
 @app.get("/analisar_nf/", response_model=ReceiptExpenses)

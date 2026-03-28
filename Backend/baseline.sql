@@ -1,21 +1,21 @@
 --------------------------------------------------------
---  Arquivo criado - segunda-feira-mar√ßo-16-2026   
+--  Arquivo criado - sexta-feira-marÁo-27-2026   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Sequence NOTA_FISCAL_ITENS_SEQ
 --------------------------------------------------------
 
-   CREATE SEQUENCE  "SCAN2SPEND"."NOTA_FISCAL_ITENS_SEQ"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 327 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+   CREATE SEQUENCE  "SCAN2SPEND"."NOTA_FISCAL_ITENS_SEQ"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 329 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
 --------------------------------------------------------
 --  DDL for Sequence NOTAS_FISCAIS_SEQ
 --------------------------------------------------------
 
-   CREATE SEQUENCE  "SCAN2SPEND"."NOTAS_FISCAIS_SEQ"  MINVALUE 1 MAXVALUE 999999 INCREMENT BY 1 START WITH 121 CACHE 20 NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+   CREATE SEQUENCE  "SCAN2SPEND"."NOTAS_FISCAIS_SEQ"  MINVALUE 1 MAXVALUE 999999 INCREMENT BY 1 START WITH 142 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
 --------------------------------------------------------
 --  DDL for Sequence USUARIOS_SEQ
 --------------------------------------------------------
 
-   CREATE SEQUENCE  "SCAN2SPEND"."USUARIOS_SEQ"  MINVALUE 1 MAXVALUE 9999999 INCREMENT BY 1 START WITH 21 CACHE 20 NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+   CREATE SEQUENCE  "SCAN2SPEND"."USUARIOS_SEQ"  MINVALUE 1 MAXVALUE 9999999 INCREMENT BY 1 START WITH 34 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
 --------------------------------------------------------
 --  DDL for Table NOTA_FISCAL_ITENS
 --------------------------------------------------------
@@ -244,7 +244,7 @@ END PKG_AUTH;
     
     EXCEPTION
         WHEN OTHERS THEN 
-            raise_application_error(-20001, 'Erro ao validar credenciais de login do usu√°rio');
+            raise_application_error(-20001, 'Erro ao validar credenciais de login do usu·rio');
 
     END;
     
@@ -281,7 +281,7 @@ END PKG_AUTH;
     
     EXCEPTION
         WHEN OTHERS THEN 
-            raise_application_error(-20001, 'Erro ao retornar informa√ß√µes do usu√°rio');
+            raise_application_error(-20001, 'Erro ao retornar informaÁıes do usu·rio');
     
     END;
 
