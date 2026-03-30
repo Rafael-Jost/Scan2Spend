@@ -3,7 +3,7 @@ import { use, useEffect } from 'react'
 import {useState} from 'react'
 import Cookies from 'js-cookie'
 
-function Login({ setToken, setCadastrandoUsuario }) {
+function Login({ setUsuarioLogado, setCadastrandoUsuario }) {
     const [email, setEmail] = useState(Cookies.get('email') || '')
     const [senha, setSenha] = useState('')
     const [lembrarMe, setLembrarMe] = useState(Cookies.get('email') ? true : false)
@@ -15,32 +15,30 @@ function Login({ setToken, setCadastrandoUsuario }) {
         e.preventDefault()
         setErroLogin(null)
 
-        const token_response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/login', {
+        const response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'include',
             body: JSON.stringify({ login: email, senha })
         })
 
-        if (!token_response.ok) {
-            const erroData = await token_response.json()
+        if (!response.ok) {
+            const erroData = await response.json()
             console.error('Erro no login:', erroData)
             setErroLogin(erroData?.detail || 'Erro no login!')
             return
         }
 
-        const token_data = await token_response.json()
-        setToken(token_data.token)
+        const token_data = await response.json()
+        setUsuarioLogado(true)
 
         if (lembrarMe) {
             Cookies.set('email', email, { expires: 30 })
         }else {
             Cookies.remove('email')
         }
-
-        console.log('token:' + token_data.token)
-        Cookies.set('token', token_data.token, { expires: 1 }) // Armazena o token em um cookie por 1 dias
 
     }
     

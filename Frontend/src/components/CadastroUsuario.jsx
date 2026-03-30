@@ -28,6 +28,7 @@ function CadastroUsuario({setCadastrandoUsuario}) {
                 headers: {
                     'Content-Type': 'application/json'
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                     nome,
                     sobrenome,

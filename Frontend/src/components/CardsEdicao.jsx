@@ -121,6 +121,7 @@ export async function SalvarPayload(usuarioId){
         headers: {
             'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify(payloadAtualizado)
     })
     if (response.ok) {

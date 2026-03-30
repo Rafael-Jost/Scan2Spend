@@ -17,7 +17,7 @@ import Cookies from 'js-cookie'
 import './App.css'
 
 function App() {
-  const [usuarioLogado, setUsuarioLogado] = useState(false)
+  const [usuarioLogado, setUsuarioLogado] = useState(Cookies.get('usuarioLogado') === 'true' || false)
   const [cadastrandoUsuario, setCadastrandoUsuario] = useState(false)
   const [estadoTela, setEstadoTela] = useState('login')
   const [textoMensagem, setTextoMensagem] = useState(null)
@@ -29,32 +29,32 @@ function App() {
   const [nomeUsuario, setNomeUsuario] = useState('')
   const [emailUsuario, setEmailUsuario] = useState('')
   const [usuarioId, setUsuarioId] = useState(null)
-  const [token, setToken] = useState('')
   const [exibirPopUpPerfil, setExibirPopUpPerfil] = useState(false)
 
-  useEffect(() => {
-      const token_cookie = Cookies.get('token')
-      if (token_cookie) {
-          setToken(token_cookie)
-          console.log("Token encontrado no cookie:", token_cookie)
-      }
-  }, [])
-
   useEffect (() =>{
-      if (!token) return
+
+    if (usuarioLogado == false) {return}
 
       (async () => {
-          const dados_usuario_response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/me?token=${token}`, {
-              method: 'GET'
+          const dados_usuario_response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/me`, {
+              method: 'GET',
+              credentials: 'include'
           })
-          // setDadosUsuario(await dados_usuario_response.json())
-          loginUsuario(await dados_usuario_response.json())
-      })()
-  }, [token])
+          
+          if (!dados_usuario_response.ok) {
+              console.error('Erro ao buscar dados do usuário:', await dados_usuario_response.text())
+              return
+          }
 
-  const loginUsuario = useCallback((dadosUsuario) => {
+          if (Cookies.get('usuarioLogado') !== 'true') {
+            Cookies.set('usuarioLogado', 'true', { expires: 30 })
+          }
+          carregaUsuario(await dados_usuario_response.json())
+      })()
+  }, [usuarioLogado])
+
+  const carregaUsuario = useCallback((dadosUsuario) => {
     console.log("Dados do usuário após login:", dadosUsuario.nome, dadosUsuario.sobrenome, dadosUsuario.email, dadosUsuario.usuario_id);
-    setUsuarioLogado(true)
     setEstadoTela('inicial')
     setNomeUsuario(dadosUsuario.nome + ' ' + dadosUsuario.sobrenome)
     setEmailUsuario(dadosUsuario.email)
@@ -65,8 +65,6 @@ function App() {
     setUsuarioLogado(false)
     setEstadoTela('login')
     setUsuarioId(null)
-    setToken('')
-    Cookies.remove('token')
   }, [])
 
   const buscarDespesasTotais = useCallback(async (dt_inicio, dt_fim, tipo_agrupamento) => {
@@ -86,9 +84,7 @@ function App() {
     
     const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/despesas/?${params}`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      credentials: 'include'
     })
     
     if (response.ok) {
@@ -114,9 +110,7 @@ function App() {
     
     const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/despesas/categorias?${params}`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      credentials: 'include'
     })
     
     if (response.ok) {
@@ -174,7 +168,11 @@ function App() {
       setTextoMensagem("Analisando...")
 
       const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/analisar_nf/?QRurl=${encodeURIComponent(url)}`, {
-        method: 'GET'
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
       })
 
       if (response.ok) {
@@ -212,6 +210,7 @@ function App() {
         headers: {
           'Content-Type': 'application/json'
         },
+        credentials: 'include'
       })
       console.log('Servidor acordado com sucesso!');
     } catch (error) {
@@ -235,7 +234,7 @@ function App() {
     if (cadastrandoUsuario) {
       return <CadastroUsuario setCadastrandoUsuario={setCadastrandoUsuario} />
     }else {
-      return <Login setToken={setToken} setCadastrandoUsuario={setCadastrandoUsuario}/>
+      return <Login setUsuarioLogado={setUsuarioLogado} setCadastrandoUsuario={setCadastrandoUsuario}/>
     }
   }
 
