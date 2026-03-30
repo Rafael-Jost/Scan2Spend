@@ -2,7 +2,7 @@ import os
 import asyncio
 from pathlib import Path
 from wsgiref import headers
-from fastapi import FastAPI, HTTPException, UploadFile
+from fastapi import FastAPI, HTTPException, UploadFile, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from pytesseract import pytesseract
@@ -69,7 +69,7 @@ class Login(BaseModel):
     senha: str
 
 class LoginResponse(BaseModel):
-    token: str
+    msg: str
 
 class CadastroUsuario(BaseModel):
     nome: str
@@ -179,7 +179,7 @@ def cadastroUsuario(dados_usuario: CadastroUsuario):
 
 
 @app.post('/login', response_model = LoginResponse)
-def login(credenciais: Login):
+def login(credenciais: Login, response: Response):
 
     connection = None
     cursor = None
@@ -219,7 +219,14 @@ def login(credenciais: Login):
         raise HTTPException(status_code=500, detail="Erro interno ao fazer login")
     else:
         token = gerar_token_login(usuario_id)
-        return LoginResponse(token=token)
+        response.set_cookie(
+            key="token", 
+            value=token, 
+            httponly=True,
+            secure=True,
+            samesite="strict"
+        )
+        return LoginResponse(msg="Login realizado com sucesso")
     finally:
         if cursor:
             cursor.close()
