@@ -223,8 +223,8 @@ def login(credenciais: Login, response: Response):
             key="token", 
             value=token, 
             httponly=True,
-            secure=False,
-            samesite="lax"
+            secure=True,
+            samesite="none"
         )
         return LoginResponse(msg="Login realizado com sucesso")
     finally:
