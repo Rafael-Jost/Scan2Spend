@@ -2,7 +2,7 @@ import os
 import asyncio
 from pathlib import Path
 from wsgiref import headers
-from fastapi import FastAPI, HTTPException, UploadFile, Response
+from fastapi import FastAPI, HTTPException, UploadFile, Response, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from pytesseract import pytesseract
@@ -235,11 +235,12 @@ def login(credenciais: Login, response: Response):
 
 
 @app.get('/me', response_model=MeResponse)
-def me(token: str):
+def me(request: Request):
     try:
         connection = None
         cursor = None
         
+        token = request.cookies.get("token")
         usuario_id = validar_token_login(token)
 
         connection = makeDBconnection()
@@ -279,7 +280,7 @@ def me(token: str):
         raise HTTPException(status_code=500, detail="Erro interno ao buscar informações do usuário")
     else:
         return MeResponse(nome=nome, sobrenome=sobrenome, email=email, usuario_id=usuario_id)
-    
+    finally:
         if cursor:
             cursor.close()
         if connection:
