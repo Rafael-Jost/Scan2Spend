@@ -19,7 +19,7 @@ import './App.css'
 function App() {
   const [usuarioLogado, setUsuarioLogado] = useState(Cookies.get('usuarioLogado') === 'true' || false)
   const [cadastrandoUsuario, setCadastrandoUsuario] = useState(false)
-  const [estadoTela, setEstadoTela] = useState('login')
+  const [estadoTela, setEstadoTela] = useState(Cookies.get('estadoTela') || 'login')
   const [textoMensagem, setTextoMensagem] = useState(null)
   const [classeMensagem, setClasseMensagem] = useState('oculto')
   const [textoRecibo, setTextoRecibo] = useState(null)
@@ -33,7 +33,7 @@ function App() {
 
   useEffect (() =>{
 
-    if (usuarioLogado == false) {return}
+    if (usuarioLogado == false) { Cookies.remove('estadoTela'); return}
 
       (async () => {
           const dados_usuario_response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/me`, {
@@ -55,14 +55,18 @@ function App() {
 
   const carregaUsuario = useCallback((dadosUsuario) => {
     console.log("Dados do usuário após login:", dadosUsuario.nome, dadosUsuario.sobrenome, dadosUsuario.email, dadosUsuario.usuario_id);
-    setEstadoTela('inicial')
+    if (estadoTela === 'login') {
+      setEstadoTela('inicial')
+    }
     setNomeUsuario(dadosUsuario.nome + ' ' + dadosUsuario.sobrenome)
     setEmailUsuario(dadosUsuario.email)
     setUsuarioId(dadosUsuario.usuario_id)
   }, [])
 
   const logoutUsuario = useCallback(() => {
+    Cookies.remove('usuarioLogado');
     setUsuarioLogado(false)
+    Cookies.remove('estadoTela');
     setEstadoTela('login')
     setUsuarioId(null)
   }, [])
@@ -124,6 +128,7 @@ function App() {
 
 
   useEffect(() => {
+    Cookies.set('estadoTela', estadoTela, { expires: 1 })
     const root = document.getElementById('root')
     if (!root) return
 
