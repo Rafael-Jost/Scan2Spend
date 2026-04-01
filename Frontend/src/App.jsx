@@ -31,6 +31,14 @@ function App() {
   const [usuarioId, setUsuarioId] = useState(null)
   const [exibirPopUpPerfil, setExibirPopUpPerfil] = useState(false)
 
+
+  // /////////////////////////////////////////////////////
+  // Gerenciamento de autenticação e estado do usuário  //
+  // /////////////////////////////////////////////////////
+
+  // -----------------------------------------------------
+  // Verifica se o usuário está logado ao carregar o app 
+  // -----------------------------------------------------
   useEffect (() =>{
 
     if (usuarioLogado == false) { Cookies.remove('estadoTela'); return}
@@ -53,8 +61,10 @@ function App() {
       })()
   }, [usuarioLogado])
 
+  // ----------------------------------------------------------------
+  // Função para carregar os dados do usuário após login ou registro
+  // ----------------------------------------------------------------
   const carregaUsuario = useCallback((dadosUsuario) => {
-    console.log("Dados do usuário após login:", dadosUsuario.nome, dadosUsuario.sobrenome, dadosUsuario.email, dadosUsuario.usuario_id);
     if (estadoTela === 'login') {
       setEstadoTela('inicial')
     }
@@ -63,6 +73,9 @@ function App() {
     setUsuarioId(dadosUsuario.usuario_id)
   }, [])
 
+  // -------------------------------
+  // Função para logout do usuário
+  // -------------------------------
   const logoutUsuario = useCallback(() => {
     Cookies.remove('usuarioLogado');
     setUsuarioLogado(false)
@@ -71,6 +84,15 @@ function App() {
     setUsuarioId(null)
   }, [])
 
+
+
+  // ///////////////////////////////
+  // Gerenciamento de gráficos   //
+  // //////////////////////////////
+
+  // ------------------------------------------------
+  // Função para buscar despesas totais do usuário
+  // ------------------------------------------------
   const buscarDespesasTotais = useCallback(async (dt_inicio, dt_fim, tipo_agrupamento) => {
 
     if (!dt_inicio || !dt_fim || !tipo_agrupamento) {
@@ -78,7 +100,6 @@ function App() {
       dt_fim = '31/12/' + new Date().getFullYear()
       tipo_agrupamento = 'MES'
     }
-    console.log("Buscando despesas totais...");
     const params = new URLSearchParams({ 
       usuario_id: usuarioId, 
       dt_inicio: dt_inicio, 
@@ -99,13 +120,14 @@ function App() {
     }
   }, [usuarioId]);
 
-
+  // ----------------------------------------------------
+  // Função para buscar despesas por categoria de produto
+  // ----------------------------------------------------
   const buscarDespesasCategorias = useCallback(async (dt_inicio, dt_fim) => {
     if (!dt_inicio || !dt_fim || !tipo_agrupamento) {
       dt_inicio = '01/01/' + new Date().getFullYear()
       dt_fim = '31/12/' + new Date().getFullYear()
     }
-    console.log("Buscando despesas totais...");
     const params = new URLSearchParams({ 
       usuario_id: usuarioId, 
       dt_inicio: dt_inicio, 
@@ -127,6 +149,30 @@ function App() {
   }, [usuarioId])
 
 
+  // ------------------------------------------------------
+  // Função para atualizar ambos os gráficos de despesas 
+  // ------------------------------------------------------
+  const atualizarGraficos = useCallback(() => {
+    buscarDespesasTotais();
+    buscarDespesasCategorias();
+  }, [buscarDespesasTotais, buscarDespesasCategorias])
+
+  // ------------------------------------------------------
+  // Atualiza os gráficos sempre que o usuário fizer login
+  // ------------------------------------------------------
+  useEffect(() => {
+    if (!usuarioLogado){ return }
+    atualizarGraficos();
+  }, [atualizarGraficos, usuarioLogado])
+
+
+  // ///////////////////////////////////////////////
+  // Gerenciamento de funcionalidades do sistema //
+  // //////////////////////////////////////////////
+
+  // -----------------------------------------------------
+  // Gerencia o estado da tela (login, inicial, despesas)
+  // -----------------------------------------------------
   useEffect(() => {
     Cookies.set('estadoTela', estadoTela, { expires: 1 })
     const root = document.getElementById('root')
@@ -143,6 +189,10 @@ function App() {
     }
   }, [estadoTela])
 
+  
+  // ---------------------------------------------------------------------
+  // Componente para o botão de perfil e pop-up de informações do usuário
+  // ---------------------------------------------------------------------
   function BotaoPerfil() {
     return (
       <>
@@ -161,6 +211,9 @@ function App() {
     )
   }
 
+  // ------------------------------------------------------
+  // Função para analisar o recibo a partir da URL do QR code
+  // ------------------------------------------------------
   const AnalisarRecibo = async (url) => {
     if (!url) {
       console.error("URL vazia/undefined em AnalisarRecibo");
@@ -197,19 +250,12 @@ function App() {
       }
   }
 
-  const atualizarGraficos = useCallback(() => {
-    buscarDespesasTotais();
-    buscarDespesasCategorias();
-  }, [buscarDespesasTotais, buscarDespesasCategorias])
-
-  useEffect(() => {
-    if (!usuarioLogado){ return }
-    atualizarGraficos();
-  }, [atualizarGraficos, usuarioLogado])
+  // ------------------------------------------------------
+  // Função para manter o servidor acordado (evitar hibernação)
+  // ------------------------------------------------------
 
   const acordarServidor = async () => {
     try {
-      console.log('Acordando o servidor...');
       await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/', {
         method: 'GET',
         headers: {
@@ -217,23 +263,30 @@ function App() {
         },
         credentials: 'include'
       })
-      console.log('Servidor acordado com sucesso!');
     } catch (error) {
       console.error('Erro ao acordar o servidor:', error);
     }
   }
 
+  // ------------------------------------------------------
+  // Acorda o servidor ao carregar o app e a cada 14 minutos
+  // ------------------------------------------------------
   useEffect(() => {
     acordarServidor();
 
     const intervaloId = setInterval(() => {
       acordarServidor();
-    }, 14 * 60 * 1000); // Acorda o servidor a cada 14 minutos
+    }, 14 * 60 * 1000); // 14 MINUTOS
 
     return () => {
       clearInterval(intervaloId);
     };
   }, [])
+
+
+  // ///////////////////////
+  // Renderização do app //
+  // ///////////////////////
 
   if (estadoTela === 'login') {
     if (cadastrandoUsuario) {

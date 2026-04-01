@@ -17,10 +17,8 @@ function CadastroUsuario({setCadastrandoUsuario}) {
         e.preventDefault()
 
         if (senha && confirmarSenha && senha !== confirmarSenha) {
-            console.log('As senhas digitadas não coincidem!')
             setErroCadastro('As senhas digitadas não coincidem!')
         }else{
-            console.log('deu certo')
             setErroCadastro('')
 
             const response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/cadastrarUsuario/', {

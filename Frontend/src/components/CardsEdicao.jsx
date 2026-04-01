@@ -18,10 +18,8 @@ export default function CardEdicao(json) {
     }
 
     useEffect(() => {
-        console.log("Dados recebidos para edição: ", json);
         const payload = json.json; 
         const itemsData = payload.itens ?? [];
-        console.log("Itens extraídos: ", itemsData);
 
         const data_sem_horario = payload.data_compra ? payload.data_compra.split(' ')[0] : '';
         const data_formatada = data_sem_horario ? data_sem_horario.split('/').reverse().join('-') : '';
@@ -37,7 +35,6 @@ export default function CardEdicao(json) {
         setPrecoFinalPago(preco_final_pago);
         setDescontoTotal(payload.desconto_total || 0);
         setItems(itemsData);
-        console.log("preço Total pago: ", preco_final_pago);
     }, [json]);
     
     return(
@@ -104,7 +101,6 @@ export async function SalvarPayload(usuarioId){
             categoria: categoriaInputs[i].value
         });
     }
-    console.log("Produtos coletados para salvamento:", produtos);
 
     const payloadAtualizado = {
         usuario_id: usuarioId,
@@ -113,8 +109,6 @@ export async function SalvarPayload(usuarioId){
         desconto_total: parseFloat(descontoTotalInput.value),
         itens: produtos
     };
-
-    console.log("Payload atualizado:", payloadAtualizado);
 
     const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/nota_fiscal/`, {
         method: 'POST',

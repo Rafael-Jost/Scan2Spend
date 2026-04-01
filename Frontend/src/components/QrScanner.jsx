@@ -23,7 +23,6 @@ export default function QrScanner({ funcAnalisarRecibo }) {
         function success(result) {
             scanner.clear();
             const url = result;
-            console.log("URL escaneada: ", url);
             // setUrl(result);
             funcAnalisarRecibo(url);
         }
