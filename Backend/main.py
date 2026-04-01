@@ -25,6 +25,7 @@ PROMPT_FILE = BASE_DIR / "utils" / "prompt_analise_nf.txt"
 
 client = OpenAI()
 
+
 class DespesasResponse(BaseModel):
     data: str
     despesa: float
@@ -86,6 +87,10 @@ class MeResponse(BaseModel):
     email: str
     usuario_id: int
 
+# //////////////////////////
+# Inicializacao do FastAPI //
+# //////////////////////////
+
 app = FastAPI()
 
 origins = [
@@ -100,6 +105,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ///////////////////////
+# Funcoes utilitarias //
+# /////////////////////
 
 def makeDBconnection():
     try:
@@ -118,10 +127,14 @@ def makeDBconnection():
     
     else:
         return connection
-    
+
 @app.get("/")
 def root():
     return {"Scan2Spend"}
+
+# ///////////////////////////////
+# Funções de autenticacao (JWT) //
+# ///////////////////////////////
 
 def gerar_token_login(usuario_id):
 
@@ -144,6 +157,10 @@ def validar_token_login(token):
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Token inválido")
 
+
+# ///////////////////////////////
+# Endpoints de autenticacao    //
+# //////////////////////////////
 
 @app.post('/cadastrarUsuario/', response_model = CadastroUsuarioResponse)
 def cadastroUsuario(dados_usuario: CadastroUsuario):
@@ -286,60 +303,9 @@ def me(request: Request):
         if connection:
             connection.close()
 
-@app.get('/despesas/categorias', response_model=list[DespesasCategoriasResponse])
-def busca_despesas_categorias(usuario_id: int, dt_inicio: str, dt_fim: str):
-    try:
-        connection = makeDBconnection()
-        if 'Erro' in str(connection):
-            connection = None
-            raise Exception(connection)
-
-        cursor = connection.cursor()
-        cursor.execute("""
-            SELECT
-                categoria  AS name,
-                SUM(valor) AS value,
-                CASE
-                    WHEN CATEGORIA = 'Alimentação' THEN '#E8684A'
-                    WHEN CATEGORIA = 'Bebidas' THEN '#7CC0FF'
-                    WHEN CATEGORIA = 'Higiene Pessoal' THEN '#9270CA'
-                    WHEN CATEGORIA = 'Lanches & Conveniência' THEN '#FF9D4D'
-                    WHEN CATEGORIA = 'Limpeza' THEN '#6DC8A3'
-                    WHEN CATEGORIA = 'Pets' THEN '#F6BD16'
-                    WHEN CATEGORIA = 'Utilidades' THEN '#5B8FF9'
-                    ELSE '#9CA3AF'
-                END AS fill
-            FROM
-                    notas_fiscais nf
-                JOIN nota_fiscal_itens nfi USING ( nota_fiscal_id )
-            WHERE
-                    usuario_id = :usuario_id
-                AND data BETWEEN TO_DATE(:dt_inicio, 'DD/MM/YYYY') AND TO_DATE(:dt_fim, 'DD/MM/YYYY')
-            GROUP BY
-                categoria
-            ORDER BY
-                categoria
-        """, {"dt_inicio": dt_inicio, "dt_fim": dt_fim, "usuario_id": usuario_id})
-
-        result = cursor.fetchall()
-        print(f"DEBUG: Query retornou {len(result)} linhas")
-        cursor.close()
-        connection.close()
-        despesas = []
-        for row in result:
-            despesas.append(DespesasCategoriasResponse(
-                name=row[0],
-                value=float(row[1]),
-                fill=row[2]
-            ))
-        print(f"DEBUG: Despesas processadas: {len(despesas)}")
-        
-    except Exception as e:
-        print(f"Erro ao buscar despesas: {e}")
-        raise HTTPException(status_code=500, detail=f"Erro ao buscar despesas: {e}")
-    else:
-        return despesas
-
+# //////////////////////
+# Rotas de despesas   //
+# //////////////////////
 
 @app.get('/despesas/', response_model=list[DespesasResponse])
 def busca_despesas(usuario_id: int, dt_inicio: str, dt_fim: str, tipo_agrupamento: str):
@@ -404,57 +370,64 @@ def busca_despesas(usuario_id: int, dt_inicio: str, dt_fim: str, tipo_agrupament
     else:
         return despesas
 
-@app.post("/nota_fiscal/", response_model=InsertItemResponse)
-def insert_item(payload: NotaFiscalPost):
 
+@app.get('/despesas/categorias', response_model=list[DespesasCategoriasResponse])
+def busca_despesas_categorias(usuario_id: int, dt_inicio: str, dt_fim: str):
     try:
-
-        usuario_id = payload.usuario_id
-        dt_compra = payload.data_compra
-        preco_final_pago = payload.preco_final_pago
-        desconto_total = payload.desconto_total
-        
         connection = makeDBconnection()
         if 'Erro' in str(connection):
             connection = None
             raise Exception(connection)
 
         cursor = connection.cursor()
-
-        id_var = cursor.var(int)
-
         cursor.execute("""
-            INSERT INTO notas_fiscais (data, valor_total, usuario_id, desconto)
-            VALUES (to_date(:dt_compra, 'YYYY-MM-DD'), to_number(:preco_final_pago), :usuario_id, to_number(:desconto_total))
-            RETURNING nota_fiscal_id INTO :id
-        """, {"dt_compra": dt_compra, "preco_final_pago": preco_final_pago, "id": id_var, "desconto_total": desconto_total, "usuario_id": usuario_id})
+            SELECT
+                categoria  AS name,
+                SUM(valor) AS value,
+                CASE
+                    WHEN CATEGORIA = 'Alimentação' THEN '#E8684A'
+                    WHEN CATEGORIA = 'Bebidas' THEN '#7CC0FF'
+                    WHEN CATEGORIA = 'Higiene Pessoal' THEN '#9270CA'
+                    WHEN CATEGORIA = 'Lanches & Conveniência' THEN '#FF9D4D'
+                    WHEN CATEGORIA = 'Limpeza' THEN '#6DC8A3'
+                    WHEN CATEGORIA = 'Pets' THEN '#F6BD16'
+                    WHEN CATEGORIA = 'Utilidades' THEN '#5B8FF9'
+                    ELSE '#9CA3AF'
+                END AS fill
+            FROM
+                    notas_fiscais nf
+                JOIN nota_fiscal_itens nfi USING ( nota_fiscal_id )
+            WHERE
+                    usuario_id = :usuario_id
+                AND data BETWEEN TO_DATE(:dt_inicio, 'DD/MM/YYYY') AND TO_DATE(:dt_fim, 'DD/MM/YYYY')
+            GROUP BY
+                categoria
+            ORDER BY
+                categoria
+        """, {"dt_inicio": dt_inicio, "dt_fim": dt_fim, "usuario_id": usuario_id})
 
-        for produto in payload.itens:
-            cursor.execute("""
-                INSERT INTO nota_fiscal_itens
-                (nota_fiscal_id, produto, valor, quantidade, valor_unitario, valor_desconto, unidade_medida, categoria)
-                VALUES (:nota_fiscal_id, :produto, :valor, :quantidade, :valor_unitario, :valor_desconto, :unidade_medida, :categoria)
-            """, {
-                "nota_fiscal_id": id_var.getvalue()[0],
-                "produto": produto.nome_produto,
-                "valor": float(produto.preco_total) if produto.preco_total else None,
-                "quantidade": float(produto.quantidade) if produto.quantidade else None,
-                "valor_unitario": float(produto.preco_unitario) if produto.preco_unitario else None,
-                "valor_desconto": float(produto.desconto) if produto.desconto else None,
-                "unidade_medida": produto.unidade_medida if produto.unidade_medida and len(produto.unidade_medida) <= 2 else None, #char(2)
-                "categoria": produto.categoria if produto.categoria else None
-            })
-        connection.commit()
+        result = cursor.fetchall()
+        print(f"DEBUG: Query retornou {len(result)} linhas")
         cursor.close()
         connection.close()
+        despesas = []
+        for row in result:
+            despesas.append(DespesasCategoriasResponse(
+                name=row[0],
+                value=float(row[1]),
+                fill=row[2]
+            ))
+        print(f"DEBUG: Despesas processadas: {len(despesas)}")
         
     except Exception as e:
-        print(f"Erro ao inserir item: {e}")
-        return {"text": f"Erro ao inserir itens no banco de dados. {e}"}
+        print(f"Erro ao buscar despesas: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar despesas: {e}")
     else:
-        return {"text": "Itens inserido com sucesso no banco de dados."}
-    
+        return despesas
 
+# //////////////////////////
+# Rotas de notas fiscais  //
+# //////////////////////////
 
 @app.get("/nota_fiscal/", response_model=list[NotaFiscalGet])
 async def busca_nota_fiscal(usuario_id: int):
@@ -511,6 +484,61 @@ async def busca_nota_fiscal(usuario_id: int):
             connection.close()
 
 
+@app.post("/nota_fiscal/", response_model=InsertItemResponse)
+def insert_item(payload: NotaFiscalPost):
+
+    try:
+
+        usuario_id = payload.usuario_id
+        dt_compra = payload.data_compra
+        preco_final_pago = payload.preco_final_pago
+        desconto_total = payload.desconto_total
+        
+        connection = makeDBconnection()
+        if 'Erro' in str(connection):
+            connection = None
+            raise Exception(connection)
+
+        cursor = connection.cursor()
+
+        id_var = cursor.var(int)
+
+        cursor.execute("""
+            INSERT INTO notas_fiscais (data, valor_total, usuario_id, desconto)
+            VALUES (to_date(:dt_compra, 'YYYY-MM-DD'), to_number(:preco_final_pago), :usuario_id, to_number(:desconto_total))
+            RETURNING nota_fiscal_id INTO :id
+        """, {"dt_compra": dt_compra, "preco_final_pago": preco_final_pago, "id": id_var, "desconto_total": desconto_total, "usuario_id": usuario_id})
+
+        for produto in payload.itens:
+            cursor.execute("""
+                INSERT INTO nota_fiscal_itens
+                (nota_fiscal_id, produto, valor, quantidade, valor_unitario, valor_desconto, unidade_medida, categoria)
+                VALUES (:nota_fiscal_id, :produto, :valor, :quantidade, :valor_unitario, :valor_desconto, :unidade_medida, :categoria)
+            """, {
+                "nota_fiscal_id": id_var.getvalue()[0],
+                "produto": produto.nome_produto,
+                "valor": float(produto.preco_total) if produto.preco_total else None,
+                "quantidade": float(produto.quantidade) if produto.quantidade else None,
+                "valor_unitario": float(produto.preco_unitario) if produto.preco_unitario else None,
+                "valor_desconto": float(produto.desconto) if produto.desconto else None,
+                "unidade_medida": produto.unidade_medida if produto.unidade_medida and len(produto.unidade_medida) <= 2 else None, #char(2)
+                "categoria": produto.categoria if produto.categoria else None
+            })
+        connection.commit()
+        cursor.close()
+        connection.close()
+        
+    except Exception as e:
+        print(f"Erro ao inserir item: {e}")
+        return {"text": f"Erro ao inserir itens no banco de dados. {e}"}
+    else:
+        return {"text": "Itens inserido com sucesso no banco de dados."}
+
+
+
+# ///////////////////////////////
+# Rota de analise de NFC-e    //
+# ///////////////////////////////
 
 @app.get("/analisar_nf/", response_model=ReceiptExpenses)
 async def analisar_nf(QRurl: str):
