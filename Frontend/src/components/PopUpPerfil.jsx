@@ -24,7 +24,7 @@ function PopUpPerfil({ nomeUsuario, emailUsuario, fncLogout, fncFechar }) {
     
     return (
         <>
-        <PopUpNotasFiscais notasFiscais={[]} fncFechar={() => {setExibirNotasFiscais(false)}} display={exibirNotasFiscais ? 'block' : 'none'} />
+        <PopUpNotasFiscais fncFechar={() => {setExibirNotasFiscais(false)}} display={exibirNotasFiscais ? 'block' : 'none'} />
         <div className="popup-perfil" ref={popupRef}>
             <div className="popup-perfil-content">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
