@@ -94,6 +94,7 @@ function App() {
   // Função para buscar despesas totais do usuário
   // ------------------------------------------------
   const buscarDespesasTotais = useCallback(async (dt_inicio, dt_fim, tipo_agrupamento) => {
+    if (usuarioLogado == false || usuarioLogado == '') { return }
 
     if (!dt_inicio || !dt_fim || !tipo_agrupamento) {
       dt_inicio = '01/01/' + new Date().getFullYear()
@@ -124,6 +125,8 @@ function App() {
   // Função para buscar despesas por categoria de produto
   // ----------------------------------------------------
   const buscarDespesasCategorias = useCallback(async (dt_inicio, dt_fim) => {
+    if (usuarioLogado == false || usuarioLogado == '') { return }
+
     if (!dt_inicio || !dt_fim || !tipo_agrupamento) {
       dt_inicio = '01/01/' + new Date().getFullYear()
       dt_fim = '31/12/' + new Date().getFullYear()
@@ -153,9 +156,11 @@ function App() {
   // Função para atualizar ambos os gráficos de despesas 
   // ------------------------------------------------------
   const atualizarGraficos = useCallback(() => {
+    if (!usuarioId) { return }
+
     buscarDespesasTotais();
     buscarDespesasCategorias();
-  }, [buscarDespesasTotais, buscarDespesasCategorias])
+  }, [buscarDespesasTotais, buscarDespesasCategorias, usuarioId])
 
   // ------------------------------------------------------
   // Atualiza os gráficos sempre que o usuário fizer login
