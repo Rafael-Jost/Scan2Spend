@@ -1,4 +1,4 @@
-import {FaUser, FaLock} from 'react-icons/fa'
+import {FaUser, FaLock, FaEye, FaEyeSlash} from 'react-icons/fa'
 import { use, useEffect } from 'react'
 import {useState} from 'react'
 import Cookies from 'js-cookie'
@@ -7,6 +7,7 @@ function Login({ setUsuarioLogado, setCadastrandoUsuario }) {
     const [email, setEmail] = useState(Cookies.get('email') || '')
     const [senha, setSenha] = useState('')
     const [lembrarMe, setLembrarMe] = useState(Cookies.get('email') ? true : false)
+    const [senhaVisivel, setSenhaVisivel] = useState(false)
 
     // const [token, setToken] = useState('')
     const [erroLogin, setErroLogin] = useState(null)
@@ -56,13 +57,19 @@ function Login({ setUsuarioLogado, setCadastrandoUsuario }) {
                       onChange={(e) => setEmail(e.target.value)}
                       defaultValue={email}
                     ></input></div>
-                <div className='input-container'>
+                    <div className='input-container senha-container'>
                     <FaLock className='login-icon' /> 
                     <input 
                       className='login-input'
-                      type="password" 
+                      type={ senhaVisivel ? "text" : "password"} 
                       placeholder="Senha" 
                       onChange={(e) => setSenha(e.target.value)}/>
+                    {senhaVisivel 
+                    ? 
+                        <FaEyeSlash className='icon-visibilidade-senha' onClick={() => setSenhaVisivel(false)}></FaEyeSlash> 
+                    : 
+                        <FaEye className='icon-visibilidade-senha' onClick={() => setSenhaVisivel(true)}></FaEye>
+                    }
                 </div>
                 <label> <input type="checkbox" defaultChecked={lembrarMe} onChange={(e) => {setLembrarMe(e.target.checked ? true : false)}} /> Não me esqueça :(</label>
                 <span className={erroLogin ? 'span-msg-erro' : 'span-msg-erro oculto'}>{erroLogin}</span>
