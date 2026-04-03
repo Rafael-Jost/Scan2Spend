@@ -85,7 +85,6 @@ function App() {
   }, [])
 
 
-
   // ///////////////////////////////
   // Gerenciamento de gráficos   //
   // //////////////////////////////
@@ -206,6 +205,7 @@ function App() {
         }}></BotaoSimples>
         {exibirPopUpPerfil ? (
           <PopUpPerfil
+            usuarioId={usuarioId}
             nomeUsuario={nomeUsuario}
             emailUsuario={emailUsuario}
             fncLogout={logoutUsuario}
