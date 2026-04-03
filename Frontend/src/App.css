@@ -354,3 +354,9 @@
   cursor: pointer;
   color: #888;
 }
+
+.s2s-logo {
+  width: 20vh;
+  background-color: #eeeeee;
+  border-radius: 50px;
+}

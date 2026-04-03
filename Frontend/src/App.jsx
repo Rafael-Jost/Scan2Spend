@@ -14,6 +14,7 @@ import Login from './components/Login.jsx'
 import CadastroUsuario from './components/CadastroUsuario.jsx'
 import PopUpPerfil from './components/PopUpPerfil.jsx'
 import Cookies from 'js-cookie'
+import S2S_logo from './assets/Scan2Spend_logo.png'
 import './App.css'
 
 function App() {
@@ -308,7 +309,7 @@ function App() {
         <BotaoSimples className="botao-menu despesas" icone={despesasIcon} onClick={() => {
           setEstadoTela('despesas')
         }}></BotaoSimples>
-        <CardSemLink titulo="Bem-vindo ao Scan2Spend!" descricao="Faça upload dos seus recibos, rastreie seus gastos e receba dicas de economia." />
+        <CardSemLink titulo="Bem-vindo ao Scan2Spend!" descricao="Faça upload dos seus recibos, rastreie seus gastos e receba dicas de economia." img={S2S_logo} />
         <QrScanner funcAnalisarRecibo={AnalisarRecibo} />
         <PopUpDeInformacoes usuarioId={usuarioId} conteudo={<CardEdicao json={parseRecibo(textoRecibo)}  />} popupAberto={popupAberto} setPopupAberto={setPopupAberto} atualizarGraficos={atualizarGraficos}/>
         <BotaoSimples id="botao-upload" texto={textoMensagem} className={classeMensagem} onClick={() => {

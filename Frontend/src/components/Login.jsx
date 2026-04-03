@@ -2,6 +2,7 @@ import {FaUser, FaLock, FaEye, FaEyeSlash} from 'react-icons/fa'
 import { use, useEffect } from 'react'
 import {useState} from 'react'
 import Cookies from 'js-cookie'
+import S2S_logo from '../assets/Scan2Spend_logo.png'
 
 function Login({ setUsuarioLogado, setCadastrandoUsuario }) {
     const [email, setEmail] = useState(Cookies.get('email') || '')
@@ -47,6 +48,7 @@ function Login({ setUsuarioLogado, setCadastrandoUsuario }) {
     return <>
         <div className="pagina-login">
             <form onSubmit={handleSubmit}>
+                <img style={{marginBottom: '-30px'}} src={S2S_logo} alt="Logo Scan2Spend" className='s2s-logo' />
                 <h1>Login</h1>
                 <div className='input-container'> 
                     <FaUser className='login-icon' /> 
