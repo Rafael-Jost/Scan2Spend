@@ -319,6 +319,10 @@
   border-radius: 999px;
 }
 
+.nota-itens:hover{
+  background-color: color-mix(in srgb, CanvasText 10%, transparent);
+}
+
 .nota-valores {
   display: flex;
   flex-direction: column;

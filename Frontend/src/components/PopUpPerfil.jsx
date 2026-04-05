@@ -4,11 +4,15 @@ import PopUpNotasFiscais from './PopUpNotasFiscais'
 
 function PopUpPerfil({ usuarioId, nomeUsuario, emailUsuario, fncLogout, fncFechar }) {
     const popupRef = useRef(null)
+    const notasRef = useRef(null)
     const [exibirNotasFiscais, setExibirNotasFiscais] = useState(false)
 
     useEffect(() => {
         const handleClickFora = (evento) => {
-            if (popupRef.current && !popupRef.current.contains(evento.target)) {
+            const cliqueDentroPerfil = popupRef.current?.contains(evento.target)
+            const cliqueDentroNotas = notasRef.current?.contains(evento.target)
+
+            if (!cliqueDentroPerfil && !cliqueDentroNotas) {
                 fncFechar()
             }
         }
@@ -24,7 +28,7 @@ function PopUpPerfil({ usuarioId, nomeUsuario, emailUsuario, fncLogout, fncFecha
     
     return (
         <>
-        <PopUpNotasFiscais usuarioId={usuarioId} fncFechar={() => {setExibirNotasFiscais(false)}} display={exibirNotasFiscais ? 'block' : 'none'} />
+        <PopUpNotasFiscais ref={notasRef} usuarioId={usuarioId} fncFechar={() => {setExibirNotasFiscais(false)}} display={exibirNotasFiscais ? 'block' : 'none'} />
         <div className="popup-perfil" ref={popupRef}>
             <div className="popup-perfil-content">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>

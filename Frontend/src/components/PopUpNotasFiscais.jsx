@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 
-export default function PopUpNotasFiscais({ fncFechar, display, usuarioId }) {
+function PopUpNotasFiscais({ fncFechar, display, usuarioId }, ref) {
     const [notasFiscais, setNotasFiscais] = useState([]);
 
     const buscarNotasFiscais = async () => {
@@ -28,6 +28,7 @@ export default function PopUpNotasFiscais({ fncFechar, display, usuarioId }) {
             const listaNotas = Array.isArray(data) ? data : [];
 
             setNotasFiscais(listaNotas.map((notaFiscal) => ({
+                nota_fiscal_id: notaFiscal.nota_fiscal_id ?? notaFiscal.id ?? '',
                 data: notaFiscal.data_compra ?? notaFiscal.data ?? '',
                 numeroItens: Number(notaFiscal.quantidade_itens ?? notaFiscal.numeroItens ?? 0),
                 valorPago: Number(notaFiscal.preco_final_pago ?? notaFiscal.valorPago ?? 0),
@@ -49,7 +50,7 @@ export default function PopUpNotasFiscais({ fncFechar, display, usuarioId }) {
 
     return (
     <>
-        <div id="popup-notas-fiscais" style={{ display }}>
+        <div id="popup-notas-fiscais" style={{ display }} ref={ref}>
             <div className="popup-notas-header">
                 <h2>Minhas Notas Fiscais</h2>
                 <button type="button" onClick={fncFechar}>Fechar</button>
@@ -62,7 +63,11 @@ export default function PopUpNotasFiscais({ fncFechar, display, usuarioId }) {
                     <div className="popup-nota-fiscal-row" key={`${notaFiscal.data}-${index}`}>
                         <div className="nota-info">
                             <span className="nota-data">{notaFiscal.data}</span>
-                            <span className="nota-itens">{notaFiscal.numeroItens} itens</span>
+                            <span className="nota-itens" onClick={() => {
+                                console.log('nota clicada:', notaFiscal.nota_fiscal_id)
+                            }}>
+                                {notaFiscal.numeroItens} itens
+                            </span>
                         </div>
 
                         <div className="nota-valores">
@@ -76,5 +81,7 @@ export default function PopUpNotasFiscais({ fncFechar, display, usuarioId }) {
     </>
     )
 }
+
+export default forwardRef(PopUpNotasFiscais)
 
 
