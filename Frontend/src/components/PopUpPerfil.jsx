@@ -2,7 +2,7 @@ import perfilIcon from '../assets/perfil.png'
 import { useEffect, useRef, useState } from 'react'
 import PopUpNotasFiscais from './PopUpNotasFiscais'
 
-function PopUpPerfil({ usuarioId, nomeUsuario, emailUsuario, fncLogout, fncFechar }) {
+function PopUpPerfil({ usuarioId, nomeUsuario, emailUsuario, fncLogout, fncFechar, setPopUpInformacoesAberto, setConteudo }) {
     const popupRef = useRef(null)
     const notasRef = useRef(null)
     const [exibirNotasFiscais, setExibirNotasFiscais] = useState(false)
@@ -28,7 +28,7 @@ function PopUpPerfil({ usuarioId, nomeUsuario, emailUsuario, fncLogout, fncFecha
     
     return (
         <>
-        <PopUpNotasFiscais ref={notasRef} usuarioId={usuarioId} fncFechar={() => {setExibirNotasFiscais(false)}} display={exibirNotasFiscais ? 'block' : 'none'} />
+        <PopUpNotasFiscais ref={notasRef} usuarioId={usuarioId} fncFechar={() => {setExibirNotasFiscais(false)}} display={exibirNotasFiscais ? 'block' : 'none'} setPopUpInformacoesAberto={setPopUpInformacoesAberto} setConteudo={setConteudo} />
         <div className="popup-perfil" ref={popupRef}>
             <div className="popup-perfil-content">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>

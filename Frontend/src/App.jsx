@@ -211,6 +211,8 @@ function App() {
             emailUsuario={emailUsuario}
             fncLogout={logoutUsuario}
             fncFechar={() => setExibirPopUpPerfil(false)}
+            setPopUpInformacoesAberto={setPopupAberto}
+            setConteudo = {setTextoRecibo}
           />
         ) : null}
       </>
