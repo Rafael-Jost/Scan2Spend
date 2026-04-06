@@ -126,12 +126,95 @@
   margin: 0 auto;
 }
 
+.edicao-resumo-container {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: 14px;
+  width: min(60vw, 1250px);
+  margin: 0 auto 18px auto;
+  padding-bottom: 15px;
+}
+
+.edicao-resumo-item,
+.card-edicao p {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+}
+
+.edicao-resumo-item span,
+.campo-label {
+  font-size: 0.85rem;
+  color: #4f5967;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.titulo-nota-fiscal {
+  margin-top: 0;
+  margin-bottom: 14px;
+}
+
+.card-edicao .unidade-medida-span {
+  color: #6f7784;
+  font-weight: 600;
+}
+
+.input-data-compra,
+.input-preco-final-pago,
+.input-desconto-total,
+.nome-produto-input,
+.quantidade-input,
+.input-preco_unitario,
+.input-desconto,
+.input-preco_total,
+.input-categoria {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d6dde6;
+  border-radius: 10px;
+  background: #f7f9fc;
+  color: #1c2430;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.input-data-compra:focus,
+.input-preco-final-pago:focus,
+.input-desconto-total:focus,
+.nome-produto-input:focus,
+.quantidade-input:focus,
+.input-preco_unitario:focus,
+.input-desconto:focus,
+.input-preco_total:focus,
+.input-categoria:focus {
+  outline: none;
+  border-color: #008cba;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(0, 140, 186, 0.15);
+}
+
+.input-categoria {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, #5f6b7a 50%), linear-gradient(135deg, #5f6b7a 50%, transparent 50%);
+  background-position: calc(100% - 18px) calc(50% - 2px), calc(100% - 12px) calc(50% - 2px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 34px;
+}
+
 .card-edicao {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 10px;
+  border: 1px solid #d6dde6;
+  border-radius: 14px;
+  padding: 14px;
   text-align: left;
-  box-shadow: 5px 10px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 /* Scrollbar */
@@ -149,10 +232,26 @@
 }
 
 .botao-remover{
-  float: right;
-  background: #e0e0e0;
-  border: none;
+  align-self: flex-end;
+  background: #ffe3e1;
+  border: 1px solid #ffc9c5;
+  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
   cursor: pointer;
+}
+
+.botao-remover:hover {
+  background: #ffd5d1;
+}
+
+.botao-remover:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 112, 94, 0.3);
 }
 .botao-menu.despesas {
   top: 90px;
@@ -317,6 +416,81 @@
   padding: 2px 8px;
   border: 1px solid color-mix(in srgb, CanvasText 24%, transparent);
   border-radius: 999px;
+}
+
+@media (max-width: 1024px) {
+  #cards-edicao-container,
+  .edicao-resumo-container {
+    width: min(92vw, 1250px);
+  }
+
+  .edicao-resumo-container {
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  #cards-edicao-container {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    height: 62vh;
+  }
+
+  .edicao-resumo-container {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .edicao-resumo-item {
+    gap: 4px;
+  }
+
+  .edicao-resumo-item span {
+    font-size: 0.78rem;
+    line-height: 1.2;
+  }
+
+  .card-edicao {
+    border-radius: 12px;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .input-data-compra,
+  .input-preco-final-pago,
+  .input-desconto-total,
+  .nome-produto-input,
+  .quantidade-input,
+  .input-preco_unitario,
+  .input-desconto,
+  .input-preco_total,
+  .input-categoria {
+    min-height: 40px;
+    font-size: 15px;
+    padding: 8px 10px;
+  }
+
+  .titulo-nota-fiscal {
+    margin-top: 16px;
+    margin-bottom: 12px;
+    font-size: 1.35rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .edicao-resumo-container {
+    grid-template-columns: repeat(3, minmax(90px, 1fr));
+    gap: 6px;
+  }
+
+  .edicao-resumo-item span {
+    font-size: 0.74rem;
+  }
+
+  .titulo-nota-fiscal {
+    margin-top: 18px;
+  }
 }
 
 .nota-itens:hover{
