@@ -1,5 +1,105 @@
 import { useState, useEffect } from 'react'
+import { FaBucket, FaBurger, FaCarrot, FaCircleQuestion, FaMugHot, FaPaw, FaPlugCircleBolt, FaSoap  } from 'react-icons/fa6';
 import trashIcon from "../assets/trash.png";
+
+const categoriaOptions = [
+    { value: 'Alimentação', label: 'Alimentação', Icon: FaCarrot, color: '#f89c71', colorBkg: '#fff1e6' },
+    { value: 'Bebidas', label: 'Bebidas', Icon: FaMugHot, color: '#60a5fa', colorBkg: '#dbeafe' },
+    { value: 'Pets', label: 'Pets', Icon: FaPaw, color: '#b39c78', colorBkg: '#f0e8d6' },
+    { value: 'Higiene Pessoal', label: 'Higiene Pessoal', Icon: FaSoap, color: '#a78bfa', colorBkg: '#ede9fe' },
+    { value: 'Limpeza', label: 'Limpeza', Icon: FaBucket, color: '#34d3ab', colorBkg: '#d1fae5' },
+    { value: 'Utilidades', label: 'Utilidades', Icon: FaPlugCircleBolt, color: '#fa9be2', colorBkg: '#fdf2fa' },
+    { value: 'Lanches & Conveniência', label: 'Lanches & Conveniência', Icon: FaBurger, color: '#fbbf24', colorBkg: '#fef3c7' },
+    { value: 'Outros', label: 'Outros', Icon: FaCircleQuestion, color: '#94a3b8', colorBkg: '#e2e8f0' },
+];
+
+function CategoriaIconPicker({ value, onChange }) {
+    const [aberto, setAberto] = useState(false);
+    const categoriaAtual = categoriaOptions.find((categoria) => categoria.value === value) ?? categoriaOptions[categoriaOptions.length - 1];
+    const IconAtual = categoriaAtual.Icon;
+    const ColorAtual = categoriaAtual.color;
+
+    return (
+        <div style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
+            <button
+                type="button"
+                onClick={() => setAberto((estadoAtual) => !estadoAtual)}
+                title={categoriaAtual.label}
+                aria-label={categoriaAtual.label}
+                style={{
+                    width: 52,
+                    height: 52,
+                    padding: 0,
+                    borderRadius: '50%',
+                    border: '1px solid #d2dbe8',
+                    // background: 'linear-gradient(180deg, #ffffff 0%, #edf2f7 100%)',
+                    background: ColorAtual,
+                    color: '#1f3a56',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    boxShadow: '0 8px 18px rgba(15, 23, 42, 0.08)',
+                }}
+            >
+                <IconAtual size={22} />
+            </button>
+
+            {aberto && (
+                <div
+                    style={{
+                        position: 'absolute',
+                        top: 'calc(100% + 10px)',
+                        left: '50%',
+                        transform: 'translateX(-10%)',
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(4, 1fr)',
+                        gap: 10,
+                        padding: 12,
+                        borderRadius: 18,
+                        background: '#ffffff',
+                        border: '1px solid #d9e2ec',
+                        boxShadow: '0 18px 40px rgba(15, 23, 42, 0.16)',
+                        zIndex: 10,
+                    }}
+                >
+                    {categoriaOptions.map(({ value: categoriaValue, label, Icon, color }) => {
+                        const selecionada = categoriaValue === value;
+
+                        return (
+                            <button
+                                key={categoriaValue}
+                                type="button"
+                                onClick={() => {
+                                    onChange(categoriaValue);
+                                    setAberto(false);
+                                }}
+                                title={label}
+                                aria-label={label}
+                                style={{
+                                    width: 42,
+                                    height: 42,
+                                    padding: 0,
+                                    borderRadius: '50%',
+                                    border: selecionada ? '2px solid #1f3a56' : '1px solid #d2dbe8',
+                                    // background: selecionada ? '#dbeafe' : '#f8fafc',
+                                    background: selecionada ? color : color,
+                                    color: '#1f3a56',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'pointer',
+                                }}
+                            >
+                                <Icon size={19} />
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
+}
 
 export default function CardEdicao(json) {
 
@@ -16,6 +116,14 @@ export default function CardEdicao(json) {
             </div>
         )
     }
+
+    const atualizarCategoriaItem = (index, novaCategoria) => {
+        setItems((estadoAtual) =>
+            estadoAtual.map((item, i) =>
+                i === index ? { ...item, categoria: novaCategoria } : item
+            )
+        );
+    };
 
     useEffect(() => {
         const payload = json.json; 
@@ -57,8 +165,17 @@ export default function CardEdicao(json) {
         <div id="cards-edicao-container">
             {items.map(({nome_produto, unidade_medida, quantidade, preco_unitario, preco_total, desconto, categoria}, index) => (
                 <div key={index}>
-                    <div className="card-edicao">
-                        <button className="botao-remover" onClick={() => removerItem(index)}><img style={{width: 15, height: 15}} src={trashIcon} alt="Remover item"></img></button>
+                    <div
+                        className="card-edicao"
+                        style={{
+                            background: categoriaOptions.find((cat) => cat.value === categoria)?.colorBkg ?? '#ffffff',
+                            backgroundImage: 'none',
+                        }}
+                    >
+                        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10}}>
+                            <CategoriaIconPicker value={categoria || ""} onChange={(novaCategoria) => atualizarCategoriaItem(index, novaCategoria)}></CategoriaIconPicker>
+                            <button className="botao-remover" onClick={() => removerItem(index)}><img style={{width: 15, height: 15}} src={trashIcon} alt="Remover item"></img></button>
+                        </div>
                         <p>
                             <span className="campo-label">Produto</span>
                             <input className="nome-produto-input" type="text" defaultValue={nome_produto}></input>
@@ -81,7 +198,7 @@ export default function CardEdicao(json) {
                         </p>
                         <p>
                             <span className="campo-label">Categoria</span>
-                            <select className="input-categoria" defaultValue={categoria || ""}>
+                            <select className="input-categoria" value={categoria || ""} onChange={(e) => atualizarCategoriaItem(index, e.target.value)}>
                                 <option value="" disabled>Selecione</option>
                                 <option value="Alimentação">Alimentação</option>
                                 <option value="Bebidas">Bebidas</option>
