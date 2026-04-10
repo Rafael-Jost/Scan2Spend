@@ -262,7 +262,7 @@ def login(credenciais: Login, response: Response):
         if connection:
             connection.close()
 
-@app.post('/validarToken' , response_model=ValidadeTokenResponse)
+@app.get('/validarToken' , response_model=ValidadeTokenResponse)
 def validar_token(request: Request):
 
     try:
