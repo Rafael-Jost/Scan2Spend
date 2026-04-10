@@ -283,7 +283,7 @@ def me(request: Request):
         cursor = None
         
         token = request.cookies.get("token")
-        usuario_id = validar_token_login(token)
+        usuario_id, _ = validar_token_login(token)
 
         connection = makeDBconnection()
         if 'Erro' in str(connection):
