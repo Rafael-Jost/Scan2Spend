@@ -90,6 +90,10 @@ class MeResponse(BaseModel):
     email: str
     usuario_id: int
 
+class ValidadeTokenResponse(BaseModel):
+    msg: str
+    hora_expiracao: str
+
 # //////////////////////////
 # Inicializacao do FastAPI //
 # //////////////////////////
@@ -144,7 +148,7 @@ def gerar_token_login(usuario_id):
     SECRET_KEY = os.getenv("SECRET_KEY")
     payload ={
         "usuario_id": usuario_id,
-        "exp": datetime.now(timezone.utc) + timedelta(minutes=41)
+        "exp": datetime.now(timezone.utc) + timedelta(minutes=30)
     }
 
     return jwt.encode(payload, SECRET_KEY, algorithm="HS256")
@@ -154,7 +158,11 @@ def validar_token_login(token):
     SECRET_KEY = os.getenv("SECRET_KEY")
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-        return payload["usuario_id"]
+        fuso_brasil = timezone(timedelta(hours=-3))
+        return payload["usuario_id"], datetime.fromtimestamp(
+            payload["exp"],
+            tz=fuso_brasil
+        )
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expirado")
     except jwt.InvalidTokenError:
@@ -244,7 +252,8 @@ def login(credenciais: Login, response: Response):
             value=token, 
             httponly=True,
             secure=True,
-            samesite="none"
+            samesite="none",
+            expires=datetime.now(timezone.utc) + timedelta(minutes=30)
         )
         return LoginResponse(msg="Login realizado com sucesso")
     finally:
@@ -253,6 +262,19 @@ def login(credenciais: Login, response: Response):
         if connection:
             connection.close()
 
+@app.post('/validarToken' , response_model=ValidadeTokenResponse)
+def validar_token(request: Request):
+
+    try:
+        token = request.cookies.get("token")
+        _, hora_expiracao = validar_token_login(token)
+    except HTTPException:
+        raise
+    else:
+        return ValidadeTokenResponse(
+            msg="Token válido",
+            hora_expiracao=hora_expiracao.strftime("%d/%m/%Y %H:%M:%S")
+        )
 
 @app.get('/me', response_model=MeResponse)
 def me(request: Request):
