@@ -273,7 +273,7 @@ def validar_token(request: Request):
     else:
         return ValidadeTokenResponse(
             msg="Token válido",
-            hora_expiracao=hora_expiracao.strftime("%d/%m/%Y %H:%M:%S")
+            hora_expiracao=hora_expiracao.strftime("%d/%m/%Y %H:%M")
         )
 
 @app.get('/me', response_model=MeResponse)
