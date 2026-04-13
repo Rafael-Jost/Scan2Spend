@@ -85,6 +85,61 @@ function App() {
     setUsuarioId(null)
   }, [])
 
+  // -------------------------------------------------------
+  // Função que verifica a validade do token a cada 1 minuto
+  // --------------------------------------------------------
+
+  useEffect(() => {
+    if (!usuarioLogado) { return }
+
+    function parseData(dataString) {
+      const [data, hora] = dataString.split(' ')
+      const [dia, mes, ano] = data.split('/')
+      const [horaStr, minuto] = hora.split(':')
+
+      return new Date(
+        Number(ano),
+        Number(mes) - 1, // mês começa do 0
+        Number(dia),
+        Number(horaStr),
+        Number(minuto)
+      )
+    }
+
+    const verificarToken = async () => {
+      try {
+        const response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/validarToken', {
+          method: 'GET',
+          credentials: 'include'
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          if (data.msg === "Token válido") {
+            var data_atual = new Date()
+            console.warn('Hora de expiração do token (string):', data.hora_expiracao)
+            const horaExpiracao = parseData(data.hora_expiracao)
+            console.warn('Token válido. Expira em:', horaExpiracao)
+
+            if (horaExpiracao - data_atual < 5 * 60 * 1000) { // Se faltar menos de 5 minutos para expirar
+              alert('Sua sessão irá expirar em 5 minutos, por favor faça login novamente para continuar usando o Scan2Spend sem interrupções.')
+            } 
+          }
+        } else if (response.status === 401) {
+          console.warn('Token inválido ou expirado. Realizando logout.')
+          logoutUsuario()
+        }
+      } catch (error) {
+        console.error('Erro ao verificar token:', error)
+      }
+    }
+
+    verificarToken()
+    const verificarTokenIntervalo = setInterval(verificarToken, 60000) // Verifica a cada 1 minuto
+
+    return () => clearInterval(verificarTokenIntervalo)
+  }, [usuarioLogado, logoutUsuario])
+
 
   // ///////////////////////////////
   // Gerenciamento de gráficos   //
@@ -273,6 +328,9 @@ function App() {
       })
     } catch (error) {
       console.error('Erro ao acordar o servidor:', error);
+    }
+    finally {
+      console.log('Servidor acordado com sucesso!');
     }
   }
 
