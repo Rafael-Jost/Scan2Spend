@@ -31,7 +31,7 @@ function App() {
   const [emailUsuario, setEmailUsuario] = useState('')
   const [usuarioId, setUsuarioId] = useState(null)
   const [exibirPopUpPerfil, setExibirPopUpPerfil] = useState(false)
-
+  const [notasFiscais, setNotasFiscais] = useState([]);
 
   // /////////////////////////////////////////////////////
   // Gerenciamento de autenticação e estado do usuário  //
@@ -261,6 +261,7 @@ function App() {
         }}></BotaoSimples>
         {exibirPopUpPerfil ? (
           <PopUpPerfil
+            notasFiscais={notasFiscais}
             usuarioId={usuarioId}
             nomeUsuario={nomeUsuario}
             emailUsuario={emailUsuario}
@@ -312,6 +313,49 @@ function App() {
           setTextoMensagem("Erro ao analisar")
       }
   }
+
+
+  const buscarNotasFiscais = useCallback(async () => {
+        if (!usuarioId) {
+            setNotasFiscais([]);
+            return;
+        }
+        console.log('Buscando notas fiscais para usuárioId:', usuarioId);
+        try {
+            const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/nota_fiscal/?usuario_id=${usuarioId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                console.error('Erro ao buscar notas fiscais do usuário:', response.statusText);
+                setNotasFiscais([]);
+                return;
+            }
+
+            const data = await response.json();
+            const listaNotas = Array.isArray(data) ? data : [];
+
+            setNotasFiscais(listaNotas.map((notaFiscal) => ({
+                nota_fiscal_id: notaFiscal.nota_fiscal_id ?? notaFiscal.id ?? '',
+                data: notaFiscal.data_compra ?? notaFiscal.data ?? '',
+                numeroItens: Number(notaFiscal.quantidade_itens ?? notaFiscal.numeroItens ?? 0),
+                valorPago: Number(notaFiscal.preco_final_pago ?? notaFiscal.valorPago ?? 0),
+                desconto: Number(notaFiscal.desconto_total ?? notaFiscal.desconto ?? 0)
+            })));
+        } catch (error) {
+            console.error('Erro ao buscar notas fiscais do usuário:', error);
+            setNotasFiscais([]);
+        }
+    }, [usuarioId]);
+
+  useEffect(() => {
+    if (estadoTela === 'login') { return }
+    buscarNotasFiscais()
+  }, [estadoTela, buscarNotasFiscais])
 
   // ------------------------------------------------------
   // Função para manter o servidor acordado (evitar hibernação)
