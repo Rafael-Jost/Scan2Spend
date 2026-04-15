@@ -59,6 +59,7 @@ function App() {
             Cookies.set('usuarioLogado', 'true', { expires: 30 })
           }
           carregaUsuario(await dados_usuario_response.json())
+          setEstadoTela(Cookies.get('estadoTela') || 'inicial')
       })()
   }, [usuarioLogado])
 
