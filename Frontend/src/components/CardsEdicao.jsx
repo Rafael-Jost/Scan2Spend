@@ -140,7 +140,7 @@ export default function CardEdicao(json) {
                 preco_final_pago += item.preco_total ? item.preco_total : 0;
             }
         }
-        setPrecoFinalPago(preco_final_pago);
+        setPrecoFinalPago(preco_final_pago || 0);
         setDescontoTotal(payload.desconto_total || 0);
         setItems(itemsData);
     }, [json]);
