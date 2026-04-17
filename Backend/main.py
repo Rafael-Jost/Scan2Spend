@@ -48,6 +48,7 @@ class ItemNota(BaseModel):
     categoria: str
     
 class NotaFiscalDetalhes(BaseModel):
+    nota_fiscal_id: int = None
     usuario_id: int
     data_compra: str
     itens: List[ItemNota]
@@ -573,6 +574,7 @@ async def busca_nota_fiscal(nota_fiscal_id: int):
         cursor = connection.cursor()
         cursor.execute("""
             SELECT
+                nota_fiscal_id,
                 nf.usuario_id,
                 nf.data,
                 nf.valor_total,
@@ -600,13 +602,13 @@ async def busca_nota_fiscal(nota_fiscal_id: int):
 
         for row in result:
             itens.append(ItemNota(
-                nome_produto=row[4],
-                quantidade=float(row[5]) if row[5] else 0.0,
-                preco_unitario=float(row[6]) if row[6] else 0.0,
-                desconto=float(row[7]) if row[7] else 0.0,
-                preco_total=float(row[8]) if row[8] else 0.0,
-                unidade_medida=row[9],
-                categoria=row[10]
+                nome_produto=row[5],
+                quantidade=float(row[6]) if row[6] else 0.0,
+                preco_unitario=float(row[7]) if row[7] else 0.0,
+                desconto=float(row[8]) if row[8] else 0.0,
+                preco_total=float(row[9]) if row[9] else 0.0,
+                unidade_medida=row[10],
+                categoria=row[11]
             ))
 
     except HTTPException:
@@ -616,11 +618,12 @@ async def busca_nota_fiscal(nota_fiscal_id: int):
         raise HTTPException(status_code=503, detail="Erro ao buscar itens da nota fiscal: " + str(e))
     else:
         return NotaFiscalDetalhes(
-            usuario_id=primeiro_registro[0],
-            data_compra=primeiro_registro[1].strftime("%Y-%m-%d") if primeiro_registro[1] else "",
+            nota_fiscal_id=primeiro_registro[0],
+            usuario_id=primeiro_registro[1],
+            data_compra=primeiro_registro[2].strftime("%Y-%m-%d") if primeiro_registro[2] else "",
             itens=itens,
-            preco_final_pago=float(primeiro_registro[2]) if primeiro_registro[2] else 0.0,
-            desconto_total=float(primeiro_registro[3]) if primeiro_registro[3] else 0.0,
+            preco_final_pago=float(primeiro_registro[3]) if primeiro_registro[3] else 0.0,
+            desconto_total=float(primeiro_registro[4]) if primeiro_registro[4] else 0.0,
         )
     finally:
         if cursor:
