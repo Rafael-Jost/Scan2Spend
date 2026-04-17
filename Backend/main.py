@@ -95,6 +95,9 @@ class ValidadeTokenResponse(BaseModel):
     msg: str
     hora_expiracao: str
 
+class MessageResponse(BaseModel):
+    msg: str
+
 # //////////////////////////
 # Inicializacao do FastAPI //
 # //////////////////////////
@@ -455,6 +458,76 @@ def busca_despesas_categorias(usuario_id: int, dt_inicio: str, dt_fim: str):
 # Rotas de notas fiscais  //
 # //////////////////////////
 
+def busca_payload_nota_fiscal(nota_fiscal_id: int):
+    connection = None
+    cursor = None
+    try:
+        connection = makeDBconnection()
+
+        if 'Erro' in str(connection):
+            connection = None
+            raise Exception(connection)
+
+        cursor = connection.cursor()
+        cursor.execute("""
+            SELECT
+                nota_fiscal_id,
+                nf.usuario_id,
+                nf.data,
+                nf.valor_total,
+                nf.desconto,
+                nfi.produto,
+                nfi.quantidade,
+                nfi.valor_unitario,
+                nfi.valor_desconto,
+                nfi.valor,
+                nfi.unidade_medida,
+                nfi.categoria
+            FROM
+                notas_fiscais nf
+                JOIN nota_fiscal_itens nfi USING (nota_fiscal_id)
+            WHERE
+                nota_fiscal_id = :nota_fiscal_id
+        """, {"nota_fiscal_id": nota_fiscal_id})
+
+        result = cursor.fetchall()
+        if not result:
+            raise HTTPException(status_code=404, detail="Nota fiscal não encontrada")
+
+        primeiro_registro = result[0]
+        itens = []
+
+        for row in result:
+            itens.append(ItemNota(
+                nome_produto=row[5],
+                quantidade=float(row[6]) if row[6] else 0.0,
+                preco_unitario=float(row[7]) if row[7] else 0.0,
+                desconto=float(row[8]) if row[8] else 0.0,
+                preco_total=float(row[9]) if row[9] else 0.0,
+                unidade_medida=row[10],
+                categoria=row[11]
+            ))
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Erro ao estabelecer conexão com o banco de dados: {e}")
+        raise HTTPException(status_code=503, detail="Erro ao buscar itens da nota fiscal: " + str(e))
+    else:
+        return NotaFiscalDetalhes(
+            nota_fiscal_id=primeiro_registro[0],
+            usuario_id=primeiro_registro[1],
+            data_compra=primeiro_registro[2].strftime("%Y-%m-%d") if primeiro_registro[2] else "",
+            itens=itens,
+            preco_final_pago=float(primeiro_registro[3]) if primeiro_registro[3] else 0.0,
+            desconto_total=float(primeiro_registro[4]) if primeiro_registro[4] else 0.0,
+        )
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
 @app.get("/nota_fiscal/", response_model=list[NotaFiscalGet])
 async def busca_nota_fiscal(usuario_id: int):
     try:
@@ -561,75 +634,14 @@ def insert_item(payload: NotaFiscalDetalhes):
         return {"text": "Itens inserido com sucesso no banco de dados."}
 
 @app.get("/nota_fiscal/{nota_fiscal_id}", response_model=NotaFiscalDetalhes)
-async def busca_nota_fiscal(nota_fiscal_id: int):
-    connection = None
-    cursor = None
+async def busca_iten_nota_fiscal(nota_fiscal_id: int):
     try:
-        connection = makeDBconnection()
-
-        if 'Erro' in str(connection):
-            connection = None
-            raise Exception(connection)
-
-        cursor = connection.cursor()
-        cursor.execute("""
-            SELECT
-                nota_fiscal_id,
-                nf.usuario_id,
-                nf.data,
-                nf.valor_total,
-                nf.desconto,
-                nfi.produto,
-                nfi.quantidade,
-                nfi.valor_unitario,
-                nfi.valor_desconto,
-                nfi.valor,
-                nfi.unidade_medida,
-                nfi.categoria
-            FROM
-                notas_fiscais nf
-                JOIN nota_fiscal_itens nfi USING (nota_fiscal_id)
-            WHERE
-                nota_fiscal_id = :nota_fiscal_id
-        """, {"nota_fiscal_id": nota_fiscal_id})
-
-        result = cursor.fetchall()
-        if not result:
-            raise HTTPException(status_code=404, detail="Nota fiscal não encontrada")
-
-        primeiro_registro = result[0]
-        itens = []
-
-        for row in result:
-            itens.append(ItemNota(
-                nome_produto=row[5],
-                quantidade=float(row[6]) if row[6] else 0.0,
-                preco_unitario=float(row[7]) if row[7] else 0.0,
-                desconto=float(row[8]) if row[8] else 0.0,
-                preco_total=float(row[9]) if row[9] else 0.0,
-                unidade_medida=row[10],
-                categoria=row[11]
-            ))
-
+        return busca_payload_nota_fiscal(nota_fiscal_id)
     except HTTPException:
         raise
     except Exception as e:
-        print(f"Erro ao estabelecer conexão com o banco de dados: {e}")
-        raise HTTPException(status_code=503, detail="Erro ao buscar itens da nota fiscal: " + str(e))
-    else:
-        return NotaFiscalDetalhes(
-            nota_fiscal_id=primeiro_registro[0],
-            usuario_id=primeiro_registro[1],
-            data_compra=primeiro_registro[2].strftime("%Y-%m-%d") if primeiro_registro[2] else "",
-            itens=itens,
-            preco_final_pago=float(primeiro_registro[3]) if primeiro_registro[3] else 0.0,
-            desconto_total=float(primeiro_registro[4]) if primeiro_registro[4] else 0.0,
-        )
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
+        print(f"Erro ao buscar detalhes da nota fiscal: {e}")
+        raise HTTPException(status_code=503, detail="Erro ao buscar detalhes da nota fiscal: " + str(e))
 
 # ///////////////////////////////
 # Rota de analise de NFC-e    //
