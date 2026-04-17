@@ -643,11 +643,19 @@ def update_nota_fiscal(payload: NotaFiscalDetalhes):
     payload_banco = busca_payload_nota_fiscal(nota_fiscal_id)
 
     diff = DeepDiff(payload_banco, payload, ignore_order=True)
+    message = ''
+    # if not diff:
+    #     return MessageResponse(msg="Nenhuma alteração detectada na nota fiscal.")
+    # else:
+    #     return MessageResponse(msg="Alterações detectadas na nota fiscal." + json.dumps(diff, default=str))
+    
+    if 'values_changed' in diff:
+        for key, change in diff['values_changed'].items():
+            index = key.split('[')[1:-1]  
+            nome_produto = payload_banco.itens[int(index)].nome_produto if 'nome_produto' in key else '' #TROCAR PELO ID QUANDO ADICINADO
+            field = key.split('[')[-1].rstrip(']')
+            message += f"Campo '{field}'-'{nome_produto}' alterado de '{change['old_value']}' para '{change['new_value']}'. "
 
-    if not diff:
-        return MessageResponse(msg="Nenhuma alteração detectada na nota fiscal.")
-    else:
-        return MessageResponse(msg="Alterações detectadas na nota fiscal." + json.dumps(diff, default=str))
 
 @app.get("/nota_fiscal/{nota_fiscal_id}", response_model=NotaFiscalDetalhes)
 async def busca_iten_nota_fiscal(nota_fiscal_id: int):
