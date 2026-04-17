@@ -17,6 +17,7 @@ import json
 from typing import List
 import jwt
 from datetime import datetime, timedelta, timezone
+from deepdiff import DeepDiff
 
 load_dotenv()
 
@@ -632,6 +633,21 @@ def insert_item(payload: NotaFiscalDetalhes):
         return {"text": f"Erro ao inserir itens no banco de dados. {e}"}
     else:
         return {"text": "Itens inserido com sucesso no banco de dados."}
+
+
+@app.put("/nota_fiscal", response_model=MessageResponse)
+def update_nota_fiscal(payload: NotaFiscalDetalhes):
+
+    nota_fiscal_id = payload.nota_fiscal_id
+
+    payload_banco = busca_payload_nota_fiscal(nota_fiscal_id)
+
+    diff = DeepDiff(payload_banco, payload, ignore_order=True)
+
+    if not diff:
+        return MessageResponse(msg="Nenhuma alteração detectada na nota fiscal.")
+    else:
+        return MessageResponse(msg="Alterações detectadas na nota fiscal." + json.dumps(diff, default=str))
 
 @app.get("/nota_fiscal/{nota_fiscal_id}", response_model=NotaFiscalDetalhes)
 async def busca_iten_nota_fiscal(nota_fiscal_id: int):
