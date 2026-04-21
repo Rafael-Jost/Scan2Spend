@@ -40,6 +40,7 @@ class InsertItemResponse(BaseModel):
     text: str = "Nenhum item inserido"
 
 class ItemNota(BaseModel):
+    nota_fiscal_item_id: int = None
     nome_produto: str
     quantidade: float
     preco_unitario: float
@@ -477,6 +478,7 @@ def busca_payload_nota_fiscal(nota_fiscal_id: int):
                 nf.data,
                 nf.valor_total,
                 nf.desconto,
+                nfi.nota_fiscal_item_id,
                 nfi.produto,
                 nfi.quantidade,
                 nfi.valor_unitario,
@@ -500,13 +502,14 @@ def busca_payload_nota_fiscal(nota_fiscal_id: int):
 
         for row in result:
             itens.append(ItemNota(
-                nome_produto=row[5],
-                quantidade=float(row[6]) if row[6] else 0.0,
-                preco_unitario=float(row[7]) if row[7] else 0.0,
-                desconto=float(row[8]) if row[8] else 0.0,
-                preco_total=float(row[9]) if row[9] else 0.0,
-                unidade_medida=row[10],
-                categoria=row[11]
+                nota_fiscal_item_id=row[5],
+                nome_produto=row[6],
+                quantidade=float(row[7]) if row[7] else 0.0,
+                preco_unitario=float(row[8]) if row[8] else 0.0,
+                desconto=float(row[9]) if row[9] else 0.0,
+                preco_total=float(row[10]) if row[10] else 0.0,
+                unidade_medida=row[11],
+                categoria=row[12]
             ))
 
     except HTTPException:
