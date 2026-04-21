@@ -642,19 +642,43 @@ def update_nota_fiscal(payload: NotaFiscalDetalhes):
 
     payload_banco = busca_payload_nota_fiscal(nota_fiscal_id)
 
-    diff = DeepDiff(payload_banco, payload, ignore_order=True)
+    payload_banco_dict = payload_banco.model_dump() if hasattr(payload_banco, "model_dump") else payload_banco.dict()
+    payload_dict = payload.model_dump() if hasattr(payload, "model_dump") else payload.dict()
+    diff = DeepDiff(payload_banco_dict, payload_dict, ignore_order=True)
     message = ''
-    # if not diff:
-    #     return MessageResponse(msg="Nenhuma alteração detectada na nota fiscal.")
-    # else:
-    #     return MessageResponse(msg="Alterações detectadas na nota fiscal." + json.dumps(diff, default=str))
     
+    novos_valores = {'data_compra': None, 'preco_final_pago': None, 'desconto_total': None}
+
+    # Busca mudanças nos campos principais
     if 'values_changed' in diff:
-        for key, change in diff['values_changed'].items():
-            index = key.split('[')[1:-1]  
-            nome_produto = payload_banco.itens[int(index)].nome_produto if 'nome_produto' in key else '' #TROCAR PELO ID QUANDO ADICINADO
-            field = key.split('[')[-1].rstrip(']')
-            message += f"Campo '{field}'-'{nome_produto}' alterado de '{change['old_value']}' para '{change['new_value']}'. "
+        values_changed = diff['values_changed']
+        for key, change in values_changed.items():
+            if not key.startswith("root['itens']"):
+                for field in novos_valores:
+                    if key.endswith(f"['{field}']") or key.endswith(f".{field}"):
+                        novos_valores[field] = change['new_value']
+                        message += f"{field} atualizado de {change['old_value']} para {change['new_value']}.\n"
+
+    # Se os campos principais não tiverem mudanças, busca mudanças de tipo (ex: string para float) e atualiza os valores principais com base nisso
+    if any(value is None for value in novos_valores.values()) and 'type_changes' in diff:
+        type_changes = diff['type_changes']
+        for key, change in type_changes.items():
+            if not key.startswith("root['itens']"):
+                for field in novos_valores:
+                    if key.endswith(f"['{field}']") or key.endswith(f".{field}"):
+                        novos_valores[field] = change['new_value']
+                        message += f"{field} atualizado de {change['old_value']} para {change['new_value']} (mudança de tipo).\n"
+
+    # (mantém os valores antigos se não houver mudanças)
+    for field, new_value in novos_valores.items():
+        if new_value is None:
+            novos_valores[field] = payload_banco_dict[field]
+            message += f"{field} mantido como {payload_banco_dict[field]}.\n"
+
+    return MessageResponse(msg=message)
+             
+
+    
 
 
 @app.get("/nota_fiscal/{nota_fiscal_id}", response_model=NotaFiscalDetalhes)
