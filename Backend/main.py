@@ -720,6 +720,17 @@ def update_nota_fiscal(payload: NotaFiscalDetalhes):
                 message += f" - {field} mantido como {payload_banco_dict['itens'][changes['index']][field]}.\n"
                 # message += f"Item modificado: {item_id} mudou de {change['old_value']} para {change['new_value']}.\n"
 
+    itens_removidos = []
+
+    if 'iterable_item_removed' in diff:
+        items_removed = diff['iterable_item_removed']
+        for key, value in items_removed.items():
+            if key.startswith("root['itens']"):
+                item_index = key.split("[")[2].split("]")[0]
+                item_id = value['nota_fiscal_item_id']
+                itens_removidos.append(item_id)
+                message += f"Item removido: {item_id} - {payload_banco_dict['itens'][int(item_index)]['nome_produto']}.\n"
+
 
     return MessageResponse(msg=message)
              
