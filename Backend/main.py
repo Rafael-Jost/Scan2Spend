@@ -98,7 +98,8 @@ class ValidadeTokenResponse(BaseModel):
     hora_expiracao: str
 
 class MessageResponse(BaseModel):
-    msg: str
+    msg: str = None
+    diff: dict = None
 
 # //////////////////////////
 # Inicializacao do FastAPI //
@@ -644,14 +645,14 @@ def update_nota_fiscal(payload: NotaFiscalDetalhes):
     nota_fiscal_id = payload.nota_fiscal_id
 
     payload_banco = busca_payload_nota_fiscal(nota_fiscal_id)
-
-    payload_banco_dict = payload_banco.model_dump() if hasattr(payload_banco, "model_dump") else payload_banco.dict()
-    payload_dict = payload.model_dump() if hasattr(payload, "model_dump") else payload.dict()
+    payload_banco_dict = payload_banco.model_dump(mode="json")
+    payload_dict = payload.model_dump(mode="json")
     diff = DeepDiff(payload_banco_dict, payload_dict, ignore_order=True)
     message = ''
-    
+    # return MessageResponse(diff=diff)
     novos_valores = {'data_compra': None, 'preco_final_pago': None, 'desconto_total': None}
 
+    message += "Analisando mudanças na nota fiscal...\n"
     # Busca mudanças nos campos principais
     if 'values_changed' in diff:
         values_changed = diff['values_changed']
@@ -661,7 +662,7 @@ def update_nota_fiscal(payload: NotaFiscalDetalhes):
                     if key.endswith(f"['{field}']") or key.endswith(f".{field}"):
                         novos_valores[field] = change['new_value']
                         message += f"{field} atualizado de {change['old_value']} para {change['new_value']}.\n"
-
+    
     # Se os campos principais não tiverem mudanças, busca mudanças de tipo (ex: string para float) e atualiza os valores principais com base nisso
     if any(value is None for value in novos_valores.values()) and 'type_changes' in diff:
         type_changes = diff['type_changes']
@@ -677,6 +678,48 @@ def update_nota_fiscal(payload: NotaFiscalDetalhes):
         if new_value is None:
             novos_valores[field] = payload_banco_dict[field]
             message += f"{field} mantido como {payload_banco_dict[field]}.\n"
+
+
+    message += "Analisando mudanças nos itens da nota fiscal...\n"
+    
+    itens_modificados = {}
+
+    if 'values_changed' in diff:
+        values_changed = diff['values_changed']
+        for key, change in values_changed.items():
+            if key.startswith("root['itens']"):
+                item_index = key.split("[")[2].split("]")[0]
+                item_id = payload_banco_dict['itens'][int(item_index)]['nota_fiscal_item_id']
+                if item_id not in itens_modificados:
+                    itens_modificados[item_id] = {"index": int(item_index), "nome_produto": None, "quantidade": None, "preco_unitario": None, "desconto": None, "preco_total": None, "unidade_medida": None, "categoria": None}
+                
+                if item_id in itens_modificados:
+                    if key.endswith("['nome_produto']"):
+                        itens_modificados[item_id]['nome_produto'] = change['new_value']
+                    elif key.endswith("['quantidade']"):
+                        itens_modificados[item_id]['quantidade'] = change['new_value']
+                    elif key.endswith("['preco_unitario']"):
+                        itens_modificados[item_id]['preco_unitario'] = change['new_value']
+                    elif key.endswith("['desconto']"):
+                        itens_modificados[item_id]['desconto'] = change['new_value']
+                    elif key.endswith("['preco_total']"):
+                        itens_modificados[item_id]['preco_total'] = change['new_value']
+                    elif key.endswith("['unidade_medida']"):
+                        itens_modificados[item_id]['unidade_medida'] = change['new_value']
+                    elif key.endswith("['categoria']"):
+                        itens_modificados[item_id]['categoria'] = change['new_value']
+    
+    for item_id, changes in itens_modificados.items():
+        message += f"Item modificado: {item_id}.\n"
+        for field, new_value in changes.items():
+            if field == "index":
+                continue
+            if new_value is not None:
+                message += f" - {field} atualizado para {new_value}.\n"
+            else:
+                message += f" - {field} mantido como {payload_banco_dict['itens'][changes['index']][field]}.\n"
+                # message += f"Item modificado: {item_id} mudou de {change['old_value']} para {change['new_value']}.\n"
+
 
     return MessageResponse(msg=message)
              
