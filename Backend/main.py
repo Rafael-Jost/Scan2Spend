@@ -661,7 +661,7 @@ def update_nota_fiscal(payload: NotaFiscalDetalhes):
                 for field in novos_valores:
                     if key.endswith(f"['{field}']") or key.endswith(f".{field}"):
                         novos_valores[field] = change['new_value']
-                        message += f"{field} atualizado de {change['old_value']} para {change['new_value']}.\n"
+                        # message += f"{field} atualizado de {change['old_value']} para {change['new_value']}.\n"
     
     # Se os campos principais não tiverem mudanças, busca mudanças de tipo (ex: string para float) e atualiza os valores principais com base nisso
     if any(value is None for value in novos_valores.values()) and 'type_changes' in diff:
@@ -671,13 +671,47 @@ def update_nota_fiscal(payload: NotaFiscalDetalhes):
                 for field in novos_valores:
                     if key.endswith(f"['{field}']") or key.endswith(f".{field}"):
                         novos_valores[field] = change['new_value']
-                        message += f"{field} atualizado de {change['old_value']} para {change['new_value']} (mudança de tipo).\n"
+                        # message += f"{field} atualizado de {change['old_value']} para {change['new_value']} (mudança de tipo).\n"
 
     # (mantém os valores antigos se não houver mudanças)
     for field, new_value in novos_valores.items():
         if new_value is None:
             novos_valores[field] = payload_banco_dict[field]
-            message += f"{field} mantido como {payload_banco_dict[field]}.\n"
+            # message += f"{field} mantido como {payload_banco_dict[field]}.\n"
+
+    try:
+        connection = makeDBconnection()
+        if 'Erro' in str(connection):
+            connection = None
+            raise Exception(connection)
+
+        cursor = connection.cursor()
+
+        cursor.execute("""
+            UPDATE notas_fiscais
+            SET data = TO_DATE(:data_compra, 'YYYY-MM-DD'),
+                valor_total = TO_NUMBER(:preco_final_pago),
+                desconto = TO_NUMBER(:desconto_total)
+            WHERE nota_fiscal_id = :nota_fiscal_id
+        """, {
+            "data_compra": novos_valores['data_compra'],
+            "preco_final_pago": novos_valores['preco_final_pago'],
+            "desconto_total": novos_valores['desconto_total'],
+            "nota_fiscal_id": nota_fiscal_id
+        })
+
+        connection.commit()
+    
+    except Exception as e:
+        print(f"Erro ao atualizar nota fiscal: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao atualizar nota fiscal: " + str(e))
+    finally:
+        message += "Nota fiscal atualizada com sucesso.\n"
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
 
 
     message += "Analisando mudanças nos itens da nota fiscal...\n"
