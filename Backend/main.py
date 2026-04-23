@@ -766,6 +766,32 @@ def update_nota_fiscal(payload: NotaFiscalDetalhes):
                 message += f"Item removido: {item_id} - {payload_banco_dict['itens'][int(item_index)]['nome_produto']}.\n"
 
 
+    try:
+        connection = makeDBconnection()
+        if 'Erro' in str(connection):
+            connection = None
+            raise Exception(connection)
+
+        cursor = connection.cursor()
+        
+        for item_id in itens_removidos:
+            cursor.execute("""
+                DELETE FROM nota_fiscal_itens
+                WHERE nota_fiscal_item_id = :item_id
+            """, {"item_id": item_id})
+
+        connection.commit()
+    except Exception as e:
+        print(f"Erro ao remover itens da nota fiscal: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao remover itens da nota fiscal: " + str(e))
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+        if itens_removidos:
+            message += "Itens removidos com sucesso.\n"
+
     return MessageResponse(msg=message)
              
 
