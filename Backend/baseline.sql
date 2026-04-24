@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  Arquivo criado - sexta-feira-março-27-2026   
+--  Arquivo criado - quinta-feira-abril-23-2026   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Sequence NOTA_FISCAL_ITENS_SEQ
@@ -27,7 +27,7 @@
 	"VALOR_UNITARIO" FLOAT(126), 
 	"UNIDADE_MEDIDA" CHAR(2 BYTE) COLLATE "USING_NLS_COMP", 
 	"VALOR_DESCONTO" FLOAT(126), 
-	"QUANTIDADE" NUMBER(*,0), 
+	"QUANTIDADE" FLOAT(126), 
 	"CREATED" DATE DEFAULT SYSDATE, 
 	"NOTA_FISCAL_ID" NUMBER, 
 	"ATIVO" CHAR(1 BYTE) COLLATE "USING_NLS_COMP" DEFAULT 'S', 
@@ -244,7 +244,7 @@ END PKG_AUTH;
     
     EXCEPTION
         WHEN OTHERS THEN 
-            raise_application_error(-20001, 'Erro ao validar credenciais de login do usuário');
+            raise_application_error(-20001, 'Erro ao validar credenciais de login do usuÃ¡rio');
 
     END;
     
@@ -281,7 +281,7 @@ END PKG_AUTH;
     
     EXCEPTION
         WHEN OTHERS THEN 
-            raise_application_error(-20001, 'Erro ao retornar informações do usuário');
+            raise_application_error(-20001, 'Erro ao retornar informaÃ§Ãµes do usuÃ¡rio');
     
     END;
 
