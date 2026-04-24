@@ -725,34 +725,83 @@ def update_nota_fiscal(payload: NotaFiscalDetalhes):
                 item_index = key.split("[")[2].split("]")[0]
                 item_id = payload_banco_dict['itens'][int(item_index)]['nota_fiscal_item_id']
                 if item_id not in itens_modificados:
-                    itens_modificados[item_id] = {"index": int(item_index), "nome_produto": None, "quantidade": None, "preco_unitario": None, "desconto": None, "preco_total": None, "unidade_medida": None, "categoria": None}
+                    itens_modificados[item_id] = {"index": int(item_index), 
+                                                  "nome_produto": payload_banco_dict['itens'][int(item_index)]['nome_produto'], 
+                                                  "quantidade": payload_banco_dict['itens'][int(item_index)]['quantidade'], 
+                                                  "preco_unitario": payload_banco_dict['itens'][int(item_index)]['preco_unitario'], 
+                                                  "desconto": payload_banco_dict['itens'][int(item_index)]['desconto'], 
+                                                  "preco_total": payload_banco_dict['itens'][int(item_index)]['preco_total'], 
+                                                  "unidade_medida": payload_banco_dict['itens'][int(item_index)]['unidade_medida'], 
+                                                  "categoria": payload_banco_dict['itens'][int(item_index)]['categoria']}
                 
                 if item_id in itens_modificados:
                     if key.endswith("['nome_produto']"):
-                        itens_modificados[item_id]['nome_produto'] = change['new_value']
+                        itens_modificados[item_id]['nome_produto'] = change['new_value'] 
                     elif key.endswith("['quantidade']"):
-                        itens_modificados[item_id]['quantidade'] = change['new_value']
+                        itens_modificados[item_id]['quantidade'] = change['new_value'] 
                     elif key.endswith("['preco_unitario']"):
-                        itens_modificados[item_id]['preco_unitario'] = change['new_value']
+                        itens_modificados[item_id]['preco_unitario'] = change['new_value'] 
                     elif key.endswith("['desconto']"):
-                        itens_modificados[item_id]['desconto'] = change['new_value']
+                        itens_modificados[item_id]['desconto'] = change['new_value'] 
                     elif key.endswith("['preco_total']"):
-                        itens_modificados[item_id]['preco_total'] = change['new_value']
+                        itens_modificados[item_id]['preco_total'] = change['new_value'] 
                     elif key.endswith("['unidade_medida']"):
-                        itens_modificados[item_id]['unidade_medida'] = change['new_value']
+                        itens_modificados[item_id]['unidade_medida'] = change['new_value'] 
                     elif key.endswith("['categoria']"):
-                        itens_modificados[item_id]['categoria'] = change['new_value']
+                        itens_modificados[item_id]['categoria'] = change['new_value'] 
     
     for item_id, changes in itens_modificados.items():
         message += f"Item modificado: {item_id}.\n"
-        for field, new_value in changes.items():
-            if field == "index":
-                continue
-            if new_value is not None:
-                message += f" - {field} atualizado para {new_value}.\n"
-            else:
-                message += f" - {field} mantido como {payload_banco_dict['itens'][changes['index']][field]}.\n"
+        # for field, new_value in changes.items():
+        #     if field == "index":
+        #         continue
+        #     if new_value is not None:
+        #         message += f" - {field} atualizado para {new_value}.\n"
+        #     else:
+        #         message += f" - {field} mantido como {payload_banco_dict['itens'][changes['index']][field]}.\n"
                 # message += f"Item modificado: {item_id} mudou de {change['old_value']} para {change['new_value']}.\n"
+
+
+    try:
+        connection = makeDBconnection()
+        if 'Erro' in str(connection):  
+            connection = None
+            raise Exception(connection)
+        cursor = connection.cursor()
+        for item_id, item in itens_modificados.items():
+            cursor.execute("""
+                UPDATE nota_fiscal_itens
+                SET produto = :produto,
+                    valor = :valor,
+                    quantidade = :quantidade,
+                    valor_unitario = :valor_unitario,
+                    valor_desconto = :valor_desconto,
+                    unidade_medida = :unidade_medida,
+                    categoria = :categoria
+                WHERE nota_fiscal_item_id = :nota_fiscal_item_id
+            """, {
+                "produto": item['nome_produto'],
+                "valor": float(item['preco_total']) if item['preco_total'] else None,
+                "quantidade": int(item['quantidade']) if item['quantidade'] else None,
+                "valor_unitario": float(item['preco_unitario']) if item['preco_unitario'] else None,
+                "valor_desconto": float(item['desconto']) if item['desconto'] else None,
+                "unidade_medida": item['unidade_medida'] if item['unidade_medida'] and len(item['unidade_medida']) <= 2 else None, #char(2)
+                "categoria": item['categoria'],
+                "nota_fiscal_item_id": item_id
+            })
+
+        connection.commit()
+    except Exception as e:
+        print(f"Erro ao atualizar itens da nota fiscal: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao atualizar itens da nota fiscal: " + str(e))
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+        if itens_modificados:
+            message += "Itens modificados com sucesso.\n"
+
 
     itens_removidos = []
 
