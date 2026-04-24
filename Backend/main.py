@@ -652,7 +652,6 @@ def update_nota_fiscal(payload: NotaFiscalDetalhes):
     # return MessageResponse(diff=diff)
     novos_valores = {'data_compra': None, 'preco_final_pago': None, 'desconto_total': None}
 
-    message += "Analisando mudanças na nota fiscal...\n"
     # Busca mudanças nos campos principais
     if 'values_changed' in diff:
         values_changed = diff['values_changed']
@@ -661,7 +660,6 @@ def update_nota_fiscal(payload: NotaFiscalDetalhes):
                 for field in novos_valores:
                     if key.endswith(f"['{field}']") or key.endswith(f".{field}"):
                         novos_valores[field] = change['new_value']
-                        # message += f"{field} atualizado de {change['old_value']} para {change['new_value']}.\n"
     
     # Se os campos principais não tiverem mudanças, busca mudanças de tipo (ex: string para float) e atualiza os valores principais com base nisso
     if any(value is None for value in novos_valores.values()) and 'type_changes' in diff:
@@ -677,44 +675,6 @@ def update_nota_fiscal(payload: NotaFiscalDetalhes):
     for field, new_value in novos_valores.items():
         if new_value is None:
             novos_valores[field] = payload_banco_dict[field]
-            # message += f"{field} mantido como {payload_banco_dict[field]}.\n"
-
-    try:
-        connection = makeDBconnection()
-        if 'Erro' in str(connection):
-            connection = None
-            raise Exception(connection)
-
-        cursor = connection.cursor()
-
-        cursor.execute("""
-            UPDATE notas_fiscais
-            SET data = TO_DATE(:data_compra, 'YYYY-MM-DD'),
-                valor_total = TO_NUMBER(:preco_final_pago),
-                desconto = TO_NUMBER(:desconto_total)
-            WHERE nota_fiscal_id = :nota_fiscal_id
-        """, {
-            "data_compra": novos_valores['data_compra'],
-            "preco_final_pago": novos_valores['preco_final_pago'],
-            "desconto_total": novos_valores['desconto_total'],
-            "nota_fiscal_id": nota_fiscal_id
-        })
-
-        connection.commit()
-    
-    except Exception as e:
-        print(f"Erro ao atualizar nota fiscal: {e}")
-        raise HTTPException(status_code=500, detail="Erro ao atualizar nota fiscal: " + str(e))
-    finally:
-        message += "Nota fiscal atualizada com sucesso.\n"
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
-
-
-
-    message += "Analisando mudanças nos itens da nota fiscal...\n"
     
     itens_modificados = {}
 
@@ -750,24 +710,39 @@ def update_nota_fiscal(payload: NotaFiscalDetalhes):
                     elif key.endswith("['categoria']"):
                         itens_modificados[item_id]['categoria'] = change['new_value'] 
     
-    for item_id, changes in itens_modificados.items():
-        message += f"Item modificado: {item_id}.\n"
-        # for field, new_value in changes.items():
-        #     if field == "index":
-        #         continue
-        #     if new_value is not None:
-        #         message += f" - {field} atualizado para {new_value}.\n"
-        #     else:
-        #         message += f" - {field} mantido como {payload_banco_dict['itens'][changes['index']][field]}.\n"
-                # message += f"Item modificado: {item_id} mudou de {change['old_value']} para {change['new_value']}.\n"
 
+    itens_removidos = []
+
+    if 'iterable_item_removed' in diff:
+        items_removed = diff['iterable_item_removed']
+        for key, value in items_removed.items():
+            if key.startswith("root['itens']"):
+                item_index = key.split("[")[2].split("]")[0]
+                item_id = value['nota_fiscal_item_id']
+                itens_removidos.append(item_id)
+                message += f"Item removido: {item_id} - {payload_banco_dict['itens'][int(item_index)]['nome_produto']}.\n"
 
     try:
         connection = makeDBconnection()
-        if 'Erro' in str(connection):  
+        if 'Erro' in str(connection):
             connection = None
             raise Exception(connection)
+
         cursor = connection.cursor()
+
+        cursor.execute("""
+            UPDATE notas_fiscais
+            SET data = TO_DATE(:data_compra, 'YYYY-MM-DD'),
+                valor_total = TO_NUMBER(:preco_final_pago),
+                desconto = TO_NUMBER(:desconto_total)
+            WHERE nota_fiscal_id = :nota_fiscal_id
+        """, {
+            "data_compra": novos_valores['data_compra'],
+            "preco_final_pago": novos_valores['preco_final_pago'],
+            "desconto_total": novos_valores['desconto_total'],
+            "nota_fiscal_id": nota_fiscal_id
+        })
+
         for item_id, item in itens_modificados.items():
             cursor.execute("""
                 UPDATE nota_fiscal_itens
@@ -782,46 +757,13 @@ def update_nota_fiscal(payload: NotaFiscalDetalhes):
             """, {
                 "produto": item['nome_produto'],
                 "valor": float(item['preco_total']) if item['preco_total'] else None,
-                "quantidade": int(item['quantidade']) if item['quantidade'] else None,
+                "quantidade": float(item['quantidade']) if item['quantidade'] else None,
                 "valor_unitario": float(item['preco_unitario']) if item['preco_unitario'] else None,
                 "valor_desconto": float(item['desconto']) if item['desconto'] else None,
                 "unidade_medida": item['unidade_medida'] if item['unidade_medida'] and len(item['unidade_medida']) <= 2 else None, #char(2)
                 "categoria": item['categoria'],
                 "nota_fiscal_item_id": item_id
             })
-
-        connection.commit()
-    except Exception as e:
-        print(f"Erro ao atualizar itens da nota fiscal: {e}")
-        raise HTTPException(status_code=500, detail="Erro ao atualizar itens da nota fiscal: " + str(e))
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
-        if itens_modificados:
-            message += "Itens modificados com sucesso.\n"
-
-
-    itens_removidos = []
-
-    if 'iterable_item_removed' in diff:
-        items_removed = diff['iterable_item_removed']
-        for key, value in items_removed.items():
-            if key.startswith("root['itens']"):
-                item_index = key.split("[")[2].split("]")[0]
-                item_id = value['nota_fiscal_item_id']
-                itens_removidos.append(item_id)
-                message += f"Item removido: {item_id} - {payload_banco_dict['itens'][int(item_index)]['nome_produto']}.\n"
-
-
-    try:
-        connection = makeDBconnection()
-        if 'Erro' in str(connection):
-            connection = None
-            raise Exception(connection)
-
-        cursor = connection.cursor()
         
         for item_id in itens_removidos:
             cursor.execute("""
@@ -830,17 +772,16 @@ def update_nota_fiscal(payload: NotaFiscalDetalhes):
             """, {"item_id": item_id})
 
         connection.commit()
+    
     except Exception as e:
-        print(f"Erro ao remover itens da nota fiscal: {e}")
-        raise HTTPException(status_code=500, detail="Erro ao remover itens da nota fiscal: " + str(e))
+        print(f"Erro ao atualizar nota fiscal: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao atualizar nota fiscal: " + str(e))
     finally:
         if cursor:
             cursor.close()
         if connection:
             connection.close()
-        if itens_removidos:
-            message += "Itens removidos com sucesso.\n"
-
+        message += "Nota fiscal atualizada com sucesso.\n"
     return MessageResponse(msg=message)
              
 
