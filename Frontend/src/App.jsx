@@ -323,7 +323,7 @@ function App() {
         }
         console.log('Buscando notas fiscais para usuárioId:', usuarioId);
         try {
-            const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/nota_fiscal/?usuario_id=${usuarioId}`, {
+            const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/nota_fiscal?usuario_id=${usuarioId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'

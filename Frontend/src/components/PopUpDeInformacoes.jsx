@@ -36,10 +36,8 @@ export async function SalvarPayload(usuarioId, notaFiscalId) {
 
     if (notaFiscalId) {
         console.log('Editando nota fiscal existente com ID:', notaFiscalId);
-        return
     } else {
         console.log('Criando nova nota fiscal');
-        return
     }
     const nomeProdutoInputs = document.querySelectorAll('.nome-produto-input');
     const quantidadeInputs = document.querySelectorAll('.quantidade-input');
@@ -67,6 +65,7 @@ export async function SalvarPayload(usuarioId, notaFiscalId) {
     }
 
     const payloadAtualizado = {
+        nota_fiscal_id: notaFiscalId,
         usuario_id: usuarioId,
         data_compra: dataCompraInputs[0].value,
         preco_final_pago: parseFloat(precoFinalPagoInputs[0].value),
@@ -74,14 +73,29 @@ export async function SalvarPayload(usuarioId, notaFiscalId) {
         itens: produtos
     };
 
-    const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/nota_fiscal/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify(payloadAtualizado)
-    })
+    let response;
+
+    if (notaFiscalId) {
+        console.log('URL final:', `https://scan2spend-fastapi-dockerbased.onrender.com/nota_fiscal`)
+        response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/nota_fiscal`, {
+          method: 'PUT',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          // credentials: 'include',
+          body: JSON.stringify(payloadAtualizado)
+      })
+    }else{
+      response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/nota_fiscal`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify(payloadAtualizado)
+      })
+    }
+  
     if (response.ok) {
         return 'Dados salvos com sucesso!';
     } else {
