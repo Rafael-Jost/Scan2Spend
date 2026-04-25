@@ -533,7 +533,7 @@ def busca_payload_nota_fiscal(nota_fiscal_id: int):
         if connection:
             connection.close()
 
-@app.get("/nota_fiscal/", response_model=list[NotaFiscalGet])
+@app.get("/nota_fiscal", response_model=list[NotaFiscalGet])
 async def busca_nota_fiscal(usuario_id: int):
     try:
         connection = makeDBconnection()
@@ -588,7 +588,7 @@ async def busca_nota_fiscal(usuario_id: int):
             connection.close()
 
 
-@app.post("/nota_fiscal/", response_model=InsertItemResponse)
+@app.post("/nota_fiscal", response_model=InsertItemResponse)
 def insert_item(payload: NotaFiscalDetalhes):
 
     try:
