@@ -33,7 +33,7 @@ function PopUpNotasFiscais({notasFiscais, fncFechar, display, usuarioId, setPopU
                                     } else{
                                         const data = await response.json();
                                         setPopUpInformacoesAberto(true)
-                                        setConteudo(JSON.stringify(data, null, 2))
+                                        setConteudo(data)
                                         console.log('nota clicada:', notaFiscal.nota_fiscal_id)
                                         console.log('nota clicada (string):', JSON.stringify(data, null, 2))
                                     }

@@ -416,7 +416,7 @@ function App() {
         }}></BotaoSimples>
         <CardSemLink titulo="Bem-vindo ao Scan2Spend!" descricao="Faça upload dos seus recibos, rastreie seus gastos e receba dicas de economia." img={S2S_logo} />
         <QrScanner funcAnalisarRecibo={AnalisarRecibo} />
-        <PopUpDeInformacoes usuarioId={usuarioId} conteudo={<CardEdicao json={parseRecibo(textoRecibo)}  />} popupAberto={popupAberto} setPopupAberto={setPopupAberto} atualizarGraficos={atualizarGraficos}/>
+        <PopUpDeInformacoes usuarioId={usuarioId} conteudo={parseRecibo(textoRecibo)} popupAberto={popupAberto} setPopupAberto={setPopupAberto} atualizarGraficos={atualizarGraficos}/>
         <BotaoSimples id="botao-upload" texto={textoMensagem} className={classeMensagem} onClick={() => {
           setPopupAberto(true)
         }} />

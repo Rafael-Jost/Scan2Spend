@@ -720,7 +720,6 @@ def update_nota_fiscal(payload: NotaFiscalDetalhes):
                 item_index = key.split("[")[2].split("]")[0]
                 item_id = value['nota_fiscal_item_id']
                 itens_removidos.append(item_id)
-                message += f"Item removido: {item_id} - {payload_banco_dict['itens'][int(item_index)]['nome_produto']}.\n"
 
     try:
         connection = makeDBconnection()

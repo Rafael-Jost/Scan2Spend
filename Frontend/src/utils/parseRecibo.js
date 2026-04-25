@@ -1,6 +1,10 @@
 function parseRecibo(textoRecibo) {
     if (!textoRecibo) return 'texto nao recebido';
 
+    if (typeof textoRecibo === 'object') {
+        return textoRecibo;
+    }
+
     try {
         let parsed = JSON.parse(textoRecibo);
 

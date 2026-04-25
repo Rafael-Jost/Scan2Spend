@@ -101,21 +101,15 @@ function CategoriaIconPicker({ value, onChange }) {
     );
 }
 
-export default function CardEdicao(json) {
+export default function CardEdicao({ json, setNotaFiscalId }) {
 
     const [precoFinalPago, setPrecoFinalPago] = useState(0);
     const [descontoTotal, setDescontoTotal] = useState(0);
     const [dataCompra, setDataCompra] = useState('');
     const [items, setItems] = useState([]);
-    
-    if (json === null) {
-        return (
-            <div className="cards-edicao-container">
-                <h2>Dados da Nota Fiscal</h2>
-                <p>Nenhum dado disponível.</p>
-            </div>
-        )
-    }
+    const payload = json?.json ?? json;
+    const temDados = Boolean(payload && typeof payload === 'object');
+
 
     const atualizarCategoriaItem = (index, novaCategoria) => {
         setItems((estadoAtual) =>
@@ -126,7 +120,9 @@ export default function CardEdicao(json) {
     };
 
     useEffect(() => {
-        const payload = json.json; 
+        if (!temDados) {
+            return;
+        }
         const itemsData = payload.itens ?? [];
 
         const data_sem_horario = payload.data_compra ? payload.data_compra.split(' ')[0] : '';
@@ -140,10 +136,23 @@ export default function CardEdicao(json) {
                 preco_final_pago += item.preco_total ? item.preco_total : 0;
             }
         }
+
+        if (payload.nota_fiscal_id) {
+            setNotaFiscalId(payload.nota_fiscal_id);
+        }
         setPrecoFinalPago(preco_final_pago || 0);
         setDescontoTotal(payload.desconto_total || 0);
         setItems(itemsData);
-    }, [json]);
+    }, [payload, temDados, setNotaFiscalId]);
+
+    if (!temDados) {
+        return (
+            <div className="cards-edicao-container">
+                <h2>Dados da Nota Fiscal</h2>
+                <p>Nenhum dado disponível.</p>
+            </div>
+        )
+    }
     
     return(
         <>
@@ -218,54 +227,6 @@ export default function CardEdicao(json) {
     )
 }
 
-export async function SalvarPayload(usuarioId){
-    const nomeProdutoInputs = document.querySelectorAll('.nome-produto-input');
-    const quantidadeInputs = document.querySelectorAll('.quantidade-input');
-    const precoUnitarioInputs = document.querySelectorAll('.input-preco_unitario');
-    const descontoInputs = document.querySelectorAll('.input-desconto');
-    const precoTotalInputs = document.querySelectorAll('.input-preco_total');
-    const dataCompraInputs = document.querySelectorAll('.input-data-compra');
-    const precoFinalPagoInputs = document.querySelectorAll('.input-preco-final-pago');
-    const unidadeMedida = document.querySelectorAll('.unidade-medida-span');
-    const categoriaInputs = document.querySelectorAll('.input-categoria');
-    const descontoTotalInput = document.querySelector('.input-desconto-total');
-
-    const produtos = [];
-    
-    for (let i = 0; i < nomeProdutoInputs.length; i++) {
-        produtos.push({
-            nome_produto: nomeProdutoInputs[i].value,
-            quantidade: parseFloat(quantidadeInputs[i].value),
-            preco_unitario: parseFloat(precoUnitarioInputs[i].value),
-            desconto: parseFloat(descontoInputs[i].value),
-            preco_total: parseFloat(precoTotalInputs[i].value),
-            unidade_medida: unidadeMedida[i].textContent,
-            categoria: categoriaInputs[i].value
-        });
-    }
-
-    const payloadAtualizado = {
-        usuario_id: usuarioId,
-        data_compra: dataCompraInputs[0].value,
-        preco_final_pago: parseFloat(precoFinalPagoInputs[0].value),
-        desconto_total: parseFloat(descontoTotalInput.value),
-        itens: produtos
-    };
-
-    const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/nota_fiscal/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify(payloadAtualizado)
-    })
-    if (response.ok) {
-        return 'Dados salvos com sucesso!';
-    } else {
-        return 'Erro ao salvar os dados.';
-    }
-}
 
 
 function removerItem(index) {
