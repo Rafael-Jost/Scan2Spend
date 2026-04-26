@@ -4,7 +4,7 @@ import {useState} from 'react'
 import Cookies from 'js-cookie'
 import S2S_logo from '../assets/Scan2Spend_logo.png'
 
-function Login({ setUsuarioLogado, setCadastrandoUsuario }) {
+function Login({ setUsuarioLogado, setCadastrandoUsuario}) {
     const [email, setEmail] = useState(Cookies.get('email') || '')
     const [senha, setSenha] = useState('')
     const [lembrarMe, setLembrarMe] = useState(Cookies.get('email') ? true : false)
@@ -35,6 +35,7 @@ function Login({ setUsuarioLogado, setCadastrandoUsuario }) {
 
         const token_data = await response.json()
         setUsuarioLogado(true)
+        console.log('Login bem-sucedido! msg:', token_data.msg)
 
         if (lembrarMe) {
             Cookies.set('email', email, { expires: 30 })

@@ -42,7 +42,14 @@ function App() {
   // -----------------------------------------------------
   useEffect (() =>{
 
+    console.log('Verificando estado de login do usuário...')
+
     if (usuarioLogado == false) { Cookies.remove('estadoTela'); return}
+    else {
+      if (!Cookies.get('usuarioLogado')) {
+        Cookies.set('usuarioLogado', 'true', { expires: 30 })
+      }
+    }
 
       (async () => {
           const dados_usuario_response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/me`, {
@@ -55,11 +62,10 @@ function App() {
               return
           }
 
-          if (Cookies.get('usuarioLogado') !== 'true') {
+          if (Cookies.get('usuarioLogado') !== 'true' && usuarioLogado === true) {
             Cookies.set('usuarioLogado', 'true', { expires: 30 })
           }
           carregaUsuario(await dados_usuario_response.json())
-          setEstadoTela(Cookies.get('estadoTela') || 'inicial')
       })()
   }, [usuarioLogado])
 
@@ -235,7 +241,11 @@ function App() {
   // Gerencia o estado da tela (login, inicial, despesas)
   // -----------------------------------------------------
   useEffect(() => {
-    Cookies.set('estadoTela', estadoTela, { expires: 1 })
+    if (estadoTela === 'login') {
+      Cookies.remove('estadoTela')
+    } else {
+      Cookies.set('estadoTela', estadoTela, { expires: 1 })
+    }
     const root = document.getElementById('root')
     if (!root) return
 
