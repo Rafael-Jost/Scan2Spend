@@ -32,9 +32,9 @@ class DespesasResponse(BaseModel):
     despesa: float
 
 class DespesasCategoriasResponse(BaseModel):
-    name: str
-    value: float
-    fill: str
+    categoria: str
+    data: str
+    despesa: float
 
 class InsertItemResponse(BaseModel):
     text: str = "Nenhum item inserido"
@@ -404,28 +404,29 @@ def busca_despesas(usuario_id: int, dt_inicio: str, dt_fim: str, tipo_agrupament
 
 
 @app.get('/despesas/categorias', response_model=list[DespesasCategoriasResponse])
-def busca_despesas_categorias(usuario_id: int, dt_inicio: str, dt_fim: str):
+def busca_despesas_categorias(usuario_id: int, dt_inicio: str, dt_fim: str, tipo_agrupamento: str = None):
     try:
+        if not tipo_agrupamento:
+            tipo_agrupamento = 'MES'  # Valor padrão para tipo_agrupamento
+
         connection = makeDBconnection()
         if 'Erro' in str(connection):
             connection = None
             raise Exception(connection)
-
+        
         cursor = connection.cursor()
         cursor.execute("""
             SELECT
                 categoria  AS name,
                 SUM(valor) AS value,
                 CASE
-                    WHEN CATEGORIA = 'Alimentação' THEN '#E8684A'
-                    WHEN CATEGORIA = 'Bebidas' THEN '#7CC0FF'
-                    WHEN CATEGORIA = 'Higiene Pessoal' THEN '#9270CA'
-                    WHEN CATEGORIA = 'Lanches & Conveniência' THEN '#FF9D4D'
-                    WHEN CATEGORIA = 'Limpeza' THEN '#6DC8A3'
-                    WHEN CATEGORIA = 'Pets' THEN '#F6BD16'
-                    WHEN CATEGORIA = 'Utilidades' THEN '#5B8FF9'
-                    ELSE '#9CA3AF'
-                END AS fill
+                    WHEN :tipo_agrupamento = 'ANO' THEN
+                        trunc(data, 'YYYY')
+                    WHEN :tipo_agrupamento = 'MES' THEN
+                        trunc(data, 'MM')
+                    WHEN :tipo_agrupamento = 'DIA' THEN
+                        trunc(data)
+                END              AS data_despesa
             FROM
                     notas_fiscais nf
                 JOIN nota_fiscal_itens nfi USING ( nota_fiscal_id )
@@ -433,10 +434,26 @@ def busca_despesas_categorias(usuario_id: int, dt_inicio: str, dt_fim: str):
                     usuario_id = :usuario_id
                 AND data BETWEEN TO_DATE(:dt_inicio, 'DD/MM/YYYY') AND TO_DATE(:dt_fim, 'DD/MM/YYYY')
             GROUP BY
-                categoria
+                categoria,
+                CASE
+                    WHEN :tipo_agrupamento = 'ANO' THEN
+                        trunc(data, 'YYYY')
+                    WHEN :tipo_agrupamento = 'MES' THEN
+                        trunc(data, 'MM')
+                    WHEN :tipo_agrupamento = 'DIA' THEN
+                        trunc(data)
+                END
             ORDER BY
-                categoria
-        """, {"dt_inicio": dt_inicio, "dt_fim": dt_fim, "usuario_id": usuario_id})
+                categoria,
+                CASE
+                    WHEN :tipo_agrupamento = 'ANO' THEN
+                        trunc(data, 'YYYY')
+                    WHEN :tipo_agrupamento = 'MES' THEN
+                        trunc(data, 'MM')
+                    WHEN :tipo_agrupamento = 'DIA' THEN
+                        trunc(data)
+                END
+        """, {"dt_inicio": dt_inicio, "dt_fim": dt_fim, "usuario_id": usuario_id, "tipo_agrupamento": tipo_agrupamento})
 
         result = cursor.fetchall()
         print(f"DEBUG: Query retornou {len(result)} linhas")
@@ -445,9 +462,9 @@ def busca_despesas_categorias(usuario_id: int, dt_inicio: str, dt_fim: str):
         despesas = []
         for row in result:
             despesas.append(DespesasCategoriasResponse(
-                name=row[0],
-                value=float(row[1]),
-                fill=row[2]
+                categoria=row[0],
+                data=row[2].strftime("%Y") if tipo_agrupamento == 'ANO' else row[2].strftime("%m/%Y") if tipo_agrupamento == 'MES' else row[2].strftime("%d/%m/%Y"),
+                despesa=float(row[1])
             ))
         print(f"DEBUG: Despesas processadas: {len(despesas)}")
         
