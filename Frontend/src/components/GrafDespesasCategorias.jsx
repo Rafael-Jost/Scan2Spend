@@ -1,21 +1,32 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, Label } from 'recharts';
 import { RechartsDevtools } from '@recharts/devtools';
 
-// const data = [
-//   { name: 'Alimentação', value: 400, fill: '#E8684A' },
-//   { name: 'Bebidas', value: 300, fill: '#7CC0FF' },
-//   { name: 'Higiene Pessoal', value: 300, fill: '#9270CA' },
-//   { name: 'Lanches & Conveniência', value: 200, fill: '#FF9D4D' },
-//   { name: 'Limpeza', value: 278, fill: '#6DC8A3' },
-//   { name: 'Outros', value: 189, fill: '#9CA3AF' },
-//   { name: 'Pets', value: 239, fill: '#F6BD16' },
-//   { name: 'Utilidades', value: 349, fill: '#5B8FF9' }
-// ];
+
+const fills = {
+    'Alimentação': '#f89c71',
+    'Bebidas': '#60a5fa',
+    'Higiene Pessoal': '#a78bfa',
+    'Lanches & Conveniência': '#fbbf24',
+    'Limpeza': '#34d3ab',
+    'Outros': '#94a3b8',
+    'Pets': '#b39c78',
+    'Utilidades': '#fa9be2'
+  };
+
+  const getFill = (dados) => {
+      return( dados.map(dado => ({
+      ...dado,
+      fill: fills[dado.categoria] || '#9CA3AF'
+    })));
+  };
 
 export default function GrafDespesasCategorias({ dados, buscarDespesasCategorias}) {
   const MyPie = () => (
-    <Pie data={dados} dataKey="value" nameKey="name" outerRadius="80%" innerRadius="60%" isAnimationActive={false} />
+    <Pie data={dados} dataKey="despesa" nameKey="categoria" outerRadius="80%" innerRadius="60%" isAnimationActive={false} />
   );
+
+  dados = getFill(dados);
+
   return (
       <>
 
