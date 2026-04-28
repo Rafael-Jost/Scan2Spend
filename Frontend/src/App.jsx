@@ -10,6 +10,7 @@ import paginaInicialIcon from './assets/qr-code.png'
 import perfilIcon from './assets/perfil.png'
 import GrafDespesasTotais from './components/GrafDespesasTotais.jsx'
 import GrafDespesasCategorias from './components/GrafDespesasCategorias.jsx'
+import GrafDespesasCategoriasPeriodo from './components/GrafDespesasCategoriasPeriodo.jsx'
 import Login from './components/Login.jsx'
 import CadastroUsuario from './components/CadastroUsuario.jsx'
 import PopUpPerfil from './components/PopUpPerfil.jsx'
@@ -447,6 +448,7 @@ function App() {
           <div id="graficos-row-1">
             <GrafDespesasTotais dados={despesasTotais} buscarDespesasTotais={buscarDespesasTotais} />
             <GrafDespesasCategorias dados={despesasCategorias} buscarDespesasCategorias={buscarDespesasCategorias} />
+            <GrafDespesasCategoriasPeriodo />
           </div>
         </div>
       </>
