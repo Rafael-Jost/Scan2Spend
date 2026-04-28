@@ -407,7 +407,7 @@ def busca_despesas(usuario_id: int, dt_inicio: str, dt_fim: str, tipo_agrupament
 def busca_despesas_categorias(usuario_id: int, dt_inicio: str, dt_fim: str, tipo_agrupamento: str = None):
     try:
         if not tipo_agrupamento:
-            tipo_agrupamento = 'MES'  # Valor padrão para tipo_agrupamento
+            tipo_agrupamento = 'ANO'  # Valor padrão para tipo_agrupamento
 
         connection = makeDBconnection()
         if 'Erro' in str(connection):
