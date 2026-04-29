@@ -28,6 +28,7 @@ function App() {
   const [popupAberto, setPopupAberto] = useState(false)
   const [despesasTotais, setDespesasTotais] = useState([])
   const [despesasCategorias, setDespesasCategorias] = useState([])
+  const [despesasCategoriasPeriodo, setDespesasCategoriasPeriodo] = useState([])
   const [nomeUsuario, setNomeUsuario] = useState('')
   const [emailUsuario, setEmailUsuario] = useState('')
   const [usuarioId, setUsuarioId] = useState(null)
@@ -214,6 +215,30 @@ function App() {
 
   }, [usuarioId])
 
+  // ------------------------------------------------------
+  // Função para buscar despesas por categoria ao longo do tempo
+  // ------------------------------------------------------ 
+  const buscarDespesasCategoriasPeriodo = useCallback( async (dt_inicio, dt_fim, tipo_agrupamento) => {
+    if (!dt_inicio || !dt_fim || !tipo_agrupamento){
+      dt_inicio = '01/01/' + new Date().getFullYear();
+      dt_fim = '31/12/' + new Date().getFullYear();
+      tipo_agrupamento = 'MES'
+    }
+
+    const response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/despesas/categorias/periodo?usuario_id=' + usuarioId + '&dt_inicio=' + dt_inicio + '&dt_fim=' + dt_fim + '&tipo_agrupamento=' + tipo_agrupamento, {
+      method: 'GET',
+      credentials: 'include'
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('Dados de despesas por categoria e período recebidos:', data);
+      setDespesasCategoriasPeriodo(data);
+    } else {
+      console.error('Erro ao buscar dados.');
+    }
+  }, [usuarioId])
+
 
   // ------------------------------------------------------
   // Função para atualizar ambos os gráficos de despesas 
@@ -223,7 +248,8 @@ function App() {
 
     buscarDespesasTotais();
     buscarDespesasCategorias();
-  }, [buscarDespesasTotais, buscarDespesasCategorias, usuarioId])
+    buscarDespesasCategoriasPeriodo();
+  }, [buscarDespesasTotais, buscarDespesasCategorias, buscarDespesasCategoriasPeriodo, usuarioId])
 
   // ------------------------------------------------------
   // Atualiza os gráficos sempre que o usuário fizer login
@@ -448,7 +474,7 @@ function App() {
           <div id="graficos-row-1">
             <GrafDespesasTotais dados={despesasTotais} buscarDespesasTotais={buscarDespesasTotais} />
             <GrafDespesasCategorias dados={despesasCategorias} buscarDespesasCategorias={buscarDespesasCategorias} />
-            <GrafDespesasCategoriasPeriodo />
+            <GrafDespesasCategoriasPeriodo dados={despesasCategoriasPeriodo} buscarDespesasCategoriasPeriodo={buscarDespesasCategoriasPeriodo} />
           </div>
         </div>
       </>
