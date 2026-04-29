@@ -474,6 +474,83 @@ def busca_despesas_categorias(usuario_id: int, dt_inicio: str, dt_fim: str, tipo
     else:
         return despesas
 
+
+@app.get('/despesas/categorias/periodo', response_model=list[dict])
+def busca_despesas_categorias(usuario_id: int, dt_inicio: str, dt_fim: str, tipo_agrupamento: str = None):
+
+    CATEGORIAS = ['Alimentação', 'Bebidas', 'Higiene Pessoal', 'Lanches & Conveniência', 'Limpeza', 'Outros', 'Pets', 'Utilidades']
+
+
+    try:
+        if not tipo_agrupamento:
+            tipo_agrupamento = 'ANO'  # Valor padrão para tipo_agrupamento
+
+        connection = makeDBconnection()
+        if 'Erro' in str(connection):
+            connection = None
+            raise Exception(connection)
+
+        cursor = connection.cursor()
+        cursor.execute("""
+            SELECT *
+            FROM (
+                SELECT
+                    categoria,
+                    valor,
+                    CASE
+                        WHEN :tipo_agrupamento = 'ANO' THEN trunc(data, 'YYYY')
+                        WHEN :tipo_agrupamento = 'MES' THEN trunc(data, 'MM')
+                        WHEN :tipo_agrupamento = 'DIA' THEN trunc(data)
+                    END AS data_despesa
+                FROM
+                    notas_fiscais nf
+                    JOIN nota_fiscal_itens nfi USING ( nota_fiscal_id )
+                WHERE
+                    usuario_id = :usuario_id
+                    AND data BETWEEN TO_DATE(:dt_inicio, 'DD/MM/YYYY') AND TO_DATE(:dt_fim, 'DD/MM/YYYY')
+            )
+            PIVOT (
+                SUM(valor) FOR categoria IN (
+                    'Alimentação'          AS "Alimentação",
+                    'Bebidas'              AS "Bebidas",
+                    'Higiene Pessoal'      AS "Higiene Pessoal",
+                    'Lanches & Conveniência' AS "Lanches & Conveniência",
+                    'Limpeza'              AS "Limpeza",
+                    'Outros'               AS "Outros",
+                    'Pets'                 AS "Pets",
+                    'Utilidades'           AS "Utilidades"
+                )
+            )
+            ORDER BY data_despesa
+        """, {"dt_inicio": dt_inicio, "dt_fim": dt_fim, "usuario_id": usuario_id, "tipo_agrupamento": tipo_agrupamento})
+
+        result = cursor.fetchall()
+        print(f"DEBUG: Query retornou {len(result)} linhas")
+        cursor.close()
+        connection.close()
+
+        despesas = []
+        for row in result:
+            data_str = (
+                row[0].strftime("%Y") if tipo_agrupamento == 'ANO'
+                else row[0].strftime("%m/%Y") if tipo_agrupamento == 'MES'
+                else row[0].strftime("%d/%m/%Y")
+            )
+            entry = {"data": data_str}
+            for i, cat in enumerate(CATEGORIAS):
+                if row[i + 1] is not None:
+                    entry[cat] = float(row[i + 1])
+            despesas.append(entry)
+
+        print(f"DEBUG: Despesas processadas: {len(despesas)}")
+
+    except Exception as e:
+        print(f"Erro ao buscar despesas: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar despesas: {e}")
+    else:
+        return despesas
+
+
 # //////////////////////////
 # Rotas de notas fiscais  //
 # //////////////////////////
