@@ -540,6 +540,8 @@ def busca_despesas_categorias(usuario_id: int, dt_inicio: str, dt_fim: str, tipo
             for i, cat in enumerate(CATEGORIAS):
                 if row[i + 1] is not None:
                     entry[cat] = float(row[i + 1])
+                else:
+                    entry[cat] = 0.0
             despesas.append(entry)
 
         print(f"DEBUG: Despesas processadas: {len(despesas)}")
