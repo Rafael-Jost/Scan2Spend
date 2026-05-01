@@ -34,6 +34,7 @@ function App() {
   const [usuarioId, setUsuarioId] = useState(null)
   const [exibirPopUpPerfil, setExibirPopUpPerfil] = useState(false)
   const [notasFiscais, setNotasFiscais] = useState([]);
+  const [tipoGrafDespesasCategorias, setTipoGrafDespesasCategorias] = useState('default') // 'default' para gráfico de pizza, 'periodo' para gráfico de linhas ao longo do tempo
 
   // /////////////////////////////////////////////////////
   // Gerenciamento de autenticação e estado do usuário  //
@@ -473,8 +474,12 @@ function App() {
           }}></BotaoSimples>
           <div id="graficos-row-1">
             <GrafDespesasTotais dados={despesasTotais} buscarDespesasTotais={buscarDespesasTotais} />
-            <GrafDespesasCategorias dados={despesasCategorias} buscarDespesasCategorias={buscarDespesasCategorias} />
-            <GrafDespesasCategoriasPeriodo dados={despesasCategoriasPeriodo} buscarDespesasCategoriasPeriodo={buscarDespesasCategoriasPeriodo} />
+            {tipoGrafDespesasCategorias === 'default' ? 
+            <GrafDespesasCategorias dados={despesasCategorias} buscarDespesasCategorias={buscarDespesasCategorias} setTipoGrafDespesasCategorias={setTipoGrafDespesasCategorias}/>
+            : ''} 
+            {tipoGrafDespesasCategorias === 'periodo' ? 
+              <GrafDespesasCategoriasPeriodo dados={despesasCategoriasPeriodo} buscarDespesasCategoriasPeriodo={buscarDespesasCategoriasPeriodo} setTipoGrafDespesasCategorias={setTipoGrafDespesasCategorias}/>
+              : ''}
           </div>
         </div>
       </>

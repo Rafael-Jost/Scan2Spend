@@ -1,7 +1,7 @@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { RechartsDevtools } from '@recharts/devtools';
 
-function GrafDespesasCategoriasPeriodo({ dados, buscarDespesasCategoriasPeriodo}) {
+function GrafDespesasCategoriasPeriodo({ dados, buscarDespesasCategoriasPeriodo, setTipoGrafDespesasCategorias}) {
   // #region Sample data
   const data = [
     {
@@ -49,8 +49,13 @@ function GrafDespesasCategoriasPeriodo({ dados, buscarDespesasCategoriasPeriodo}
   ];
 
   return (
-    <div style={{ width: '100%', maxWidth: '875px', margin: '0 auto' }}>
-      <h2>Gráfico de Despesas por Categoria</h2>
+    <div style={{ width: '100%', maxWidth: '600px', margin: '0 auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+          <h2>Gráfico de Despesas por Categoria</h2>
+          <button onClick={() => setTipoGrafDespesasCategorias('default')} style={{ backgroundColor: '#3b82f6', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer' }}>
+            Mudar Visualização
+          </button>
+        </div>
       <AreaChart
       style={{ width: '100%', maxWidth: '700px', maxHeight: '70vh', aspectRatio: 1.618 }}
       responsive
@@ -66,14 +71,6 @@ function GrafDespesasCategoriasPeriodo({ dados, buscarDespesasCategoriasPeriodo}
       <XAxis dataKey="data" niceTicks="snap125" />
       <YAxis width="auto" niceTicks="snap125" />
       <Tooltip />
-      {/* 'Alimentação': '#f89c71',
-    'Bebidas': '#60a5fa',
-    'Higiene Pessoal': '#a78bfa',
-    'Lanches & Conveniência': '#fbbf24',
-    'Limpeza': '#34d3ab',
-    'Outros': '#94a3b8',
-    'Pets': '#b39c78',
-    'Utilidades': '#fa9be2' */}
       <Area type="monotone" dataKey="Alimentação" stackId="1" stroke="#8884d8" fill="#8884d8" />
       <Area type="monotone" dataKey="Bebidas" stackId="1" stroke="#60a5fa" fill="#60a5fa" />
       <Area type="monotone" dataKey="Higiene Pessoal" stackId="1" stroke="#a78bfa" fill="#a78bfa" />
