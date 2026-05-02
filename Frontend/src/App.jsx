@@ -16,6 +16,7 @@ import CadastroUsuario from './components/CadastroUsuario.jsx'
 import PopUpPerfil from './components/PopUpPerfil.jsx'
 import Cookies from 'js-cookie'
 import S2S_logo from './assets/Scan2Spend_logo.png'
+import PerfilDespesas from './components/PerfilDespesas.jsx'
 import './App.css'
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
   const [exibirPopUpPerfil, setExibirPopUpPerfil] = useState(false)
   const [notasFiscais, setNotasFiscais] = useState([]);
   const [tipoGrafDespesasCategorias, setTipoGrafDespesasCategorias] = useState('default') // 'default' para gráfico de pizza, 'periodo' para gráfico de linhas ao longo do tempo
+  const [perfilDespesas, setPerfilDespesas] = useState(true)
 
   // /////////////////////////////////////////////////////
   // Gerenciamento de autenticação e estado do usuário  //
@@ -467,20 +469,41 @@ function App() {
       <>
         <BotaoPerfil />
         <div className="pagina-despesas">
-          <h1>Suas Despesas</h1>
-          <BotaoSimples className="botao-menu pagina-inicial" icone={paginaInicialIcon} onClick={() => {
+        <BotaoSimples className="botao-menu pagina-inicial" icone={paginaInicialIcon} onClick={() => {
             setEstadoTela('inicial')
             atualizarGraficos()
-          }}></BotaoSimples>
-          <div id="graficos-row-1">
-            <GrafDespesasTotais dados={despesasTotais} buscarDespesasTotais={buscarDespesasTotais} />
-            {tipoGrafDespesasCategorias === 'default' ? 
-            <GrafDespesasCategorias dados={despesasCategorias} buscarDespesasCategorias={buscarDespesasCategorias} setTipoGrafDespesasCategorias={setTipoGrafDespesasCategorias}/>
-            : ''} 
-            {tipoGrafDespesasCategorias === 'periodo' ? 
-              <GrafDespesasCategoriasPeriodo dados={despesasCategoriasPeriodo} buscarDespesasCategoriasPeriodo={buscarDespesasCategoriasPeriodo} setTipoGrafDespesasCategorias={setTipoGrafDespesasCategorias}/>
-              : ''}
-          </div>
+        }}></BotaoSimples>
+        <div className="tab-switch">
+          <button
+            className={perfilDespesas ? 'tab-btn tab-btn--active' : 'tab-btn'}
+            onClick={() => setPerfilDespesas(true)}
+          >
+            Perfil de Despesas
+          </button>
+          <button
+            className={perfilDespesas ? 'tab-btn' : 'tab-btn tab-btn--active'}
+            onClick={() => setPerfilDespesas(false)}
+          >
+            Minhas Despesas
+          </button>
+        </div>
+          {perfilDespesas ? (
+            <>
+              <PerfilDespesas nomeUsuario={nomeUsuario} usuarioID={usuarioId} />
+            </>
+          ) : (
+            <>
+              <div id="graficos-row-1">
+                <GrafDespesasTotais dados={despesasTotais} buscarDespesasTotais={buscarDespesasTotais} />
+                {tipoGrafDespesasCategorias === 'default' ? 
+                  <GrafDespesasCategorias dados={despesasCategorias} buscarDespesasCategorias={buscarDespesasCategorias} setTipoGrafDespesasCategorias={setTipoGrafDespesasCategorias}/>
+                  : ''} 
+                {tipoGrafDespesasCategorias === 'periodo' ? 
+                  <GrafDespesasCategoriasPeriodo dados={despesasCategoriasPeriodo} buscarDespesasCategoriasPeriodo={buscarDespesasCategoriasPeriodo} setTipoGrafDespesasCategorias={setTipoGrafDespesasCategorias}/>
+                  : ''}
+              </div>
+            </>
+          )}
         </div>
       </>
     );

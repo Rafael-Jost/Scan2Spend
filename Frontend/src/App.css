@@ -293,6 +293,68 @@
   box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
 }
 
+.tab-switch {
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 5px;
+  gap: 4px;
+  margin: 18px 0 24px 0;
+  backdrop-filter: blur(8px);
+}
+
+@media (prefers-color-scheme: light) {
+  .tab-switch {
+    background: rgba(0, 0, 0, 0.06);
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+}
+
+.tab-btn {
+  padding: 9px 22px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.5);
+  background: transparent;
+  transition: all 0.22s ease;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+.tab-btn:hover:not(.tab-btn--active) {
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.07);
+  border-color: transparent;
+}
+
+.tab-btn:focus-visible {
+  outline: none;
+}
+
+.tab-btn--active {
+  background: linear-gradient(135deg, #4ab0d8, #66d4ca);
+  color: #fff;
+  font-weight: 600;
+  border-color: transparent;
+}
+
+@media (prefers-color-scheme: light) {
+  .tab-btn {
+    color: rgba(33, 53, 71, 0.45);
+  }
+  .tab-btn:hover:not(.tab-btn--active) {
+    color: rgba(33, 53, 71, 0.8);
+    background: rgba(0, 0, 0, 0.05);
+  }
+  .tab-btn--active {
+    color: #fff;
+  }
+}
+
 #graficos-row-1 {
   display: flex;
   flex-wrap: wrap;
