@@ -1,17 +1,30 @@
-import {FaUser, FaLock, FaArrowLeft} from 'react-icons/fa'
-import { IoMdMail } from "react-icons/io";
-import { useEffect } from 'react'
-import {useState} from 'react'
-import Cookies from 'js-cookie'
+import { FaArrowLeft } from 'react-icons/fa'
+import { useState } from 'react'
 
 function CadastroUsuario({setCadastrandoUsuario}) {
     const [nome, setNome] = useState('')
     const [sobrenome, setSobrenome] = useState('')
     const [email, setEmail] = useState('')
+    const [orcamentoMensal, setOrcamentoMensal] = useState('')
     const [senha, setSenha] = useState('')
     const [confirmarSenha, setConfirmarSenha] = useState('')
     const [erroCadastro, setErroCadastro] = useState('')
     const [sucessoCadastro, setSucessoCadastro] = useState('')
+
+    const formatarOrcamento = (valor) => {
+        const digitos = valor.replace(/\D/g, '')
+
+        if (!digitos) {
+            return ''
+        }
+
+        const numero = Number(digitos) / 100
+
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+        }).format(numero)
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -31,7 +44,8 @@ function CadastroUsuario({setCadastrandoUsuario}) {
                     nome,
                     sobrenome,
                     email,
-                    senha
+                    senha,
+                    orcamento_mensal: parseFloat(orcamentoMensal.replace(/[^0-9,]+/g, '').replace(',', '.'))
                 })
             })
 
@@ -62,6 +76,18 @@ function CadastroUsuario({setCadastrandoUsuario}) {
                 <div className='input-container'>
                     {/* <IoMdMail className='login-icon' /> */}
                     <input className='cadastro-input' type='email' placeholder='Email' onChange={(e) => {setEmail(e.target.value)}}/>
+                </div>
+                <div className='input-container'>
+                    {/* <IoMdMail className='login-icon' /> */}
+                    <input
+                        className='cadastro-input'
+                        type='text'
+                        placeholder='Orçamento Mensal (R$)'
+                        value={orcamentoMensal}
+                        onChange={(e) => {
+                            setOrcamentoMensal(formatarOrcamento(e.target.value))
+                        }}
+                    />
                 </div>
                 <div className='input-container'>
                     {/* <FaLock className='login-icon' /> */}

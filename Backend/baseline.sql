@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  Arquivo criado - quinta-feira-abril-23-2026   
+--  Arquivo criado - domingo-maio-03-2026   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Sequence NOTA_FISCAL_ITENS_SEQ
@@ -71,7 +71,8 @@
 	"SENHA" VARCHAR2(200 BYTE) COLLATE "USING_NLS_COMP", 
 	"CREATED" DATE DEFAULT SYSDATE, 
 	"UPDATED" DATE, 
-	"ATIVO" CHAR(1 BYTE) COLLATE "USING_NLS_COMP" DEFAULT 'S'
+	"ATIVO" CHAR(1 BYTE) COLLATE "USING_NLS_COMP" DEFAULT 'S', 
+	"ORCAMENTO_MENSAL" FLOAT(126) DEFAULT 0
    )  DEFAULT COLLATION "USING_NLS_COMP" SEGMENT CREATION IMMEDIATE 
   PCTFREE 10 PCTUSED 40 INITRANS 10 MAXTRANS 255 
  NOCOMPRESS LOGGING

@@ -83,6 +83,7 @@ class CadastroUsuario(BaseModel):
     sobrenome: str
     email: str
     senha: str
+    orcamento_mensal: float
 
 class CadastroUsuarioResponse(BaseModel):
     msg: str
@@ -193,11 +194,12 @@ def cadastroUsuario(dados_usuario: CadastroUsuario):
 
         cursor = connection.cursor()
 
-        cursor.execute("INSERT INTO usuarios(nome, sobrenome, email, senha) VALUES (:nome, :sobrenome, :email, PKG_AUTH.encrypt_pwd(:senha))", {
+        cursor.execute("INSERT INTO usuarios(nome, sobrenome, email, senha, orcamento_mensal) VALUES (:nome, :sobrenome, :email, PKG_AUTH.encrypt_pwd(:senha), :orcamento_mensal)", {
             'nome': dados_usuario.nome.capitalize(),
             'sobrenome': dados_usuario.sobrenome.capitalize(),
             'email': dados_usuario.email,
-            'senha': dados_usuario.senha
+            'senha': dados_usuario.senha,
+            'orcamento_mensal': dados_usuario.orcamento_mensal
         })
         connection.commit()
 
