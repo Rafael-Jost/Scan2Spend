@@ -64,21 +64,18 @@ function CadastroUsuario({setCadastrandoUsuario}) {
 
 
     return <>
-        <div className="pagina-login">
-            <a style={{display: "flex", width: "25px",  height:"25px",color: "white"}} onClick={() => setCadastrandoUsuario(false)}><FaArrowLeft/></a>
-            <form>
+        <div className="pagina-login cadastro-usuario">
+            <a className="btn-voltar" onClick={() => setCadastrandoUsuario(false)}><FaArrowLeft/></a>
+            <form onSubmit={handleSubmit}>
                 <h1>Cadastro</h1>
                 <div className='input-container' style={{gap: "10px"}}>
-                    {/* <FaUser className='login-icon' /> */}
                     <input className='cadastro-input' type='text' placeholder='Nome' onChange={(e) => {setNome(e.target.value)}}/>
                     <input className='cadastro-input' type='text' placeholder='Sobrenome' onChange={(e) => {setSobrenome(e.target.value)}}/>
                 </div>
                 <div className='input-container'>
-                    {/* <IoMdMail className='login-icon' /> */}
                     <input className='cadastro-input' type='email' placeholder='Email' onChange={(e) => {setEmail(e.target.value)}}/>
                 </div>
                 <div className='input-container'>
-                    {/* <IoMdMail className='login-icon' /> */}
                     <input
                         className='cadastro-input'
                         type='text'
@@ -90,17 +87,15 @@ function CadastroUsuario({setCadastrandoUsuario}) {
                     />
                 </div>
                 <div className='input-container'>
-                    {/* <FaLock className='login-icon' /> */}
                     <input className='cadastro-input' type='password' placeholder='Senha' onChange={(e) => {setSenha(e.target.value)}}/>
                 </div>
                 <div className='input-container'>
-                    {/* <FaLock className='login-icon' /> */}
                     <input className='cadastro-input' type='password' placeholder='Confirmar Senha' onChange={(e) => {setConfirmarSenha(e.target.value)}}/>
                 </div>
                 <span className={erroCadastro ? 'span-msg-erro' : 'span-msg-erro oculto'}>{erroCadastro}</span>
                 <span className={sucessoCadastro ? 'span-msg-sucesso' : 'span-msg-sucesso oculto'}>{sucessoCadastro}</span>
-                <button id="btn-cadastro" type="submit" onClick={handleSubmit}>Cadastrar</button>
-            </form> 
+                <button id="btn-cadastro" type="submit">Cadastrar</button>
+            </form>
         </div>
     </>
 }

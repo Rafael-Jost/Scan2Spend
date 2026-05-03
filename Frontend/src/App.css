@@ -26,6 +26,15 @@
   width: min(350px, 90vw);
   margin: 0 auto;
 }
+
+.pagina-login.cadastro-usuario form {
+  border: 1px solid color-mix(in srgb, CanvasText 14%, transparent);
+  padding: 28px 24px;
+  border-radius: 18px;
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.14);
+  background: color-mix(in srgb, Canvas 90%, transparent);
+}
+
 .card-sem-link {
   text-align: center;
   align-items: center;
@@ -67,11 +76,43 @@
 #btn-login, #btn-cadastro {
   margin-top: 10px;
   color: white;
-  padding: 10px 20px;
+  padding: 12px 20px;
   width: 100%;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #4ab0d8, #66d4ca);}
+
+#btn-login:hover, #btn-cadastro:hover {
+  background: linear-gradient(135deg, #35a0cc, #4ec9bc);
+  transform: translateY(-1px);
+}
+
+#btn-login:active, #btn-cadastro:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.btn-voltar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: color-mix(in srgb, CanvasText 8%, transparent);
+  border: 1px solid color-mix(in srgb, CanvasText 14%, transparent);
+  color: CanvasText;
+  cursor: pointer;
+  margin-bottom: 12px;
+
+}
+
+.btn-voltar:hover {
+  background: color-mix(in srgb, CanvasText 14%, transparent);
+  color: CanvasText;
 }
 #botao-upload {
   margin-top: 20px;
@@ -373,10 +414,20 @@
 .login-input, .cadastro-input {
   flex: 1 1 auto;
   width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, CanvasText 20%, transparent);
   border-radius: 10px;
   box-sizing: border-box;
+  background: color-mix(in srgb, Canvas 70%, transparent);
+  color: CanvasText;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.login-input:focus, .cadastro-input:focus {
+  outline: none;
+  border-color: #4ab0d8;
+  box-shadow: 0 0 0 3px rgba(74, 176, 216, 0.18);
 }
 
 .input-container {
