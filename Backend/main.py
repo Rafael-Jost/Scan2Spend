@@ -93,6 +93,7 @@ class MeResponse(BaseModel):
     sobrenome: str
     email: str
     usuario_id: int
+    orcamento_mensal: float
 
 class ValidadeTokenResponse(BaseModel):
     msg: str
@@ -303,13 +304,15 @@ def me(request: Request):
         nome_var = cursor.var(str)
         sobrenome_var = cursor.var(str)
         email_var = cursor.var(str)
+        orcamento_var = cursor.var(float)
         cursor.execute("""
             BEGIN
                 PKG_AUTH.post_auth(
                     p_usuario_id => :usuario_id,
                     p_nome       => :nome,
                     p_sobrenome  => :sobrenome,
-                    p_email      => :email
+                    p_email      => :email,
+                    p_orcamento  => :orcamento_mensal
                 );  
             END;
         """, 
@@ -317,20 +320,21 @@ def me(request: Request):
             "usuario_id": usuario_id, 
             "nome": nome_var,
             "sobrenome": sobrenome_var,
-            "email": email_var
+            "email": email_var,
+            "orcamento_mensal": orcamento_var
         })
 
         nome = nome_var.getvalue()
         sobrenome = sobrenome_var.getvalue()
         email = email_var.getvalue()
-
+        orcamento = orcamento_var.getvalue()
     except HTTPException:
         raise
     except Exception as e:
         print(f"Erro ao buscar informações do usuário: {e}")
         raise HTTPException(status_code=500, detail="Erro interno ao buscar informações do usuário")
     else:
-        return MeResponse(nome=nome, sobrenome=sobrenome, email=email, usuario_id=usuario_id)
+        return MeResponse(nome=nome, sobrenome=sobrenome, email=email, usuario_id=usuario_id, orcamento_mensal=orcamento)
     finally:
         if cursor:
             cursor.close()

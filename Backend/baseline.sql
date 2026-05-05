@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  Arquivo criado - domingo-maio-03-2026   
+--  Arquivo criado - segunda-feira-maio-04-2026   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Sequence NOTA_FISCAL_ITENS_SEQ
@@ -15,7 +15,7 @@
 --  DDL for Sequence USUARIOS_SEQ
 --------------------------------------------------------
 
-   CREATE SEQUENCE  "SCAN2SPEND"."USUARIOS_SEQ"  MINVALUE 1 MAXVALUE 9999999 INCREMENT BY 1 START WITH 34 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+   CREATE SEQUENCE  "SCAN2SPEND"."USUARIOS_SEQ"  MINVALUE 1 MAXVALUE 9999999 INCREMENT BY 1 START WITH 36 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
 --------------------------------------------------------
 --  DDL for Table NOTA_FISCAL_ITENS
 --------------------------------------------------------
@@ -190,7 +190,8 @@ ALTER TRIGGER "SCAN2SPEND"."USUARIOS_BIU_TRG" ENABLE;
         p_usuario_id IN NUMBER,
         p_nome       OUT VARCHAR2,
         p_sobrenome  OUT VARCHAR2,
-        p_email      OUT VARChAR2
+        p_email      OUT VARChAR2,
+        p_orcamento  OUT FLOAT
     );
 
 END PKG_AUTH;
@@ -253,13 +254,15 @@ END PKG_AUTH;
         p_usuario_id IN NUMBER,
         p_nome       OUT VARCHAR2,
         p_sobrenome  OUT VARCHAR2,
-        p_email      OUT VARChAR2
+        p_email      OUT VARChAR2,
+        p_orcamento  OUT FLOAT
     ) IS 
         CURSOR c_usuario IS
             SELECT
                 nome,
                 sobrenome,
-                email
+                email,
+                orcamento_mensal
             FROM
                 usuarios
             WHERE 
@@ -276,6 +279,7 @@ END PKG_AUTH;
             p_nome := r_usuario.nome;
             p_sobrenome := r_usuario.sobrenome;
             p_email := r_usuario.email;
+            p_orcamento := r_usuario.orcamento_mensal;
         END IF;
         
         CLOSE c_usuario;
