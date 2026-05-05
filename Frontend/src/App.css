@@ -396,7 +396,7 @@
   }
 }
 
-#graficos-row-1 {
+#graficos-row-1{
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
@@ -404,6 +404,17 @@
   align-items: stretch;
 }
 
+
+.row--horizontal {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 5px;
+  margin-bottom:5px;
+}
 .login-icon {
   margin-right: 8px;
   top: 5px;
@@ -468,7 +479,7 @@
   margin: 0;
 }
 
-#popup-notas-fiscais {
+#popup-notas-fiscais, #popup-configuracoes{
   position: fixed;
   background-color: Canvas;
   color: CanvasText;
@@ -483,7 +494,7 @@
   overflow-y: auto;
 }
 
-.popup-notas-header {
+.popup-notas-header, .popup-config-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
