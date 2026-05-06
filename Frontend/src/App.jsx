@@ -33,6 +33,7 @@ function App() {
   const [nomeUsuario, setNomeUsuario] = useState('')
   const [emailUsuario, setEmailUsuario] = useState('')
   const [usuarioId, setUsuarioId] = useState(null)
+  const [orcamentoMensal, setOrcamentoMensal] = useState(null)
   const [exibirPopUpPerfil, setExibirPopUpPerfil] = useState(false)
   const [notasFiscais, setNotasFiscais] = useState([]);
   const [tipoGrafDespesasCategorias, setTipoGrafDespesasCategorias] = useState('default') // 'default' para gráfico de pizza, 'periodo' para gráfico de linhas ao longo do tempo
@@ -84,6 +85,7 @@ function App() {
     setNomeUsuario(dadosUsuario.nome + ' ' + dadosUsuario.sobrenome)
     setEmailUsuario(dadosUsuario.email)
     setUsuarioId(dadosUsuario.usuario_id)
+    setOrcamentoMensal(dadosUsuario.orcamento_mensal)
   }, [])
 
   // -------------------------------
@@ -306,6 +308,7 @@ function App() {
             usuarioId={usuarioId}
             nomeUsuario={nomeUsuario}
             emailUsuario={emailUsuario}
+            orcamentoMensal={orcamentoMensal}
             fncLogout={logoutUsuario}
             fncFechar={() => setExibirPopUpPerfil(false)}
             setPopUpInformacoesAberto={setPopupAberto}

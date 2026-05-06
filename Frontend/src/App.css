@@ -507,8 +507,8 @@
 }
 
 @media (max-width: 768px) {
-  #popup-notas-fiscais {
-    width: 80vw;
+  #popup-notas-fiscais, #popup-configuracoes{
+    width: 90%;
     padding: 16px;
   }
 }
