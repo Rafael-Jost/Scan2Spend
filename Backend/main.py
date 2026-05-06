@@ -85,6 +85,13 @@ class CadastroUsuario(BaseModel):
     senha: str
     orcamento_mensal: float
 
+class AtualizarUsuario(BaseModel):
+    usuario_id: int
+    nome: str
+    sobrenome: str
+    email: str
+    orcamento_mensal: float
+
 class CadastroUsuarioResponse(BaseModel):
     msg: str
 
@@ -101,7 +108,6 @@ class ValidadeTokenResponse(BaseModel):
 
 class MessageResponse(BaseModel):
     msg: str = None
-    diff: dict = None
 
 # //////////////////////////
 # Inicializacao do FastAPI //
@@ -209,6 +215,45 @@ def cadastroUsuario(dados_usuario: CadastroUsuario):
         raise HTTPException(status_code=500, detail="Erro interno ao cadastrar usuário")
     else:
         return CadastroUsuarioResponse(msg="Usuário cadastrado com sucesso")
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
+@app.put('/usuario', response_model=MessageResponse)
+def atualizarUsuario(dados_usuario: AtualizarUsuario):
+    connection = None
+    cursor = None
+    try:
+        connection = makeDBconnection()
+        if 'Erro' in str(connection):
+            connection = None
+            raise HTTPException(status_code=503, detail="Erro ao estabelecer conexão com o banco de dados")
+
+        cursor = connection.cursor()
+
+        cursor.execute("""
+            UPDATE usuarios
+            SET nome = :nome,
+                sobrenome = :sobrenome,
+                email = :email,
+                orcamento_mensal = :orcamento_mensal
+            WHERE usuario_id = :usuario_id
+        """, {
+            'usuario_id': dados_usuario.usuario_id,
+            'nome': dados_usuario.nome.capitalize(),
+            'sobrenome': dados_usuario.sobrenome.capitalize(),
+            'email': dados_usuario.email,
+            'orcamento_mensal': dados_usuario.orcamento_mensal
+        })
+        connection.commit()
+
+    except Exception as e:
+        print(f"Erro ao atualizar usuário: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno ao atualizar usuário")
+    else:
+        return MessageResponse(msg="Usuário atualizado com sucesso")
     finally:
         if cursor:
             cursor.close()

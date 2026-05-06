@@ -3,3 +3,4 @@ help
 .env
 teste.json
 roadmap.txt
+__pycache__/
