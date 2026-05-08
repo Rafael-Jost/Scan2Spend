@@ -31,6 +31,7 @@ function App() {
   const [despesasCategorias, setDespesasCategorias] = useState([])
   const [despesasCategoriasPeriodo, setDespesasCategoriasPeriodo] = useState([])
   const [nomeUsuario, setNomeUsuario] = useState('')
+  const [sobrenomeUsuario, setSobrenomeUsuario] = useState('')
   const [emailUsuario, setEmailUsuario] = useState('')
   const [usuarioId, setUsuarioId] = useState(null)
   const [orcamentoMensal, setOrcamentoMensal] = useState(null)
@@ -82,7 +83,8 @@ function App() {
     if (estadoTela === 'login') {
       setEstadoTela('inicial')
     }
-    setNomeUsuario(dadosUsuario.nome + ' ' + dadosUsuario.sobrenome)
+    setNomeUsuario(dadosUsuario.nome)
+    setSobrenomeUsuario(dadosUsuario.sobrenome)
     setEmailUsuario(dadosUsuario.email)
     setUsuarioId(dadosUsuario.usuario_id)
     setOrcamentoMensal(dadosUsuario.orcamento_mensal)
@@ -307,6 +309,7 @@ function App() {
             notasFiscais={notasFiscais}
             usuarioId={usuarioId}
             nomeUsuario={nomeUsuario}
+            sobrenomeUsuario={sobrenomeUsuario}
             emailUsuario={emailUsuario}
             orcamentoMensal={orcamentoMensal}
             fncLogout={logoutUsuario}

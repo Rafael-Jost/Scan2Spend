@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import PopUpNotasFiscais from './PopUpNotasFiscais'
 import PopUpConfigurações from './PopUpConfigurações'
 
-function PopUpPerfil({ usuarioId, nomeUsuario, emailUsuario, orcamentoMensal, fncLogout, fncFechar, setPopUpInformacoesAberto, setConteudo, notasFiscais }) {
+function PopUpPerfil({ usuarioId, nomeUsuario, sobrenomeUsuario, emailUsuario, orcamentoMensal, fncLogout, fncFechar, setPopUpInformacoesAberto, setConteudo, notasFiscais }) {
     const popupRef = useRef(null)
     const notasRef = useRef(null)
     const configRef = useRef(null)
@@ -32,12 +32,12 @@ function PopUpPerfil({ usuarioId, nomeUsuario, emailUsuario, orcamentoMensal, fn
     return (
         <>
         <PopUpNotasFiscais notasFiscais={notasFiscais} ref={notasRef} usuarioId={usuarioId} fncFechar={() => {setExibirNotasFiscais(false)}} display={exibirNotasFiscais ? 'block' : 'none'} setPopUpInformacoesAberto={setPopUpInformacoesAberto} setConteudo={setConteudo} />
-        <PopUpConfigurações ref={configRef} display={exibirConfig ? 'block' : 'none'} fncFechar={() => {setExibirConfig(false)}} nomeUsuario={nomeUsuario} orcamentoMensal={orcamentoMensal} emailUsuario={emailUsuario} />
+        <PopUpConfigurações ref={configRef} display={exibirConfig ? 'block' : 'none'} fncFechar={() => {setExibirConfig(false)}} usuarioId={usuarioId} nomeUsuario={nomeUsuario} sobrenomeUsuario={sobrenomeUsuario} orcamentoMensal={orcamentoMensal} emailUsuario={emailUsuario} />
         <div className="popup-perfil" ref={popupRef}>
             <div className="popup-perfil-content">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                     <img src={perfilIcon} alt="Perfil" style={{"width": "40px", "height": "40px", "backgroundColor": "lightgray", borderRadius: "100%"}}/>
-                    <span>{nomeUsuario}</span>
+                    <span>{nomeUsuario} {sobrenomeUsuario}</span>
                 </div>
                 <button style={{width: '100%'}} onClick={() => setExibirNotasFiscais(true)}>
                     Minhas Notas Fiscais
