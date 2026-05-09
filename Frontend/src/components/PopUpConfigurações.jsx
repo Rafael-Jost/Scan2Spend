@@ -1,8 +1,8 @@
-import React, { forwardRef, useEffect, useState } from 'react';
+import React, { forwardRef, use, useEffect, useState } from 'react';
 
-function PopUpConfigurações({notasFiscais, fncFechar, display, usuarioId, setPopUpInformacoesAberto, setConteudo, nomeUsuario, sobrenomeUsuario, orcamentoMensal, emailUsuario }, ref) {
+function PopUpConfigurações({notasFiscais, fncFechar, display, usuarioId, setConteudo, nomeUsuario, sobrenomeUsuario, orcamentoMensal, emailUsuario }, ref) {
 
-    const formatarOrcamento = (valor) => {
+     const formatarOrcamento = (valor) => {
         if (valor == null || valor === '') return ''
         if (typeof valor === 'number') {
             return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor)
@@ -14,17 +14,38 @@ function PopUpConfigurações({notasFiscais, fncFechar, display, usuarioId, setP
     }
 
     const [payload, setPayload] = useState({
-        usuarioId: usuarioId,
+        usuario_id: usuarioId,
         nome: nomeUsuario,
         sobrenome: sobrenomeUsuario,
         email: emailUsuario,
-        orcamentoMensal: orcamentoMensal
+        orcamento_mensal: orcamentoMensal
     })
     const [orcamentoFormatado, setOrcamentoFormatado] = useState(formatarOrcamento(orcamentoMensal))
+    const [erroSalvamento, setErroSalvamento] = useState(false)
+
+    async function salvarConfigurações() {
+        console.log(JSON.stringify(payload))
+        const response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/usuario', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(payload)
+        })
+
+        if (response.status === 200) {
+            fncFechar()
+        } else{
+            setErroSalvamento(true)
+        }
+
+    }
+
 
     useEffect(() => {
         setOrcamentoFormatado(formatarOrcamento(orcamentoMensal))
-        setPayload(prev => ({ ...prev, orcamentoMensal }))
+        setPayload(prev => ({ ...prev, orcamento_mensal: orcamentoMensal }))
     }, [orcamentoMensal])
 
     function atualizarPayload(campo, valor) {
@@ -33,6 +54,14 @@ function PopUpConfigurações({notasFiscais, fncFechar, display, usuarioId, setP
             [campo]: valor
         }))
     }
+
+    useEffect(() => {
+        if (erroSalvamento) {
+            setTimeout(() => {
+                setErroSalvamento(false)
+            }, 2000)
+        }
+    }, [erroSalvamento])
     
     return (
     <>
@@ -69,11 +98,13 @@ function PopUpConfigurações({notasFiscais, fncFechar, display, usuarioId, setP
                     const formatado = formatarOrcamento(e.target.value)
                     setOrcamentoFormatado(formatado)
                     const digitos = e.target.value.replace(/\D/g, '')
-                    atualizarPayload('orcamentoMensal', digitos ? Number(digitos) / 100 : null)
+                    atualizarPayload('orcamento_mensal', digitos ? Number(digitos) / 100 : null)
                 }}></input>
             </div>
 
-            <button style={{position: 'absolute', bottom: '20px', left: '5%', width: '90%'}} onClick={() => alert(payload.nome + ' ' + payload.sobrenome)}>Salvar Alterações</button>
+            <button style={{position: 'absolute', bottom: '20px', left: '5%', width: '90%', display: erroSalvamento ? 'none' : 'block'}} onClick={salvarConfigurações}>Salvar Alterações</button>
+            <button style={{position: 'absolute', bottom: '20px', left: '5%', width: '90%', backgroundColor: 'red', display: erroSalvamento ? 'block' : 'none'}} onClick={() => alert(payload.nome + ' ' + payload.sobrenome)}>Erro ao Salvar</button>
+
         </div>
     </>
     )
