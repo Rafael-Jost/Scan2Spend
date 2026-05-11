@@ -36,6 +36,11 @@ class DespesasCategoriasResponse(BaseModel):
     data: str
     despesa: float
 
+class InsightResponse(BaseModel):
+    tipo: str
+    icone: str
+    mensagem: str
+
 class InsertItemResponse(BaseModel):
     text: str = "Nenhum item inserido"
 
@@ -602,6 +607,165 @@ def busca_despesas_categorias(usuario_id: int, dt_inicio: str, dt_fim: str, tipo
         raise HTTPException(status_code=500, detail=f"Erro ao buscar despesas: {e}")
     else:
         return despesas
+
+
+@app.get('/despesas/insights', response_model=list[InsightResponse])
+def busca_insights(usuario_id: int):
+    def formatar_moeda(v):
+        return f"R$ {v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+    insights = []
+    connection = None
+    cursor = None
+    try:
+        connection = makeDBconnection()
+        if 'Erro' in str(connection):
+            connection = None
+            raise Exception(connection)
+
+        cursor = connection.cursor()
+
+        # --- Orçamento restante no mês ---
+        cursor.execute("""
+            SELECT
+                u.orcamento_mensal,
+                NVL(SUM(nf.valor_total), 0) AS gasto_mes
+            FROM usuarios u
+            LEFT JOIN notas_fiscais nf
+                ON nf.usuario_id = u.usuario_id
+                AND TRUNC(nf.data, 'MM') = TRUNC(SYSDATE, 'MM')
+                AND nf.ativo = 'S'
+            WHERE u.usuario_id = :usuario_id
+            GROUP BY u.orcamento_mensal
+        """, {"usuario_id": usuario_id})
+        row = cursor.fetchone()
+        if row:
+            orcamento = float(row[0]) if row[0] else 0.0
+            gasto_mes = float(row[1])
+            if orcamento > 0:
+                restante = orcamento - gasto_mes
+                if restante <= 0:
+                    insights.append(InsightResponse(
+                        tipo="danger", icone="🚨",
+                        mensagem=f"Você ultrapassou seu limite mensal em {formatar_moeda(abs(restante))}!"
+                    ))
+                elif restante / orcamento < 0.15:
+                    insights.append(InsightResponse(
+                        tipo="warning", icone="⚠️",
+                        mensagem=f"Atenção! Faltam apenas {formatar_moeda(restante)} para atingir seu limite mensal."
+                    ))
+                else:
+                    insights.append(InsightResponse(
+                        tipo="info", icone="🔔",
+                        mensagem=f"Faltam {formatar_moeda(restante)} para atingir seu limite mensal."
+                    ))
+
+        # --- Variação por categoria vs mês anterior ---
+        cursor.execute("""
+            SELECT
+                categoria,
+                SUM(CASE WHEN TRUNC(nf.data, 'MM') = TRUNC(SYSDATE, 'MM')
+                         THEN nfi.valor ELSE 0 END) AS mes_atual,
+                SUM(CASE WHEN TRUNC(nf.data, 'MM') = ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -1)
+                         THEN nfi.valor ELSE 0 END) AS mes_anterior
+            FROM nota_fiscal_itens nfi
+            JOIN notas_fiscais nf ON nf.nota_fiscal_id = nfi.nota_fiscal_id
+            WHERE nf.usuario_id = :usuario_id
+                AND nf.data >= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -1)
+                AND nf.ativo = 'S'
+                AND nfi.ativo = 'S'
+            GROUP BY categoria
+            ORDER BY (
+                SUM(CASE WHEN TRUNC(nf.data, 'MM') = TRUNC(SYSDATE, 'MM') THEN nfi.valor ELSE 0 END)
+              - SUM(CASE WHEN TRUNC(nf.data, 'MM') = ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -1) THEN nfi.valor ELSE 0 END)
+            ) DESC
+        """, {"usuario_id": usuario_id})
+        categorias = cursor.fetchall()
+        if categorias:
+            top = categorias[0]
+            aumento = float(top[1]) - float(top[2])
+            if aumento > 0 and float(top[2]) > 0:
+                insights.append(InsightResponse(
+                    tipo="warning", icone="⚠️",
+                    mensagem=f"Você aumentou os gastos em {top[0]} em {formatar_moeda(aumento)} este mês."
+                ))
+            for row in reversed(categorias):
+                economia = float(row[2]) - float(row[1])
+                if economia > 0 and float(row[2]) > 0:
+                    insights.append(InsightResponse(
+                        tipo="success", icone="✅",
+                        mensagem=f"{row[0]} dentro do limite — economizou {formatar_moeda(economia)} vs. mês passado."
+                    ))
+                    break
+
+        # --- Dia da semana com maior gasto (últimos 90 dias) ---
+        cursor.execute("""
+            SELECT TO_CHAR(data, 'D') AS dia_num, SUM(valor_total) AS total
+            FROM notas_fiscais nf
+            WHERE usuario_id = :usuario_id
+                AND data >= SYSDATE - 90
+                AND ativo = 'S'
+            GROUP BY TO_CHAR(data, 'D')
+            ORDER BY SUM(valor_total) DESC
+            FETCH FIRST 1 ROW ONLY
+        """, {"usuario_id": usuario_id})
+        row = cursor.fetchone()
+        if row:
+            dias = {
+                '1': 'domingos', '2': 'segundas-feiras', '3': 'terças-feiras',
+                '4': 'quartas-feiras', '5': 'quintas-feiras', '6': 'sextas-feiras',
+                '7': 'sábados'
+            }
+            insights.append(InsightResponse(
+                tipo="info", icone="💡",
+                mensagem=f"Seu pico de gastos costuma ser nas {dias.get(str(row[0]), 'fins de semana')}."
+            ))
+
+        # --- Descontos capturados este mês ---
+        cursor.execute("""
+            SELECT NVL(SUM(desconto), 0) AS total_descontos
+            FROM notas_fiscais nf
+            WHERE usuario_id = :usuario_id
+                AND TRUNC(data, 'MM') = TRUNC(SYSDATE, 'MM')
+                AND ativo = 'S'
+        """, {"usuario_id": usuario_id})
+        row = cursor.fetchone()
+        if row and float(row[0]) > 0:
+            insights.append(InsightResponse(
+                tipo="success", icone="💸",
+                mensagem=f"Você economizou {formatar_moeda(float(row[0]))} em descontos este mês."
+            ))
+
+        # --- Categoria campeã do mês ---
+        cursor.execute("""
+            SELECT categoria, SUM(nfi.valor) AS total
+            FROM nota_fiscal_itens nfi
+            JOIN notas_fiscais nf ON nf.nota_fiscal_id = nfi.nota_fiscal_id
+            WHERE nf.usuario_id = :usuario_id
+                AND TRUNC(nf.data, 'MM') = TRUNC(SYSDATE, 'MM')
+                AND nf.ativo = 'S'
+                AND nfi.ativo = 'S'
+            GROUP BY categoria
+            ORDER BY SUM(nfi.valor) DESC
+            FETCH FIRST 1 ROW ONLY
+        """, {"usuario_id": usuario_id})
+        row = cursor.fetchone()
+        if row:
+            insights.append(InsightResponse(
+                tipo="info", icone="🛒",
+                mensagem=f"{row[0]} foi sua maior categoria este mês — {formatar_moeda(float(row[1]))}."
+            ))
+
+    except Exception as e:
+        print(f"Erro ao buscar insights: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar insights: {e}")
+    else:
+        return insights
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
 
 
 # //////////////////////////
