@@ -41,6 +41,11 @@ class InsightResponse(BaseModel):
     icone: str
     mensagem: str
 
+class topProdutosResponse(BaseModel):
+    nome_produto: str
+    quantidade: float
+    unidade_medida: str
+
 class InsertItemResponse(BaseModel):
     text: str = "Nenhum item inserido"
 
@@ -608,6 +613,55 @@ def busca_despesas_categorias(usuario_id: int, dt_inicio: str, dt_fim: str, tipo
     else:
         return despesas
 
+
+@app.get('/despesas/topProdutos', response_model=list[topProdutosResponse])
+def busca_top_produtos(usuario_id: int, dt_inicio: str, dt_fim: str):
+    try:
+        connection = makeDBconnection()
+        if 'Erro' in str(connection):
+            connection = None
+            raise Exception(connection)
+
+        cursor = connection.cursor()
+        cursor.execute("""
+            SELECT
+                produto,
+                SUM(quantidade) AS total_quantidade,
+                unidade_medida
+            FROM
+                notas_fiscais nf
+                JOIN nota_fiscal_itens nfi USING (nota_fiscal_id)
+            WHERE
+                    usuario_id = :usuario_id
+                AND data BETWEEN TO_DATE(:dt_inicio, 'DD/MM/YYYY') AND TO_DATE(:dt_fim, 'DD/MM/YYYY')
+                AND nf.ativo = 'S'
+                AND nfi.ativo = 'S'
+            GROUP BY
+                produto, unidade_medida
+            ORDER BY
+                total_quantidade DESC
+            FETCH FIRST 5 ROWS ONLY
+        """, {"dt_inicio": dt_inicio, "dt_fim": dt_fim, "usuario_id": usuario_id})
+
+        result = cursor.fetchall()
+        print(f"DEBUG: Query retornou {len(result)} linhas")
+        cursor.close()
+        connection.close()
+
+        top_produtos = []
+        for row in result:
+            top_produtos.append(topProdutosResponse(
+                nome_produto=row[0],
+                quantidade=float(row[1]),
+                unidade_medida=row[2]
+            ))
+        print(f"DEBUG: Top produtos processados: {len(top_produtos)}")
+
+    except Exception as e:
+        print(f"Erro ao buscar top produtos: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar top produtos: {e}")
+    else:
+        return top_produtos
 
 @app.get('/despesas/insights', response_model=list[InsightResponse])
 def busca_insights(usuario_id: int):
