@@ -1,6 +1,20 @@
 import perfilIcon from '../assets/perfil.png'
 
-function PerfilDespesas({nomeUsuario, usuarioID}){
+function PerfilDespesas({nomeUsuario, usuarioID, insights}) {
+
+    function ListaInsights(insights) {
+        const dicionarioCores = {"info": "#52a6ff61", "warning": "#ffe79661", "success": "#adffc061", "danger": "#ff899361"}
+        var lista = []
+        for (const i in insights) {
+
+            lista.push(
+                <div key={i} style={{background: dicionarioCores[insights[i].tipo] || "#fff3cd61", borderRadius: "8px", padding: "10px 12px", fontSize: "0.85rem"}}>
+                    {insights[i].icone} {insights[i].mensagem}
+                </div>
+            )
+        }
+        return lista;
+    }
     const mesAtual = (new Date().getMonth() + 1) + '/' + new Date().getFullYear()
     return (
         <div className="perfil-despesas">
@@ -42,18 +56,11 @@ function PerfilDespesas({nomeUsuario, usuarioID}){
             <div className="perfil-despesas-col">
                 <h3 style={{marginBottom: "12px"}}>Alertas e dicas</h3>
                 <div style={{display: "flex", flexDirection: "column", gap: "10px", width: "100%"}}>
-                    <div style={{background: "#fff3cd61", borderRadius: "8px", padding: "10px 12px", fontSize: "0.85rem"}}>
-                        ⚠️ Você aumentou o seus gastos em Lanches e conveniência em R$ 213,00 este mês.
-                    </div>
-                    <div style={{background: "#d4edda61", borderRadius: "8px", padding: "10px 12px", fontSize: "0.85rem"}}>
-                        ✅ Compras dentro do limite — economizou R$ 800,00 vs. mês passado.
-                    </div>
-                    <div style={{background: "#cce5ff61", borderRadius: "8px", padding: "10px 12px", fontSize: "0.85rem"}}>
-                        💡 Seu pico de gastos costuma ser nas <strong>sextas-feiras</strong>.
-                    </div>
-                    <div style={{background: "#f8d7da61", borderRadius: "8px", padding: "10px 12px", fontSize: "0.85rem"}}>
-                        🔔 Faltam <strong>R$ 256,50</strong> para atingir seu limite mensal.
-                    </div>
+                    {insights && insights.length > 0 ? (
+                        ListaInsights(insights)
+                    ) : (
+                        <p style={{color: "#888", fontStyle: "italic"}}>Nenhum alerta disponível no momento.</p>
+                    )}
                 </div>
             </div>
         </div>

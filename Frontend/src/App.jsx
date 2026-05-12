@@ -30,6 +30,7 @@ function App() {
   const [despesasTotais, setDespesasTotais] = useState([])
   const [despesasCategorias, setDespesasCategorias] = useState([])
   const [despesasCategoriasPeriodo, setDespesasCategoriasPeriodo] = useState([])
+  const [insights, setInsights] = useState([])
   const [nomeUsuario, setNomeUsuario] = useState('')
   const [sobrenomeUsuario, setSobrenomeUsuario] = useState('')
   const [emailUsuario, setEmailUsuario] = useState('')
@@ -247,6 +248,23 @@ function App() {
   }, [usuarioId])
 
 
+  const buscarInsights = useCallback( async () => {
+    if (usuarioLogado == false || usuarioLogado == '') { return }
+    const response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/despesas/insights?usuario_id=' + usuarioId, {
+      method: 'GET',
+      credentials: 'include'
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('Insights recebidos:', data);
+      setInsights(data);
+    }else {
+      console.error('Erro ao buscar insights.');
+    }
+  }, [usuarioId])
+
+
   // ------------------------------------------------------
   // Função para atualizar ambos os gráficos de despesas 
   // ------------------------------------------------------
@@ -256,7 +274,8 @@ function App() {
     buscarDespesasTotais();
     buscarDespesasCategorias();
     buscarDespesasCategoriasPeriodo();
-  }, [buscarDespesasTotais, buscarDespesasCategorias, buscarDespesasCategoriasPeriodo, usuarioId])
+    buscarInsights();
+  }, [buscarDespesasTotais, buscarDespesasCategorias, buscarDespesasCategoriasPeriodo, buscarInsights, usuarioId])
 
   // ------------------------------------------------------
   // Atualiza os gráficos sempre que o usuário fizer login
@@ -495,7 +514,7 @@ function App() {
         </div>
           {perfilDespesas ? (
             <>
-              <PerfilDespesas nomeUsuario={nomeUsuario} usuarioID={usuarioId} />
+              <PerfilDespesas nomeUsuario={nomeUsuario} usuarioID={usuarioId} insights={insights} />
             </>
           ) : (
             <>
