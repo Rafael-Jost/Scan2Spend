@@ -1,6 +1,6 @@
 import perfilIcon from '../assets/perfil.png'
 
-function PerfilDespesas({nomeUsuario, usuarioID, insights}) {
+function PerfilDespesas({nomeUsuario, usuarioID, insights, topProdutos}) {
 
     function ListaInsights(insights) {
         const dicionarioCores = {"info": "#52a6ff61", "warning": "#ffe79661", "success": "#adffc061", "danger": "#ff899361"}
@@ -38,18 +38,16 @@ function PerfilDespesas({nomeUsuario, usuarioID, insights}) {
             <div className="perfil-despesas-col">
                 <h3 style={{marginBottom: "12px"}}>Top produtos comprados</h3>
                 <ol style={{paddingLeft: "18px", width: "100%"}}>
-                    {[
-                        {nome: "Arroz 5kg", qtd: 4},
-                        {nome: "Café 500g", qtd: 3},
-                        {nome: "Leite Integral 1L", qtd: 8},
-                        {nome: "Pão de Forma", qtd: 5},
-                        {nome: "Frango Kg", qtd: 3},
-                    ].map((item, i) => (
-                        <li key={i} style={{display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid #f0f0f0"}}>
-                            <span>{item.nome}</span>
-                            <span style={{color: "#888", fontSize: "0.85rem"}}>{item.qtd}x</span>
-                        </li>
-                    ))}
+                    {topProdutos && topProdutos.length > 0 ? (
+                        topProdutos.map((item, i) => (
+                            <li key={i} style={{display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid #f0f0f0"}}>
+                                <span>{item.nome}</span>
+                                <span style={{color: "#888", fontSize: "0.85rem"}}>{item.quantidade}{item.unidade_medida}</span>
+                            </li>
+                        ))
+                    ) : (
+                        <p style={{color: "#888", fontStyle: "italic"}}>Nenhum produto disponível no momento.</p>
+                    )}
                 </ol>
             </div>
 

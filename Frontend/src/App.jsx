@@ -31,6 +31,7 @@ function App() {
   const [despesasCategorias, setDespesasCategorias] = useState([])
   const [despesasCategoriasPeriodo, setDespesasCategoriasPeriodo] = useState([])
   const [insights, setInsights] = useState([])
+  const [topProdutos, setTopProdutos] = useState([])
   const [nomeUsuario, setNomeUsuario] = useState('')
   const [sobrenomeUsuario, setSobrenomeUsuario] = useState('')
   const [emailUsuario, setEmailUsuario] = useState('')
@@ -247,7 +248,9 @@ function App() {
     }
   }, [usuarioId])
 
-
+  // ------------------------------------------------------
+  // Função para buscar insights personalizados para o usuário
+  // ------------------------------------------------------
   const buscarInsights = useCallback( async () => {
     if (usuarioLogado == false || usuarioLogado == '') { return }
     const response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/despesas/insights?usuario_id=' + usuarioId, {
@@ -266,6 +269,35 @@ function App() {
 
 
   // ------------------------------------------------------
+  // Função para buscar os produtos mais comprados pelo usuário
+  // ------------------------------------------------------
+  const buscarTopProdutos = useCallback( async (dt_inicio, dt_fim) => {
+    if (usuarioLogado == false || usuarioLogado == '') { return }
+
+    if (!dt_inicio || !dt_fim){
+      const hoje = new Date()
+      const ano = hoje.getFullYear()
+      const mes = String(hoje.getMonth() + 1).padStart(2, '0')
+      const ultimoDiaMes = new Date(ano, hoje.getMonth() + 1, 0).getDate()
+
+      dt_inicio = `01/${mes}/${ano}`
+      dt_fim = `${String(ultimoDiaMes).padStart(2, '0')}/${mes}/${ano}`
+    }
+    const response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/despesas/topProdutos?usuario_id=' + usuarioId + '&dt_inicio=' + dt_inicio + '&dt_fim=' + dt_fim, {
+      method: 'GET',
+      credentials: 'include'
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('Top produtos recebidos:', data);
+      setTopProdutos(data);
+    } else {
+      console.error('Erro ao buscar top produtos.');
+    }
+  }, [usuarioId])
+
+  // ------------------------------------------------------
   // Função para atualizar ambos os gráficos de despesas 
   // ------------------------------------------------------
   const atualizarGraficos = useCallback(() => {
@@ -275,7 +307,8 @@ function App() {
     buscarDespesasCategorias();
     buscarDespesasCategoriasPeriodo();
     buscarInsights();
-  }, [buscarDespesasTotais, buscarDespesasCategorias, buscarDespesasCategoriasPeriodo, buscarInsights, usuarioId])
+    buscarTopProdutos();
+  }, [buscarDespesasTotais, buscarDespesasCategorias, buscarDespesasCategoriasPeriodo, buscarInsights, buscarTopProdutos, usuarioId])
 
   // ------------------------------------------------------
   // Atualiza os gráficos sempre que o usuário fizer login
@@ -514,7 +547,7 @@ function App() {
         </div>
           {perfilDespesas ? (
             <>
-              <PerfilDespesas nomeUsuario={nomeUsuario} usuarioID={usuarioId} insights={insights} />
+              <PerfilDespesas nomeUsuario={nomeUsuario} usuarioID={usuarioId} insights={insights} topProdutos={topProdutos} />
             </>
           ) : (
             <>
