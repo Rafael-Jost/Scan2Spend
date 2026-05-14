@@ -41,8 +41,8 @@ function PerfilDespesas({nomeUsuario, usuarioID, insights, topProdutos}) {
                     {topProdutos && topProdutos.length > 0 ? (
                         topProdutos.map((item, i) => (
                             <li key={i} style={{display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid #f0f0f0"}}>
-                                <span>{item.nome}</span>
-                                <span style={{color: "#888", fontSize: "0.85rem"}}>{item.quantidade}{item.unidade_medida}</span>
+                                <span>{item.nome_produto}</span>
+                                <span style={{color: "#888", fontSize: "0.85rem"}}>{item.quantidade} {item.unidade_medida}</span>
                             </li>
                         ))
                     ) : (
