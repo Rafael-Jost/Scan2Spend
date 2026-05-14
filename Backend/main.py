@@ -14,7 +14,7 @@ from openai import OpenAI
 import oracledb
 from dotenv import load_dotenv
 import json
-from typing import List
+from typing import List, Optional
 import jwt
 from datetime import datetime, timedelta, timezone
 from deepdiff import DeepDiff
@@ -50,7 +50,7 @@ class InsertItemResponse(BaseModel):
     text: str = "Nenhum item inserido"
 
 class ItemNota(BaseModel):
-    nota_fiscal_item_id: int = None
+    nota_fiscal_item_id: Optional[int] = None
     nome_produto: str
     quantidade: float
     preco_unitario: float
@@ -60,8 +60,8 @@ class ItemNota(BaseModel):
     categoria: str
     
 class NotaFiscalDetalhes(BaseModel):
-    nota_fiscal_id: int = None
-    usuario_id: int
+    nota_fiscal_id: Optional[int] = None
+    usuario_id: Optional[int] = None
     data_compra: str
     itens: List[ItemNota]
     preco_final_pago: float
@@ -1007,6 +1007,9 @@ def insert_item(payload: NotaFiscalDetalhes):
 @app.put("/nota_fiscal", response_model=MessageResponse)
 def update_nota_fiscal(payload: NotaFiscalDetalhes):
 
+    if not payload.nota_fiscal_id:
+        raise HTTPException(status_code=400, detail="nota_fiscal_id é obrigatório para atualização")
+    
     nota_fiscal_id = payload.nota_fiscal_id
 
     payload_banco = busca_payload_nota_fiscal(nota_fiscal_id)
