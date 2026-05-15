@@ -31,6 +31,14 @@ class DespesasResponse(BaseModel):
     data: str
     despesa: float
 
+class PerfilDespesasResponse(BaseModel):
+    gastos_totais: float
+    perc_orcamento_consumido: float
+    perc_relativo_mes_anterior: float
+    maior_compra: float
+    qtd_compras: int
+    compra_media: float
+
 class DespesasCategoriasResponse(BaseModel):
     categoria: str
     data: str
@@ -613,6 +621,9 @@ def busca_despesas_categorias(usuario_id: int, dt_inicio: str, dt_fim: str, tipo
     else:
         return despesas
 
+# //////////////////////////////
+# Rotas de perfil de Despesas
+# //////////////////////////////
 
 @app.get('/despesas/topProdutos', response_model=list[topProdutosResponse])
 def busca_top_produtos(usuario_id: int, dt_inicio: str, dt_fim: str):
@@ -821,7 +832,72 @@ def busca_insights(usuario_id: int):
         if connection:
             connection.close()
 
+@app.get('/despesas/perfil', response_model=PerfilDespesasResponse)
+def busca_perfil_depesas(usuario_id: int):
+    try:
+        connection = makeDBconnection()
+        if 'Erro' in str(connection):
+            connection = None
+            raise Exception(connection)
 
+        cursor = connection.cursor()
+        cursor.execute("""
+            WITH Despesas_Mes_Anterior As (
+                SELECT 
+                    Aa.Usuario_Id,
+                    Sum(Aa.Valor_Total) As Gastos_Totais_Mes_Anterior
+                FROM 
+                    Notas_Fiscais Aa 
+                WHERE 
+                    To_Char(Aa.Data, 'MM/YYYY') = To_Char(Add_Months(Sysdate, -1), 'MM/YYYY')
+                GROUP BY 
+                    Aa.Usuario_Id
+            )
+            SELECT
+                Sum(A.Valor_Total) As Gastos_Totais,
+                Round(((Sum(A.Valor_Total) / B.Orcamento_Mensal) * 100), 2) As Orcamento_Gasto,
+                NVL(Round(
+                    ((Nvl(Sum(A.Valor_Total),0) - Nvl(C.Gastos_Totais_Mes_Anterior, 0)) / C.Gastos_Totais_Mes_Anterior) * 100,
+                    2
+                ), 0) As Perc_Ref_Mes_Anterior,
+                Max(Valor_Total) As Maior_Compra,
+                Count(A.Nota_Fiscal_Id) As Qtd_Compras,
+                Sum(A.Valor_Total) / Count(A.Nota_Fiscal_Id) As Despesa_Media
+            FROM
+                Notas_Fiscais A 
+                JOIN Usuarios B ON A.Usuario_Id = B.Usuario_Id
+                LEFT JOIN Despesas_Mes_Anterior C ON C.Usuario_Id = B.Usuario_Id
+            WHERE
+                B.Usuario_Id = :Usuario_Id
+                AND To_Char(A.Data, 'MM/YYYY') = TO_CHAR(Sysdate, 'MM/YYYY')
+            GROUP BY
+                B.Usuario_Id, 
+                Orcamento_Mensal,
+                Gastos_Totais_Mes_Anterior;
+            """, {"Usuario_Id": usuario_id})
+
+        result = cursor.fetchone()
+        cursor.close()
+        connection.close()
+
+        if not result:
+            raise HTTPException(status_code=404, detail="Nenhum dado encontrado para o usuário no mês atual")
+
+        return PerfilDespesasResponse(
+            gastos_totais=result[0] or 0,
+            perc_orcamento_consumido=result[1] or 0,
+            perc_relativo_mes_anterior=result[2] or 0,
+            maior_compra=result[3] or 0,
+            qtd_compras=result[4] or 0,
+            compra_media=result[5] or 0,
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Erro ao buscar perfil de despesas: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar perfil de despesas: {e}")
+    
 # //////////////////////////
 # Rotas de notas fiscais  //
 # //////////////////////////
