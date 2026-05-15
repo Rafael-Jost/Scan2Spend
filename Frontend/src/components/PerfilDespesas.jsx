@@ -1,6 +1,6 @@
 import perfilIcon from '../assets/perfil.png'
 
-function PerfilDespesas({nomeUsuario, usuarioID, insights, topProdutos}) {
+function PerfilDespesas({nomeUsuario, usuarioID, insights, topProdutos, dadosPerfilDespesas}) {
 
     function ListaInsights(insights) {
         const dicionarioCores = {"info": "#52a6ff61", "warning": "#ffe79661", "success": "#adffc061", "danger": "#ff899361"}
@@ -23,15 +23,27 @@ function PerfilDespesas({nomeUsuario, usuarioID, insights, topProdutos}) {
                 <p style={{fontWeight: "bold", margin: "4px 0 12px"}}>{nomeUsuario ?? "Usuário"}</p>
                 <p style={{fontSize: "0.85rem", color: "#888", margin: "0 0 16px"}}>{mesAtual}</p>
                 <div style={{width: "100%", textAlign: "left"}}>
-                    <p><span style={{color: "#888"}}>Gastos totais:</span> <strong>R$ 1.243,50</strong></p>
-                    <p><span style={{color: "#888"}}>% do orçamento consumida:</span> <strong>62%</strong></p>
+
+                    <p><span style={{color: "#888"}}>Gastos totais:</span> <strong>R$ {dadosPerfilDespesas.gastos_totais}</strong></p>
+
+                    <p><span style={{color: "#888"}}>Orçamento consumido:</span> <strong>{dadosPerfilDespesas.perc_orcamento_consumido}%</strong></p>
                     <div style={{background: "#eee", borderRadius: "6px", height: "8px", margin: "4px 0 12px"}}>
-                        <div style={{background: "#f06060", borderRadius: "6px", height: "8px", width: "62%"}}></div>
+                        <div style={{background: dadosPerfilDespesas.perc_orcamento_consumido >= 80 ? "#e05050" : "#4caf50", borderRadius: "6px", height: "8px", width: `${dadosPerfilDespesas.perc_orcamento_consumido}%`}}></div>
                     </div>
-                    <p><span style={{color: "#888"}}>Vs. mês passado:</span> <strong style={{color: "#e05050"}}>▲ 14,3%</strong></p>
-                    <p><span style={{color: "#888"}}>Maior Compra:</span> <strong>R$ 320,00</strong></p>
-                    <p><span style={{color: "#888"}}>Nº de compras:</span> <strong>37</strong></p>
-                    <p><span style={{color: "#888"}}>Compra média:</span> <strong>R$ 33,61</strong></p>
+
+                    {dadosPerfilDespesas.perc_relativo_mes_anterior != 0 ? 
+                    (<p>
+                        <span style={{color: "#888"}}>Vs. mês passado:</span> 
+                        {dadosPerfilDespesas.perc_relativo_mes_anterior > 0 ? 
+                        (<strong style={{color: "#e05050"}}>▲ {dadosPerfilDespesas.perc_relativo_mes_anterior}%</strong>) :
+                        (<strong style={{color: "#4caf50"}}>▼ {dadosPerfilDespesas.perc_relativo_mes_anterior}%</strong>)
+                        }
+                    </p>) : 
+                    ('')
+                    }
+                    <p><span style={{color: "#888"}}>Maior Compra:</span> <strong>R$ {dadosPerfilDespesas.maior_compra}</strong></p>
+                    <p><span style={{color: "#888"}}>Nº de compras:</span> <strong>{dadosPerfilDespesas.qtd_compras}</strong></p>
+                    <p><span style={{color: "#888"}}>Compra média:</span> <strong>R$ {dadosPerfilDespesas.compra_media}</strong></p>
                 </div>
             </div>
 

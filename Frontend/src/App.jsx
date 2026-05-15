@@ -31,6 +31,7 @@ function App() {
   const [despesasCategorias, setDespesasCategorias] = useState([])
   const [despesasCategoriasPeriodo, setDespesasCategoriasPeriodo] = useState([])
   const [insights, setInsights] = useState([])
+  const [dadosPerfilDespesas, setDadosPerfilDespesas] = useState({})
   const [topProdutos, setTopProdutos] = useState([])
   const [nomeUsuario, setNomeUsuario] = useState('')
   const [sobrenomeUsuario, setSobrenomeUsuario] = useState('')
@@ -297,6 +298,21 @@ function App() {
     }
   }, [usuarioId])
 
+  const buscarDadosPerfilDespesas = useCallback(async () =>{
+    const response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/despesas/perfil?usuario_id=' + usuarioId, {
+      method: 'GET',
+      credentials: 'include'
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('Dados de perfil de despesas recebidos:', data);
+      setDadosPerfilDespesas(data);
+    } else {
+      console.error('Erro ao buscar Dados de perfil de despesas.');
+    }
+  }, [usuarioId])
+
   // ------------------------------------------------------
   // Função para atualizar ambos os gráficos de despesas 
   // ------------------------------------------------------
@@ -308,7 +324,8 @@ function App() {
     buscarDespesasCategoriasPeriodo();
     buscarInsights();
     buscarTopProdutos();
-  }, [buscarDespesasTotais, buscarDespesasCategorias, buscarDespesasCategoriasPeriodo, buscarInsights, buscarTopProdutos, usuarioId])
+    buscarDadosPerfilDespesas();
+  }, [buscarDespesasTotais, buscarDespesasCategorias, buscarDespesasCategoriasPeriodo, buscarInsights, buscarTopProdutos, buscarDadosPerfilDespesas, usuarioId])
 
   // ------------------------------------------------------
   // Atualiza os gráficos sempre que o usuário fizer login
@@ -547,7 +564,7 @@ function App() {
         </div>
           {perfilDespesas ? (
             <>
-              <PerfilDespesas nomeUsuario={nomeUsuario} usuarioID={usuarioId} insights={insights} topProdutos={topProdutos} />
+              <PerfilDespesas nomeUsuario={nomeUsuario} usuarioID={usuarioId} insights={insights} topProdutos={topProdutos} dadosPerfilDespesas={dadosPerfilDespesas}/>
             </>
           ) : (
             <>
