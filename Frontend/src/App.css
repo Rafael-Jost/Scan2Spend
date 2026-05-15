@@ -672,11 +672,96 @@
 }
 
 .perfil-despesas-col{
-  background-color: rgba(255, 255, 255, 0.07);
+  background-color: color-mix(in srgb, Canvas 90%, transparent);
   border-radius: 20px;
   padding: 20px;
   width: 100%;
   align-items: center;
   display: flex;
   flex-direction: column;
+}
+
+.top-produtos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.top-produto-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: Canvas;
+  border: 1px solid color-mix(in srgb, CanvasText 14%, transparent);
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+.top-produto-item--ouro {
+  background: color-mix(in srgb, #f9a825 12%, Canvas);
+  border-color: color-mix(in srgb, #f9a825 70%, transparent);
+}
+
+.top-produto-item--prata {
+  background: color-mix(in srgb, CanvasText 6%, Canvas);
+  border-color: color-mix(in srgb, CanvasText 28%, transparent);
+}
+
+.top-produto-item--bronze {
+  background: color-mix(in srgb, #ff7043 12%, Canvas);
+  border-color: color-mix(in srgb, #ff7043 70%, transparent);
+}
+
+.top-produto-badge {
+  min-width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 0.8rem;
+  background: color-mix(in srgb, CanvasText 12%, transparent);
+  color: CanvasText;
+}
+
+.top-produto-badge--medalha {
+  background: transparent;
+  font-size: 1.2rem;
+}
+
+.top-produto-nome {
+  flex: 1;
+  font-weight: 500;
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: CanvasText;
+}
+
+.top-produto-qtd {
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  background: color-mix(in srgb, CanvasText 12%, transparent);
+  color: CanvasText;
+}
+
+.top-produto-item--ouro .top-produto-qtd {
+  background: #f9a825;
+  color: #333;
+}
+
+.top-produto-item--prata .top-produto-qtd {
+  background: color-mix(in srgb, CanvasText 30%, transparent);
+  color: CanvasText;
+}
+
+.top-produto-item--bronze .top-produto-qtd {
+  background: #ff7043;
+  color: #333;
 }
