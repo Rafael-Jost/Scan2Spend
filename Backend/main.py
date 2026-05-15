@@ -136,6 +136,7 @@ app = FastAPI()
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://127.0.0.1:8000",
 ]
 
 app.add_middleware(
@@ -1301,10 +1302,16 @@ async def analisar_nf(QRurl: str):
     prompt = prompt + receipt_text
 
     response = client.responses.create(
-        model="gpt-4o-mini",
-        input= prompt
+        model="gpt-5.4-mini",
+        reasoning={"effort": "medium"},
+        input=prompt
     )
 
-    return{
-        "text": response.output_text
-    }
+    output = response.output_text
+    if not output:
+        raise HTTPException(
+            status_code=422,
+            detail="Modelo não retornou texto. Verifique se a URL da NFC-e é válida e contém dados legíveis."
+        )
+
+    return {"text": output}
