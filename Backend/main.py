@@ -19,6 +19,8 @@ import jwt
 from datetime import datetime, timedelta, timezone
 from deepdiff import DeepDiff
 
+from functions import enviar_redefinicao_senha
+
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -1315,3 +1317,35 @@ async def analisar_nf(QRurl: str):
         )
 
     return {"text": output}
+
+@app.post("/redefinir_senha", response_model=MessageResponse)
+def redefinir_senha(email_destino: str):
+    try:
+        connection = makeDBconnection()
+        if 'Erro' in str(connection):
+            connection = None
+            raise Exception(connection)
+        
+        cursor = connection.cursor()
+        cursor.execute("SELECT usuario_id FROM usuarios WHERE email = :email", {"email": email_destino})
+        result = cursor.fetchone()
+        if not result:
+            raise HTTPException(status_code=404, detail="Email não encontrado")
+    except Exception as e:
+        print(f"Erro ao gerar token de redefinição de senha: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao gerar token de redefinição de senha: {e}")
+    
+    SECRET_KEY = os.getenv("SECRET_KEY")
+
+    try:
+        token = jwt.encode(
+            {"email": email_destino, "exp": datetime.now(tz=timezone.utc) + timedelta(hours=1)},
+            SECRET_KEY,
+            algorithm="HS256"
+        )
+        enviar_redefinicao_senha(email_destino, token)
+    except Exception as e:
+        print(f"Erro ao enviar email de redefinição de senha: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao enviar email de redefinição de senha: {e}")
+    else:
+        return MessageResponse(msg="Email de redefinição de senha enviado com sucesso.")
