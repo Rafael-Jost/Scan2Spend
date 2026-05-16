@@ -14,7 +14,7 @@ def enviar_redefinicao_senha(email_destino, token):
 
     html = f"""
     <p>Clique para redefinir sua senha:</p>
-    <a href="http://localhost:8000/reset?token={token}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; border-radius: 5px;">
+    <a href="http://localhost:5173/reset-senha?token={token}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; border-radius: 5px;">
         Redefinir Senha
     </a>
     """
