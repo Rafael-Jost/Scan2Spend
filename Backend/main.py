@@ -1349,3 +1349,43 @@ def redefinir_senha(email_destino: str):
         raise HTTPException(status_code=500, detail=f"Erro ao enviar email de redefinição de senha: {e}")
     else:
         return MessageResponse(msg="Email de redefinição de senha enviado com sucesso.")
+    
+@app.put("/redefinir_senha", response_model=MessageResponse)
+def atualizar_senha(token: str, nova_senha: str):
+    SECRET_KEY = os.getenv("SECRET_KEY")
+
+    # Valida o token e extrai o email
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        email = payload.get("email")
+        if not email:
+            raise HTTPException(status_code=404, detail="Token inválido")
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=404, detail="Token expirado")
+    except jwt.InvalidTokenError as e:
+        print(f"Erro ao decodificar token JWT: {e}")
+        raise HTTPException(status_code=404, detail="Token inválido")
+    
+    # Atualiza a senha no banco de dados
+    try:
+        connection = makeDBconnection()
+        if 'Erro' in str(connection):
+            connection = None
+            raise Exception(connection)
+
+        cursor = connection.cursor()
+        cursor.execute("SELECT usuario_id FROM usuarios WHERE email = :email", {"email": email})
+        result = cursor.fetchone()
+        if not result:
+            raise HTTPException(status_code=404, detail="Email não encontrado")
+
+        usuario_id = result[0]
+        cursor.execute("UPDATE usuarios SET senha = pkg_auth.encrypt_pwd(:senha) WHERE usuario_id = :usuario_id",
+                       {"senha": nova_senha, "usuario_id": usuario_id})
+        connection.commit()
+
+    except Exception as e:
+        print(f"Erro ao atualizar senha: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao atualizar senha: {e}")
+    else:
+        return MessageResponse(msg="Senha atualizada com sucesso.")
