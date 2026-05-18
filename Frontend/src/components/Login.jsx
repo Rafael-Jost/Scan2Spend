@@ -83,7 +83,7 @@ function Login({ setUsuarioLogado, setCadastrandoUsuario}) {
                         setCadastrandoUsuario(true)
                     }}> Cadastre-se</a>
                 </label>
-                <label><a href="#">Esqueci minha senha</a></label>
+                <label><a href="/reset-senha">Esqueci minha senha</a></label>
             </form>
         </div>
     </>
