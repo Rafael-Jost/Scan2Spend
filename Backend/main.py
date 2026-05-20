@@ -26,7 +26,13 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent
 PROMPT_FILE = BASE_DIR / "utils" / "prompt_analise_nf.txt"
 
-client = OpenAI()
+_openai_client = None
+
+def get_openai_client():
+    global _openai_client
+    if _openai_client is None:
+        _openai_client = OpenAI()
+    return _openai_client
 
 
 class DespesasResponse(BaseModel):
@@ -1303,7 +1309,7 @@ async def analisar_nf(QRurl: str):
 
     prompt = prompt + receipt_text
 
-    response = client.responses.create(
+    response = get_openai_client().responses.create(
         model="gpt-5.4-mini",
         reasoning={"effort": "medium"},
         input=prompt
@@ -1331,6 +1337,8 @@ def redefinir_senha(email_destino: str):
         result = cursor.fetchone()
         if not result:
             raise HTTPException(status_code=404, detail="Email não encontrado")
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"Erro ao gerar token de redefinição de senha: {e}")
         raise HTTPException(status_code=500, detail=f"Erro ao gerar token de redefinição de senha: {e}")
@@ -1365,6 +1373,8 @@ def atualizar_senha(token: str, nova_senha: str):
     except jwt.InvalidTokenError as e:
         print(f"Erro ao decodificar token JWT: {e}")
         raise HTTPException(status_code=404, detail="Token inválido")
+    except HTTPException:
+        raise
     
     # Atualiza a senha no banco de dados
     try:

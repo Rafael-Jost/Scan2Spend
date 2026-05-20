@@ -19,8 +19,7 @@ RUN python -m playwright install --with-deps chromium
 # Copiar código
 COPY . .
 
-# Expor porta (Render usa porta dinâmica)
-EXPOSE $PORT
+# Cloud Run usa porta 8080
+EXPOSE 8080
 
-# Comando para iniciar - usa variável de ambiente PORT
-CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-10000}
+CMD uvicorn main:app --host 0.0.0.0 --port 8080
