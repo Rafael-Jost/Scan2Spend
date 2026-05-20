@@ -62,7 +62,7 @@ function App() {
     }
 
       (async () => {
-          const dados_usuario_response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/me`, {
+          const dados_usuario_response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/me`, {
               method: 'GET',
               credentials: 'include'
           })
@@ -127,7 +127,7 @@ function App() {
 
     const verificarToken = async () => {
       try {
-        const response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/validarToken', {
+        const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/validarToken', {
           method: 'GET',
           credentials: 'include'
         })
@@ -182,7 +182,7 @@ function App() {
       tipo_agrupamento: tipo_agrupamento 
     }).toString();
     
-    const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/despesas/?${params}`, {
+    const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/?${params}`, {
       method: 'GET',
       credentials: 'include'
     })
@@ -211,7 +211,7 @@ function App() {
       dt_fim: dt_fim
     }).toString();
     
-    const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/despesas/categorias?${params}`, {
+    const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/categorias?${params}`, {
       method: 'GET',
       credentials: 'include'
     })
@@ -235,7 +235,7 @@ function App() {
       tipo_agrupamento = 'MES'
     }
 
-    const response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/despesas/categorias/periodo?usuario_id=' + usuarioId + '&dt_inicio=' + dt_inicio + '&dt_fim=' + dt_fim + '&tipo_agrupamento=' + tipo_agrupamento, {
+    const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/categorias/periodo?usuario_id=' + usuarioId + '&dt_inicio=' + dt_inicio + '&dt_fim=' + dt_fim + '&tipo_agrupamento=' + tipo_agrupamento, {
       method: 'GET',
       credentials: 'include'
     });
@@ -254,7 +254,7 @@ function App() {
   // ------------------------------------------------------
   const buscarInsights = useCallback( async () => {
     if (usuarioLogado == false || usuarioLogado == '') { return }
-    const response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/despesas/insights?usuario_id=' + usuarioId, {
+    const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/insights?usuario_id=' + usuarioId, {
       method: 'GET',
       credentials: 'include'
     });
@@ -284,7 +284,7 @@ function App() {
       dt_inicio = `01/${mes}/${ano}`
       dt_fim = `${String(ultimoDiaMes).padStart(2, '0')}/${mes}/${ano}`
     }
-    const response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/despesas/topProdutos?usuario_id=' + usuarioId + '&dt_inicio=' + dt_inicio + '&dt_fim=' + dt_fim, {
+    const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/topProdutos?usuario_id=' + usuarioId + '&dt_inicio=' + dt_inicio + '&dt_fim=' + dt_fim, {
       method: 'GET',
       credentials: 'include'
     });
@@ -299,7 +299,7 @@ function App() {
   }, [usuarioId])
 
   const buscarDadosPerfilDespesas = useCallback(async () =>{
-    const response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/despesas/perfil?usuario_id=' + usuarioId, {
+    const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/perfil?usuario_id=' + usuarioId, {
       method: 'GET',
       credentials: 'include'
     });
@@ -405,7 +405,7 @@ function App() {
       setClasseMensagem("carregando")
       setTextoMensagem("Analisando...")
 
-      const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/analisar_nf/?QRurl=${encodeURIComponent(url)}`, {
+      const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/analisar_nf/?QRurl=${encodeURIComponent(url)}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -438,7 +438,7 @@ function App() {
         }
         console.log('Buscando notas fiscais para usuárioId:', usuarioId);
         try {
-            const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/nota_fiscal?usuario_id=${usuarioId}`, {
+            const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/nota_fiscal?usuario_id=${usuarioId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -479,7 +479,7 @@ function App() {
 
   const acordarServidor = async () => {
     try {
-      await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/', {
+      await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'

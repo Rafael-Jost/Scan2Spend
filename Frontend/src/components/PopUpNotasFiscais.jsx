@@ -19,7 +19,7 @@ function PopUpNotasFiscais({notasFiscais, fncFechar, display, usuarioId, setPopU
                             <span className="nota-data">{notaFiscal.data}</span>
                             <span className="nota-itens" onClick={async () => {
                                 try {
-                                    const response = await fetch(`https://scan2spend-fastapi-dockerbased.onrender.com/nota_fiscal/${notaFiscal.nota_fiscal_id}`, {
+                                    const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/nota_fiscal/${notaFiscal.nota_fiscal_id}`, {
                                         method: 'GET',
                                         headers: {
                                             'Content-Type': 'application/json'

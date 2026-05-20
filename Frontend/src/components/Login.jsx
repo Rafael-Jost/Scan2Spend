@@ -17,7 +17,7 @@ function Login({ setUsuarioLogado, setCadastrandoUsuario}) {
         e.preventDefault()
         setErroLogin(null)
 
-        const response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/login', {
+        const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

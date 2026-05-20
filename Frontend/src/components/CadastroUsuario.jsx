@@ -34,7 +34,7 @@ function CadastroUsuario({setCadastrandoUsuario}) {
         }else{
             setErroCadastro('')
 
-            const response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/cadastrarUsuario/', {
+            const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/cadastrarUsuario/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

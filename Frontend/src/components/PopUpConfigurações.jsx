@@ -25,7 +25,7 @@ function PopUpConfigurações({notasFiscais, fncFechar, display, usuarioId, setC
 
     async function salvarConfigurações() {
         console.log(JSON.stringify(payload))
-        const response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/usuario', {
+        const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/usuario', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'

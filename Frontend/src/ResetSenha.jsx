@@ -16,7 +16,7 @@ function ResetSenha() {
             alert('As senhas não coincidem!')
             return
         }
-        const response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/redefinir_senha?token=' + token + '&nova_senha=' + senha, {
+        const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/redefinir_senha?token=' + token + '&nova_senha=' + senha, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -38,7 +38,7 @@ function ResetSenha() {
     const handleSubmitNoToken = async (e) => {
         e.preventDefault()
 
-        const response = await fetch('https://scan2spend-fastapi-dockerbased.onrender.com/redefinir_senha?email_destino=' + email , {
+        const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/redefinir_senha?email_destino=' + email , {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
