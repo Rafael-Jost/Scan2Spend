@@ -40,6 +40,10 @@ class DespesasResponse(BaseModel):
     data: str
     despesa: float
 
+class DescontosResponse(BaseModel):
+    data: str
+    desconto: float
+
 class PerfilDespesasResponse(BaseModel):
     gastos_totais: float
     perc_orcamento_consumido: float
@@ -649,6 +653,74 @@ def busca_despesas_categorias(usuario_id: int, dt_inicio: str, dt_fim: str, tipo
         raise HTTPException(status_code=500, detail=f"Erro ao buscar despesas: {e}")
     else:
         return despesas
+
+# //////////////////////
+# Rotas de descontos   //
+# //////////////////////
+
+@app.get('/descontos/', response_model=list[DescontosResponse])
+def busca_descontos(usuario_id: int, dt_inicio: str, dt_fim: str, tipo_agrupamento: str):
+    try:
+        connection = makeDBconnection()
+        if 'Erro' in str(connection):
+            connection = None
+            raise Exception(connection)
+
+        cursor = connection.cursor()
+        cursor.execute("""
+            SELECT
+                CASE
+                    WHEN :tipo_agrupamento = 'ANO' THEN
+                        TRUNC(DATA, 'YYYY')
+                    WHEN :tipo_agrupamento = 'MES' THEN
+                        TRUNC(DATA, 'MM')
+                    WHEN :tipo_agrupamento = 'DIA' THEN
+                        TRUNC(DATA)
+                END AS DATA_DESPESA,
+                SUM(desconto) AS DESCONTO
+            FROM
+                notas_fiscais nf
+            WHERE
+                    usuario_id = :usuario_id
+                AND data BETWEEN TO_DATE(:dt_inicio, 'DD/MM/YYYY') AND TO_DATE(:dt_fim, 'DD/MM/YYYY')
+            GROUP BY
+                CASE
+                    WHEN :tipo_agrupamento = 'ANO' THEN
+                        TRUNC(DATA, 'YYYY')
+                    WHEN :tipo_agrupamento = 'MES' THEN
+                        TRUNC(DATA, 'MM')
+                    WHEN :tipo_agrupamento = 'DIA' THEN
+                        TRUNC(DATA)
+                END
+            ORDER BY
+                CASE
+                    WHEN :tipo_agrupamento = 'ANO' THEN
+                        TRUNC(DATA, 'YYYY')
+                    WHEN :tipo_agrupamento = 'MES' THEN
+                        TRUNC(DATA, 'MM')
+                    WHEN :tipo_agrupamento = 'DIA' THEN
+                        TRUNC(DATA)
+                END
+        """, {"dt_inicio": dt_inicio, "dt_fim": dt_fim, "tipo_agrupamento": tipo_agrupamento, "usuario_id": usuario_id})
+
+        result = cursor.fetchall()
+        print(f"DEBUG: Query retornou {len(result)} linhas")
+        cursor.close()
+        connection.close()
+        despesas = []
+        for row in result:
+            despesas.append(DescontosResponse(
+                data= row[0].strftime("%Y") if tipo_agrupamento == 'ANO' else row[0].strftime("%m/%Y") if tipo_agrupamento == 'MES' else row[0].strftime("%d/%m/%Y"),
+                desconto=float(row[1]) if row[1] is not None else 0.0
+            ))
+        print(f"DEBUG: Descontos processados: {len(despesas)}")
+
+    except Exception as e:
+        print(f"Erro ao buscar descontos: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar descontos: {e}")
+    else:
+        return despesas
+
 
 # //////////////////////////////
 # Rotas de perfil de Despesas
