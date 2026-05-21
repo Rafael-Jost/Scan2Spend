@@ -494,20 +494,6 @@ function App() {
     }
   }
 
-  // ------------------------------------------------------
-  // Acorda o servidor ao carregar o app e a cada 14 minutos
-  // ------------------------------------------------------
-  useEffect(() => {
-    acordarServidor();
-
-    const intervaloId = setInterval(() => {
-      acordarServidor();
-    }, 14 * 60 * 1000); // 14 MINUTOS
-
-    return () => {
-      clearInterval(intervaloId);
-    };
-  }, [])
 
 
   // ///////////////////////
