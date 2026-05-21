@@ -397,6 +397,10 @@
 }
 
 #graficos-row-1, #graficos-row-2{
+  background-color: color-mix(in srgb, Canvas 92%, transparent);
+  border-radius: 20px;
+  padding: 20px;
+  margin-top: 20px;
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
