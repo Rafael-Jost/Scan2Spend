@@ -1,0 +1,43 @@
+import { ComposedChart, Line, Area, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { RechartsDevtools } from '@recharts/devtools';
+
+
+
+const GrafDespesasOrcamento = ({ orcamentoMensal, despesasTotais }) => {
+
+    const insereOrcamentoNasDespesas = (despesas, orcamento) => {
+        return despesas.map(despesa => ({ ...despesa, orcamento: orcamento }));
+    }
+
+    const data = insereOrcamentoNasDespesas(despesasTotais, orcamentoMensal);
+
+  return (
+    <div style={{ width: '100%', maxWidth: '700px', margin: '0 auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+          <h2>Despesas VS Orçamento</h2>
+        </div>
+    <ComposedChart
+      style={{ width: '100%', maxWidth: '700px', maxHeight: '70vh', aspectRatio: 1.618 }}
+      responsive
+      data={data}
+      margin={{
+        top: 20,
+        right: 0,
+        bottom: 0,
+        left: 0,
+      }}
+    >
+      <CartesianGrid stroke="#f5f5f51c" />
+      <XAxis dataKey="data" label={{ value: 'Pages', position: 'insideBottomRight', offset: 0 }} scale="band" />
+      <YAxis label={{ value: 'Index', angle: -90, position: 'insideLeft' }} width="auto" />
+      <Tooltip />
+      <Legend />
+      <Bar dataKey="despesa" name="Despesas" barSize={70} fill="#413ea0" />
+      <Line type="monotone" dataKey="orcamento" name="Orçamento Mensal" stroke="#ff7300" strokeWidth={3} />
+      <RechartsDevtools />
+    </ComposedChart>
+    </div>
+  );
+};
+
+export default GrafDespesasOrcamento;

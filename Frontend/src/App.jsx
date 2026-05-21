@@ -11,6 +11,7 @@ import perfilIcon from './assets/perfil.png'
 import GrafDespesasTotais from './components/GrafDespesasTotais.jsx'
 import GrafDespesasCategorias from './components/GrafDespesasCategorias.jsx'
 import GrafDespesasCategoriasPeriodo from './components/GrafDespesasCategoriasPeriodo.jsx'
+import GrafDespesasOrcamento from './components/GrafDespesasOrcamento.jsx'
 import Login from './components/Login.jsx'
 import CadastroUsuario from './components/CadastroUsuario.jsx'
 import PopUpPerfil from './components/PopUpPerfil.jsx'
@@ -562,6 +563,9 @@ function App() {
                 {tipoGrafDespesasCategorias === 'periodo' ? 
                   <GrafDespesasCategoriasPeriodo dados={despesasCategoriasPeriodo} buscarDespesasCategoriasPeriodo={buscarDespesasCategoriasPeriodo} setTipoGrafDespesasCategorias={setTipoGrafDespesasCategorias}/>
                   : ''}
+              </div>
+              <div id="graficos-row-2">
+                <GrafDespesasOrcamento orcamentoMensal={orcamentoMensal} despesasTotais={despesasTotais} />
               </div>
             </>
           )}
