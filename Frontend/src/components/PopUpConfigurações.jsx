@@ -1,4 +1,5 @@
 import React, { forwardRef, use, useEffect, useState } from 'react';
+import Swal from 'sweetalert2'
 
 function PopUpConfigurações({notasFiscais, fncFechar, display, usuarioId, setConteudo, nomeUsuario, sobrenomeUsuario, orcamentoMensal, emailUsuario }, ref) {
 
@@ -35,9 +36,31 @@ function PopUpConfigurações({notasFiscais, fncFechar, display, usuarioId, setC
         })
 
         if (response.status === 200) {
+            Swal.fire({
+                toast: true,
+                position: 'top-start',
+                title: 'Sucesso!',
+                text: 'Configurações salvas com sucesso.',
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+                zIndex: 9999
+            })
             fncFechar()
         } else{
             setErroSalvamento(true)
+            Swal.fire({
+                toast: true,
+                position: 'top-start',
+                title: 'Erro!',
+                text: 'Não foi possível salvar as configurações.',
+                icon: 'error',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+                zIndex: 9999
+            })
         }
 
     }
@@ -103,7 +126,7 @@ function PopUpConfigurações({notasFiscais, fncFechar, display, usuarioId, setC
             </div>
 
             <button style={{position: 'absolute', bottom: '20px', left: '5%', width: '90%', display: erroSalvamento ? 'none' : 'block'}} onClick={salvarConfigurações}>Salvar Alterações</button>
-            <button style={{position: 'absolute', bottom: '20px', left: '5%', width: '90%', backgroundColor: 'red', display: erroSalvamento ? 'block' : 'none'}} onClick={() => alert(payload.nome + ' ' + payload.sobrenome)}>Erro ao Salvar</button>
+            <button style={{position: 'absolute', bottom: '20px', left: '5%', width: '90%', backgroundColor: 'red', display: erroSalvamento ? 'block' : 'none'}} onClick={() => Swal.fire({ toast: true, position: 'top-start', title: 'Erro!', text: 'Não foi possível salvar as configurações.', icon: 'info', showConfirmButton: false })}>Erro ao Salvar</button>
 
         </div>
     </>

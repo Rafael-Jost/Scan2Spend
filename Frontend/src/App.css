@@ -141,7 +141,7 @@
   position: fixed;
   top: 0; right: 0; bottom: 0; left: 0;
   background: rgba(0,0,0,.5);
-  z-index: 9999;
+  z-index: 9995;
   align-items: center;
   justify-content: center;
   display: none; 
@@ -462,7 +462,7 @@
   width: 35vh;
   background-color: Canvas;
   color: CanvasText;
-  z-index: 9998;
+  z-index: 9994;
   align-items: flex-start;
   justify-content: flex-start;
   display: flex; 
@@ -491,7 +491,7 @@
   right: 0;
   height: 100vh;
   width: 30vw;
-  z-index: 9999;
+  z-index: 9996;
   box-sizing: border-box;
   padding: 20px;
   border-left: 1px solid color-mix(in srgb, CanvasText 20%, transparent);
@@ -768,4 +768,9 @@
 .top-produto-item--bronze .top-produto-qtd {
   background: #ff7043;
   color: #333;
+}
+
+/* Ensure SweetAlert2 toasts appear above app popups */
+.swal2-container {
+  z-index: 10001 !important;
 }

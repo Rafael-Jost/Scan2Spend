@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { FaLock, FaEye, FaEyeSlash } from 'react-icons/fa'
+import Swal from 'sweetalert2'
 
 function ResetSenha() {
     const [senhaVisivel, setSenhaVisivel] = useState(false)
@@ -13,7 +14,16 @@ function ResetSenha() {
     const handleSubmit = async (e) => {
         e.preventDefault()
         if (senha !== confirmarSenha) {
-            alert('As senhas não coincidem!')
+            Swal.fire({
+                toast: true,
+                position: 'top-start',
+                title: 'Atenção!',
+                text: 'As senhas não coincidem!',
+                icon: 'error',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true
+            })
             return
         }
         const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/redefinir_senha?token=' + token + '&nova_senha=' + senha, {
@@ -29,7 +39,16 @@ function ResetSenha() {
             setErroReset(erroData?.detail || 'Erro ao redefinir senha!')
             return
         }
-        alert('Senha redefinida com sucesso!')
+        Swal.fire({
+            toast: true,
+            position: 'top-start',
+            title: 'Sucesso!',
+            text: 'Senha redefinida com sucesso!',
+            icon: 'success',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
+        })
         setTimeout(() => {
             window.location.href = '/'
         }, 2000)
@@ -57,7 +76,16 @@ function ResetSenha() {
             return
         }
         setErroReset(null)
-        alert('Senha redefinida com sucesso!')
+        Swal.fire({
+            toast: true,
+            position: 'top-start',
+            title: 'Sucesso!',
+            text: 'Senha redefinida com sucesso!',
+            icon: 'success',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
+        })
         setTimeout(() => {
             window.location.href = '/'
         }, 2000)

@@ -1,5 +1,6 @@
 import CardEdicao from './CardsEdicao.jsx'
 import { useState } from 'react'
+import Swal from 'sweetalert2'
 
 function PopUpDeInformacoes({conteudo, popupAberto, setPopupAberto, atualizarGraficos, usuarioId}) {
     const [notaFiscalId, setNotaFiscalId] = useState(null);
@@ -20,7 +21,16 @@ function PopUpDeInformacoes({conteudo, popupAberto, setPopupAberto, atualizarGra
           style={{ marginTop: '20px', marginLeft: '10px', backgroundColor: '#4CAF50', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '5px' }}
           onClick={async () => {
             const status_salvamento = await SalvarPayload(usuarioId, notaFiscalId);
-            alert(status_salvamento);
+            Swal.fire({
+              toast: true,
+              position: 'top-start',
+              title: status_salvamento == 'Dados salvos com sucesso!' ? 'Sucesso!' : 'Erro!',
+              text: status_salvamento,
+              icon: status_salvamento === 'Dados salvos com sucesso!' ? 'success' : 'error',
+              showConfirmButton: false,
+              timer: 2000,
+              timerProgressBar: true
+            })
             setPopupAberto(false);
             atualizarGraficos();
           }}>

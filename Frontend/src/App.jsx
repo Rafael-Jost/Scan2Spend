@@ -19,6 +19,7 @@ import PopUpPerfil from './components/PopUpPerfil.jsx'
 import Cookies from 'js-cookie'
 import S2S_logo from './assets/Scan2Spend_logo.png'
 import PerfilDespesas from './components/PerfilDespesas.jsx'
+import Swal from 'sweetalert2'
 import './App.css'
 
 function App() {
@@ -144,7 +145,14 @@ function App() {
             console.warn('Token válido. Expira em:', horaExpiracao)
 
             if (horaExpiracao - data_atual < 5 * 60 * 1000) { // Se faltar menos de 5 minutos para expirar
-              alert('Sua sessão irá expirar em 5 minutos, por favor faça login novamente para continuar usando o Scan2Spend sem interrupções.')
+              Swal.fire({
+                position: 'top-start',
+                title: 'Atenção!',
+                text: 'Sua sessão irá expirar em 5 minutos, por favor faça login novamente para continuar usando o Scan2Spend sem interrupções.',
+                icon: 'info',
+                timer: 4000,
+                timerProgressBar: true
+              })
             } 
           }
         } else if (response.status === 401) {
@@ -503,27 +511,6 @@ function App() {
     if (estadoTela === 'login') { return }
     buscarNotasFiscais()
   }, [estadoTela, buscarNotasFiscais])
-
-  // ------------------------------------------------------
-  // Função para manter o servidor acordado (evitar hibernação)
-  // ------------------------------------------------------
-
-  const acordarServidor = async () => {
-    try {
-      await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include'
-      })
-    } catch (error) {
-      console.error('Erro ao acordar o servidor:', error);
-    }
-    finally {
-      console.log('Servidor acordado com sucesso!');
-    }
-  }
 
 
 
