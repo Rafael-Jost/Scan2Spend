@@ -12,6 +12,7 @@ import GrafDespesasTotais from './components/GrafDespesasTotais.jsx'
 import GrafDespesasCategorias from './components/GrafDespesasCategorias.jsx'
 import GrafDespesasCategoriasPeriodo from './components/GrafDespesasCategoriasPeriodo.jsx'
 import GrafDespesasOrcamento from './components/GrafDespesasOrcamento.jsx'
+import GrafDescontos from './components/GrafDescontos.jsx'
 import Login from './components/Login.jsx'
 import CadastroUsuario from './components/CadastroUsuario.jsx'
 import PopUpPerfil from './components/PopUpPerfil.jsx'
@@ -595,6 +596,7 @@ function App() {
               </div>
               <div id="graficos-row-2">
                 <GrafDespesasOrcamento orcamentoMensal={orcamentoMensal} despesasTotais={despesasTotais} />
+                <GrafDescontos dados={descontos}/>
               </div>
             </>
           )}

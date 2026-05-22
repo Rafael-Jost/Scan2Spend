@@ -12,12 +12,12 @@ const GrafDespesasOrcamento = ({ orcamentoMensal, despesasTotais }) => {
     const data = insereOrcamentoNasDespesas(despesasTotais, orcamentoMensal);
 
   return (
-    <div style={{ width: '100%', maxWidth: '700px', margin: '0 auto' }}>
+    <div style={{ width: '100%', maxWidth: '640px', margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
           <h2>Despesas VS Orçamento</h2>
         </div>
     <ComposedChart
-      style={{ width: '100%', maxWidth: '700px', maxHeight: '70vh', aspectRatio: 1.618 }}
+      style={{ width: '100%', maxWidth: '640px', maxHeight: '70vh', aspectRatio: 1.618 }}
       responsive
       data={data}
       margin={{
@@ -29,7 +29,7 @@ const GrafDespesasOrcamento = ({ orcamentoMensal, despesasTotais }) => {
     >
       <CartesianGrid stroke="#f5f5f51c" />
       <XAxis dataKey="data" label={{ value: 'Pages', position: 'insideBottomRight', offset: 0 }} scale="band" />
-      <YAxis label={{ value: 'Index', angle: -90, position: 'insideLeft' }} width="auto" />
+      <YAxis label={{ value: 'R$', angle: -90, position: 'insideLeft' }} width="auto" />
       <Tooltip />
       <Legend />
       <Bar dataKey="despesa" name="Despesas" barSize={70} fill="#413ea0" />
