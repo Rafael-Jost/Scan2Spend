@@ -31,6 +31,7 @@ function App() {
   const [despesasTotais, setDespesasTotais] = useState([])
   const [despesasCategorias, setDespesasCategorias] = useState([])
   const [despesasCategoriasPeriodo, setDespesasCategoriasPeriodo] = useState([])
+  const [descontos, setDescontos] = useState([])
   const [insights, setInsights] = useState([])
   const [dadosPerfilDespesas, setDadosPerfilDespesas] = useState({})
   const [topProdutos, setTopProdutos] = useState([])
@@ -250,6 +251,33 @@ function App() {
     }
   }, [usuarioId])
 
+
+  // ------------------------------------------------------
+  // Função pra buscar Descontos recebidos pelo usuário
+  // ------------------------------------------------------
+  const buscarDescontos = useCallback( async (dt_inicio, dt_fim, tipo_agrupamento) => {
+    if (usuarioLogado == false || usuarioLogado == '') { return }
+    if (!dt_inicio || !dt_fim || !tipo_agrupamento){
+      dt_inicio = '01/01/' + new Date().getFullYear()
+      dt_fim = '31/12/' + new Date().getFullYear()
+      tipo_agrupamento = 'MES'
+    }
+
+    const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/descontos/?usuario_id=' + usuarioId + '&dt_inicio=' + dt_inicio + '&dt_fim=' + dt_fim + '&tipo_agrupamento=' + tipo_agrupamento, {
+      method: 'GET',
+      credentials: 'include'
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('Descontos recebidos:', data);
+      setDescontos(data);
+    } else {
+      console.error('Erro ao buscar descontos.');
+    }
+
+  }, [usuarioId])
+
   // ------------------------------------------------------
   // Função para buscar insights personalizados para o usuário
   // ------------------------------------------------------
@@ -326,6 +354,7 @@ function App() {
     buscarInsights();
     buscarTopProdutos();
     buscarDadosPerfilDespesas();
+    buscarDescontos();
   }, [buscarDespesasTotais, buscarDespesasCategorias, buscarDespesasCategoriasPeriodo, buscarInsights, buscarTopProdutos, buscarDadosPerfilDespesas, usuarioId])
 
   // ------------------------------------------------------
