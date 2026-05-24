@@ -46,6 +46,7 @@ function App() {
   const [notasFiscais, setNotasFiscais] = useState([]);
   const [tipoGrafDespesasCategorias, setTipoGrafDespesasCategorias] = useState('default') // 'default' para gráfico de pizza, 'periodo' para gráfico de linhas ao longo do tempo
   const [perfilDespesas, setPerfilDespesas] = useState(true)
+  const [avisoFimSessaoExibido, setAvisoFimSessaoExibido] = useState(false)
 
   // /////////////////////////////////////////////////////
   // Gerenciamento de autenticação e estado do usuário  //
@@ -106,6 +107,7 @@ function App() {
     Cookies.remove('estadoTela');
     setEstadoTela('login')
     setUsuarioId(null)
+    setAvisoFimSessaoExibido(false)
   }, [])
 
   // -------------------------------------------------------
@@ -144,7 +146,7 @@ function App() {
             const horaExpiracao = parseData(data.hora_expiracao)
             console.warn('Token válido. Expira em:', horaExpiracao)
 
-            if (horaExpiracao - data_atual < 5 * 60 * 1000) { // Se faltar menos de 5 minutos para expirar
+            if ((horaExpiracao - data_atual < 5 * 60 * 1000) && !avisoFimSessaoExibido) { // Se faltar menos de 5 minutos para expirar
               Swal.fire({
                 position: 'top-start',
                 title: 'Atenção!',
@@ -153,6 +155,7 @@ function App() {
                 timer: 4000,
                 timerProgressBar: true
               })
+              setAvisoFimSessaoExibido(true)
             } 
           }
         } else if (response.status === 401) {
@@ -168,7 +171,7 @@ function App() {
     const verificarTokenIntervalo = setInterval(verificarToken, 60000) // Verifica a cada 1 minuto
 
     return () => clearInterval(verificarTokenIntervalo)
-  }, [usuarioLogado, logoutUsuario])
+  }, [usuarioLogado, logoutUsuario, avisoFimSessaoExibido])
 
 
   // ///////////////////////////////
