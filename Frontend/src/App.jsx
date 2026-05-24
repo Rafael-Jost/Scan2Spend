@@ -148,11 +148,11 @@ function App() {
 
             if ((horaExpiracao - data_atual < 5 * 60 * 1000) && !avisoFimSessaoExibido) { // Se faltar menos de 5 minutos para expirar
               Swal.fire({
-                position: 'top-start',
+                position: 'top',
                 title: 'Atenção!',
                 text: 'Sua sessão irá expirar em 5 minutos, por favor faça login novamente para continuar usando o Scan2Spend sem interrupções.',
                 icon: 'info',
-                timer: 4000,
+                timer: 15000,
                 timerProgressBar: true
               })
               setAvisoFimSessaoExibido(true)
@@ -555,6 +555,7 @@ function App() {
             setEstadoTela('inicial')
             atualizarGraficos()
         }}></BotaoSimples>
+        <PopUpDeInformacoes usuarioId={usuarioId} conteudo={parseRecibo(textoRecibo)} popupAberto={popupAberto} setPopupAberto={setPopupAberto} atualizarGraficos={atualizarGraficos}/>
         <div className="tab-switch">
           <button
             className={perfilDespesas ? 'tab-btn tab-btn--active' : 'tab-btn'}
