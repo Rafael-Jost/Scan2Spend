@@ -427,6 +427,7 @@ function App() {
             fncFechar={() => setExibirPopUpPerfil(false)}
             setPopUpInformacoesAberto={setPopupAberto}
             setConteudo = {setTextoRecibo}
+            carregaUsuario={carregaUsuario}
           />
         ) : null}
       </>

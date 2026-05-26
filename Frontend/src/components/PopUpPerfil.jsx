@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import PopUpNotasFiscais from './PopUpNotasFiscais'
 import PopUpConfigurações from './PopUpConfigurações'
 
-function PopUpPerfil({ usuarioId, nomeUsuario, sobrenomeUsuario, emailUsuario, orcamentoMensal, fncLogout, fncFechar, setPopUpInformacoesAberto, setConteudo, notasFiscais }) {
+function PopUpPerfil({ usuarioId, nomeUsuario, sobrenomeUsuario, emailUsuario, orcamentoMensal, fncLogout, fncFechar, setPopUpInformacoesAberto, setConteudo, notasFiscais, carregaUsuario }) {
     const popupRef = useRef(null)
     const notasRef = useRef(null)
     const configRef = useRef(null)
@@ -32,7 +32,7 @@ function PopUpPerfil({ usuarioId, nomeUsuario, sobrenomeUsuario, emailUsuario, o
     return (
         <>
         <PopUpNotasFiscais notasFiscais={notasFiscais} ref={notasRef} usuarioId={usuarioId} fncFechar={() => {setExibirNotasFiscais(false)}} display={exibirNotasFiscais ? 'block' : 'none'} setPopUpInformacoesAberto={setPopUpInformacoesAberto} setConteudo={setConteudo} />
-        <PopUpConfigurações ref={configRef} display={exibirConfig ? 'block' : 'none'} fncFechar={() => {setExibirConfig(false)}} usuarioId={usuarioId} nomeUsuario={nomeUsuario} sobrenomeUsuario={sobrenomeUsuario} orcamentoMensal={orcamentoMensal} emailUsuario={emailUsuario} />
+        <PopUpConfigurações ref={configRef} display={exibirConfig ? 'block' : 'none'} fncFechar={() => {setExibirConfig(false)}} usuarioId={usuarioId} nomeUsuario={nomeUsuario} sobrenomeUsuario={sobrenomeUsuario} orcamentoMensal={orcamentoMensal} emailUsuario={emailUsuario} carregaUsuario={carregaUsuario} />
         <div className="popup-perfil" ref={popupRef}>
             <div className="popup-perfil-content">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
