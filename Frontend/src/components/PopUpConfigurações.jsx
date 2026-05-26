@@ -1,7 +1,7 @@
 import React, { forwardRef, use, useEffect, useState } from 'react';
 import Swal from 'sweetalert2'
 
-function PopUpConfigurações({notasFiscais, fncFechar, display, usuarioId, setConteudo, nomeUsuario, sobrenomeUsuario, orcamentoMensal, emailUsuario }, ref) {
+function PopUpConfigurações({notasFiscais, fncFechar, display, usuarioId, setConteudo, nomeUsuario, sobrenomeUsuario, orcamentoMensal, emailUsuario, carregaUsuario }, ref) {
 
      const formatarOrcamento = (valor) => {
         if (valor == null || valor === '') return ''
@@ -47,6 +47,19 @@ function PopUpConfigurações({notasFiscais, fncFechar, display, usuarioId, setC
                 timerProgressBar: true,
                 zIndex: 9999
             })
+            //busca os dados atualizados do usuário para atualizar o estado global
+            const dados_usuario_response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/me`, {
+                method: 'GET',
+                credentials: 'include'
+            })
+
+            if(dados_usuario_response.status === 200){
+                const dados_usuario = await dados_usuario_response.json()
+                carregaUsuario(dados_usuario)
+            }else{
+                console.error('Erro ao buscar dados atualizados do usuário')
+            }
+
             fncFechar()
         } else{
             setErroSalvamento(true)
