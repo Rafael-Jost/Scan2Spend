@@ -96,7 +96,7 @@ function App() {
     setEmailUsuario(dadosUsuario.email)
     setUsuarioId(dadosUsuario.usuario_id)
     setOrcamentoMensal(dadosUsuario.orcamento_mensal)
-  }, [])
+  }, [estadoTela])
 
   // -------------------------------
   // Função para logout do usuário
