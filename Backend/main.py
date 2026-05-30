@@ -578,7 +578,7 @@ def busca_despesas_categorias(usuario_id: int, dt_inicio: str, dt_fim: str, tipo
 
 
 @app.get('/despesas/categorias/periodo', response_model=list[dict])
-def busca_despesas_categorias(usuario_id: int, dt_inicio: str, dt_fim: str, tipo_agrupamento: str = None):
+def busca_despesas_categorias_periodo(usuario_id: int, dt_inicio: str, dt_fim: str, tipo_agrupamento: str = None):
 
     CATEGORIAS = ['Alimentação', 'Bebidas', 'Higiene Pessoal', 'Lanches & Conveniência', 'Limpeza', 'Outros', 'Pets', 'Utilidades']
 
