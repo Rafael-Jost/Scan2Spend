@@ -40,7 +40,6 @@ function App() {
   const [nomeUsuario, setNomeUsuario] = useState('')
   const [sobrenomeUsuario, setSobrenomeUsuario] = useState('')
   const [emailUsuario, setEmailUsuario] = useState('')
-  const [usuarioId, setUsuarioId] = useState(null)
   const [orcamentoMensal, setOrcamentoMensal] = useState(null)
   const [exibirPopUpPerfil, setExibirPopUpPerfil] = useState(false)
   const [notasFiscais, setNotasFiscais] = useState([]);
@@ -94,7 +93,6 @@ function App() {
     setNomeUsuario(dadosUsuario.nome)
     setSobrenomeUsuario(dadosUsuario.sobrenome)
     setEmailUsuario(dadosUsuario.email)
-    setUsuarioId(dadosUsuario.usuario_id)
     setOrcamentoMensal(dadosUsuario.orcamento_mensal)
   }, [estadoTela])
 
@@ -106,7 +104,7 @@ function App() {
     setUsuarioLogado(false)
     Cookies.remove('estadoTela');
     setEstadoTela('login')
-    setUsuarioId(null)
+    setNomeUsuario('')
     setAvisoFimSessaoExibido(false)
   }, [])
 
@@ -189,25 +187,24 @@ function App() {
       dt_fim = '31/12/' + new Date().getFullYear()
       tipo_agrupamento = 'MES'
     }
-    const params = new URLSearchParams({ 
-      usuario_id: usuarioId, 
-      dt_inicio: dt_inicio, 
-      dt_fim: dt_fim, 
-      tipo_agrupamento: tipo_agrupamento 
+    const params = new URLSearchParams({
+      dt_inicio: dt_inicio,
+      dt_fim: dt_fim,
+      tipo_agrupamento: tipo_agrupamento
     }).toString();
-    
+
     const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/?${params}`, {
       method: 'GET',
       credentials: 'include'
     })
-    
+
     if (response.ok) {
       const data = await response.json();
       setDespesasTotais(data);
     } else {
       console.error('Erro ao buscar dados.');
     }
-  }, [usuarioId]);
+  }, []);
 
   // ----------------------------------------------------
   // Função para buscar despesas por categoria de produto
@@ -219,17 +216,16 @@ function App() {
       dt_inicio = '01/01/' + new Date().getFullYear()
       dt_fim = '31/12/' + new Date().getFullYear()
     }
-    const params = new URLSearchParams({ 
-      usuario_id: usuarioId, 
-      dt_inicio: dt_inicio, 
+    const params = new URLSearchParams({
+      dt_inicio: dt_inicio,
       dt_fim: dt_fim
     }).toString();
-    
+
     const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/categorias?${params}`, {
       method: 'GET',
       credentials: 'include'
     })
-    
+
     if (response.ok) {
       const data = await response.json();
       setDespesasCategorias(data);
@@ -237,7 +233,7 @@ function App() {
       console.error('Erro ao buscar dados.');
     }
 
-  }, [usuarioId])
+  }, [])
 
   // ------------------------------------------------------
   // Função para buscar despesas por categoria ao longo do tempo
@@ -249,7 +245,8 @@ function App() {
       tipo_agrupamento = 'MES'
     }
 
-    const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/categorias/periodo?usuario_id=' + usuarioId + '&dt_inicio=' + dt_inicio + '&dt_fim=' + dt_fim + '&tipo_agrupamento=' + tipo_agrupamento, {
+    const params = new URLSearchParams({ dt_inicio, dt_fim, tipo_agrupamento }).toString();
+    const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/categorias/periodo?${params}`, {
       method: 'GET',
       credentials: 'include'
     });
@@ -261,7 +258,7 @@ function App() {
     } else {
       console.error('Erro ao buscar dados.');
     }
-  }, [usuarioId])
+  }, [])
 
 
   // ------------------------------------------------------
@@ -275,7 +272,8 @@ function App() {
       tipo_agrupamento = 'MES'
     }
 
-    const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/descontos/?usuario_id=' + usuarioId + '&dt_inicio=' + dt_inicio + '&dt_fim=' + dt_fim + '&tipo_agrupamento=' + tipo_agrupamento, {
+    const params = new URLSearchParams({ dt_inicio, dt_fim, tipo_agrupamento }).toString();
+    const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/descontos/?${params}`, {
       method: 'GET',
       credentials: 'include'
     });
@@ -288,14 +286,14 @@ function App() {
       console.error('Erro ao buscar descontos.');
     }
 
-  }, [usuarioId])
+  }, [])
 
   // ------------------------------------------------------
   // Função para buscar insights personalizados para o usuário
   // ------------------------------------------------------
   const buscarInsights = useCallback( async () => {
     if (usuarioLogado == false || usuarioLogado == '') { return }
-    const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/insights?usuario_id=' + usuarioId, {
+    const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/insights', {
       method: 'GET',
       credentials: 'include'
     });
@@ -307,7 +305,7 @@ function App() {
     }else {
       console.error('Erro ao buscar insights.');
     }
-  }, [usuarioId])
+  }, [])
 
 
   // ------------------------------------------------------
@@ -325,7 +323,8 @@ function App() {
       dt_inicio = `01/${mes}/${ano}`
       dt_fim = `${String(ultimoDiaMes).padStart(2, '0')}/${mes}/${ano}`
     }
-    const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/topProdutos?usuario_id=' + usuarioId + '&dt_inicio=' + dt_inicio + '&dt_fim=' + dt_fim, {
+    const params = new URLSearchParams({ dt_inicio, dt_fim }).toString();
+    const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/topProdutos?${params}`, {
       method: 'GET',
       credentials: 'include'
     });
@@ -337,10 +336,10 @@ function App() {
     } else {
       console.error('Erro ao buscar top produtos.');
     }
-  }, [usuarioId])
+  }, [])
 
   const buscarDadosPerfilDespesas = useCallback(async () =>{
-    const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/perfil?usuario_id=' + usuarioId, {
+    const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/perfil', {
       method: 'GET',
       credentials: 'include'
     });
@@ -352,13 +351,13 @@ function App() {
     } else {
       console.error('Erro ao buscar Dados de perfil de despesas.');
     }
-  }, [usuarioId])
+  }, [])
 
   // ------------------------------------------------------
   // Função para atualizar ambos os gráficos de despesas 
   // ------------------------------------------------------
   const atualizarGraficos = useCallback(() => {
-    if (!usuarioId) { return }
+    if (!nomeUsuario) { return }
 
     buscarDespesasTotais();
     buscarDespesasCategorias();
@@ -367,7 +366,7 @@ function App() {
     buscarTopProdutos();
     buscarDadosPerfilDespesas();
     buscarDescontos();
-  }, [buscarDespesasTotais, buscarDespesasCategorias, buscarDespesasCategoriasPeriodo, buscarInsights, buscarTopProdutos, buscarDadosPerfilDespesas, usuarioId])
+  }, [buscarDespesasTotais, buscarDespesasCategorias, buscarDespesasCategoriasPeriodo, buscarInsights, buscarTopProdutos, buscarDadosPerfilDespesas, buscarDescontos, nomeUsuario])
 
   // ------------------------------------------------------
   // Atualiza os gráficos sempre que o usuário fizer login
@@ -418,7 +417,6 @@ function App() {
         {exibirPopUpPerfil ? (
           <PopUpPerfil
             notasFiscais={notasFiscais}
-            usuarioId={usuarioId}
             nomeUsuario={nomeUsuario}
             sobrenomeUsuario={sobrenomeUsuario}
             emailUsuario={emailUsuario}
@@ -475,13 +473,12 @@ function App() {
 
 
   const buscarNotasFiscais = useCallback(async () => {
-        if (!usuarioId) {
+        if (!nomeUsuario) {
             setNotasFiscais([]);
             return;
         }
-        console.log('Buscando notas fiscais para usuárioId:', usuarioId);
         try {
-            const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/nota_fiscal?usuario_id=${usuarioId}`, {
+            const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/nota_fiscal`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -509,7 +506,7 @@ function App() {
             console.error('Erro ao buscar notas fiscais do usuário:', error);
             setNotasFiscais([]);
         }
-    }, [usuarioId]);
+    }, [nomeUsuario]);
 
   useEffect(() => {
     if (estadoTela === 'login') { return }
@@ -539,7 +536,7 @@ function App() {
         }}></BotaoSimples>
         <CardSemLink titulo="Bem-vindo ao Scan2Spend!" descricao="Faça upload dos seus recibos, rastreie seus gastos e receba dicas de economia." img={S2S_logo} />
         <QrScanner funcAnalisarRecibo={AnalisarRecibo} />
-        <PopUpDeInformacoes usuarioId={usuarioId} conteudo={parseRecibo(textoRecibo)} popupAberto={popupAberto} setPopupAberto={setPopupAberto} atualizarGraficos={atualizarGraficos}/>
+        <PopUpDeInformacoes conteudo={parseRecibo(textoRecibo)} popupAberto={popupAberto} setPopupAberto={setPopupAberto} atualizarGraficos={atualizarGraficos}/>
         <BotaoSimples id="botao-upload" texto={textoMensagem} className={classeMensagem} onClick={() => {
           setPopupAberto(true)
         }} />
@@ -556,7 +553,7 @@ function App() {
             setEstadoTela('inicial')
             atualizarGraficos()
         }}></BotaoSimples>
-        <PopUpDeInformacoes usuarioId={usuarioId} conteudo={parseRecibo(textoRecibo)} popupAberto={popupAberto} setPopupAberto={setPopupAberto} atualizarGraficos={atualizarGraficos}/>
+        <PopUpDeInformacoes conteudo={parseRecibo(textoRecibo)} popupAberto={popupAberto} setPopupAberto={setPopupAberto} atualizarGraficos={atualizarGraficos}/>
         <div className="tab-switch">
           <button
             className={perfilDespesas ? 'tab-btn tab-btn--active' : 'tab-btn'}
@@ -573,7 +570,7 @@ function App() {
         </div>
           {perfilDespesas ? (
             <>
-              <PerfilDespesas nomeUsuario={nomeUsuario} usuarioID={usuarioId} insights={insights} topProdutos={topProdutos} dadosPerfilDespesas={dadosPerfilDespesas}/>
+              <PerfilDespesas nomeUsuario={nomeUsuario} insights={insights} topProdutos={topProdutos} dadosPerfilDespesas={dadosPerfilDespesas}/>
             </>
           ) : (
             <>

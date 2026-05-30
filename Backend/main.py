@@ -82,7 +82,6 @@ class ItemNota(BaseModel):
     
 class NotaFiscalDetalhes(BaseModel):
     nota_fiscal_id: Optional[int] = None
-    usuario_id: Optional[int] = None
     data_compra: str
     itens: List[ItemNota]
     preco_final_pago: float
@@ -117,7 +116,6 @@ class CadastroUsuario(BaseModel):
     orcamento_mensal: float
 
 class AtualizarUsuario(BaseModel):
-    usuario_id: int
     nome: str
     sobrenome: str
     email: str
@@ -130,7 +128,6 @@ class MeResponse(BaseModel):
     nome: str
     sobrenome: str
     email: str
-    usuario_id: int
     orcamento_mensal: float
 
 class ValidadeTokenResponse(BaseModel):
@@ -273,10 +270,12 @@ def cadastroUsuario(dados_usuario: CadastroUsuario):
             connection.close()
 
 @app.put('/usuario', response_model=MessageResponse)
-def atualizarUsuario(dados_usuario: AtualizarUsuario):
+def atualizarUsuario(request: Request, dados_usuario: AtualizarUsuario):
     connection = None
     cursor = None
     try:
+        usuario_id, _ = validar_token_login(request.cookies.get("token"))
+
         connection = makeDBconnection()
         if 'Erro' in str(connection):
             connection = None
@@ -292,7 +291,7 @@ def atualizarUsuario(dados_usuario: AtualizarUsuario):
                 orcamento_mensal = :orcamento_mensal
             WHERE usuario_id = :usuario_id
         """, {
-            'usuario_id': dados_usuario.usuario_id,
+            'usuario_id': usuario_id,
             'nome': dados_usuario.nome.capitalize(),
             'sobrenome': dados_usuario.sobrenome.capitalize(),
             'email': dados_usuario.email,
@@ -430,7 +429,7 @@ def me(request: Request):
         print(f"Erro ao buscar informações do usuário: {e}")
         raise HTTPException(status_code=500, detail="Erro interno ao buscar informações do usuário")
     else:
-        return MeResponse(nome=nome, sobrenome=sobrenome, email=email, usuario_id=usuario_id, orcamento_mensal=orcamento)
+        return MeResponse(nome=nome, sobrenome=sobrenome, email=email, orcamento_mensal=orcamento)
     finally:
         if cursor:
             cursor.close()
@@ -442,8 +441,10 @@ def me(request: Request):
 # //////////////////////
 
 @app.get('/despesas/', response_model=list[DespesasResponse])
-def busca_despesas(usuario_id: int, dt_inicio: str, dt_fim: str, tipo_agrupamento: str):
+def busca_despesas(request: Request, dt_inicio: str, dt_fim: str, tipo_agrupamento: str):
     try:
+        usuario_id, _ = validar_token_login(request.cookies.get("token"))
+
         connection = makeDBconnection()
         if 'Erro' in str(connection):
             connection = None
@@ -506,8 +507,10 @@ def busca_despesas(usuario_id: int, dt_inicio: str, dt_fim: str, tipo_agrupament
 
 
 @app.get('/despesas/categorias', response_model=list[DespesasCategoriasResponse])
-def busca_despesas_categorias(usuario_id: int, dt_inicio: str, dt_fim: str, tipo_agrupamento: str = None):
+def busca_despesas_categorias(request: Request, dt_inicio: str, dt_fim: str, tipo_agrupamento: str = None):
     try:
+        usuario_id, _ = validar_token_login(request.cookies.get("token"))
+
         if not tipo_agrupamento:
             tipo_agrupamento = 'ANO'  # Valor padrão para tipo_agrupamento
 
@@ -578,12 +581,14 @@ def busca_despesas_categorias(usuario_id: int, dt_inicio: str, dt_fim: str, tipo
 
 
 @app.get('/despesas/categorias/periodo', response_model=list[dict])
-def busca_despesas_categorias_periodo(usuario_id: int, dt_inicio: str, dt_fim: str, tipo_agrupamento: str = None):
+def busca_despesas_categorias_periodo(request: Request, dt_inicio: str, dt_fim: str, tipo_agrupamento: str = None):
 
     CATEGORIAS = ['Alimentação', 'Bebidas', 'Higiene Pessoal', 'Lanches & Conveniência', 'Limpeza', 'Outros', 'Pets', 'Utilidades']
 
 
     try:
+        usuario_id, _ = validar_token_login(request.cookies.get("token"))
+
         if not tipo_agrupamento:
             tipo_agrupamento = 'ANO'  # Valor padrão para tipo_agrupamento
 
@@ -659,8 +664,10 @@ def busca_despesas_categorias_periodo(usuario_id: int, dt_inicio: str, dt_fim: s
 # //////////////////////
 
 @app.get('/descontos/', response_model=list[DescontosResponse])
-def busca_descontos(usuario_id: int, dt_inicio: str, dt_fim: str, tipo_agrupamento: str):
+def busca_descontos(request: Request, dt_inicio: str, dt_fim: str, tipo_agrupamento: str):
     try:
+        usuario_id, _ = validar_token_login(request.cookies.get("token"))
+
         connection = makeDBconnection()
         if 'Erro' in str(connection):
             connection = None
@@ -727,8 +734,10 @@ def busca_descontos(usuario_id: int, dt_inicio: str, dt_fim: str, tipo_agrupamen
 # //////////////////////////////
 
 @app.get('/despesas/topProdutos', response_model=list[topProdutosResponse])
-def busca_top_produtos(usuario_id: int, dt_inicio: str, dt_fim: str):
+def busca_top_produtos(request: Request, dt_inicio: str, dt_fim: str):
     try:
+        usuario_id, _ = validar_token_login(request.cookies.get("token"))
+
         connection = makeDBconnection()
         if 'Erro' in str(connection):
             connection = None
@@ -776,7 +785,9 @@ def busca_top_produtos(usuario_id: int, dt_inicio: str, dt_fim: str):
         return top_produtos
 
 @app.get('/despesas/insights', response_model=list[InsightResponse])
-def busca_insights(usuario_id: int):
+def busca_insights(request: Request):
+    usuario_id, _ = validar_token_login(request.cookies.get("token"))
+
     def formatar_moeda(v):
         return f"R$ {v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
@@ -934,7 +945,8 @@ def busca_insights(usuario_id: int):
             connection.close()
 
 @app.get('/despesas/perfil', response_model=PerfilDespesasResponse)
-def busca_perfil_depesas(usuario_id: int):
+def busca_perfil_depesas(request: Request):
+    usuario_id, _ = validar_token_login(request.cookies.get("token"))
     try:
         connection = makeDBconnection()
         if 'Erro' in str(connection):
@@ -1063,7 +1075,6 @@ def busca_payload_nota_fiscal(nota_fiscal_id: int):
     else:
         return NotaFiscalDetalhes(
             nota_fiscal_id=primeiro_registro[0],
-            usuario_id=primeiro_registro[1],
             data_compra=primeiro_registro[2].strftime("%Y-%m-%d") if primeiro_registro[2] else "",
             itens=itens,
             preco_final_pago=float(primeiro_registro[3]) if primeiro_registro[3] else 0.0,
@@ -1076,8 +1087,9 @@ def busca_payload_nota_fiscal(nota_fiscal_id: int):
             connection.close()
 
 @app.get("/nota_fiscal", response_model=list[NotaFiscalGet])
-async def busca_nota_fiscal(usuario_id: int):
+async def busca_nota_fiscal(request: Request):
     try:
+        usuario_id, _ = validar_token_login(request.cookies.get("token"))
         connection = makeDBconnection()
 
         if 'Erro' in str(connection):
@@ -1131,11 +1143,10 @@ async def busca_nota_fiscal(usuario_id: int):
 
 
 @app.post("/nota_fiscal", response_model=InsertItemResponse)
-def insert_item(payload: NotaFiscalDetalhes):
+def insert_item(request: Request, payload: NotaFiscalDetalhes):
 
     try:
-
-        usuario_id = payload.usuario_id
+        usuario_id, _ = validar_token_login(request.cookies.get("token"))
         dt_compra = payload.data_compra
         preco_final_pago = payload.preco_final_pago
         desconto_total = payload.desconto_total
@@ -1182,7 +1193,9 @@ def insert_item(payload: NotaFiscalDetalhes):
 
 
 @app.put("/nota_fiscal", response_model=MessageResponse)
-def update_nota_fiscal(payload: NotaFiscalDetalhes):
+def update_nota_fiscal(request: Request, payload: NotaFiscalDetalhes):
+
+    usuario_id, _ = validar_token_login(request.cookies.get("token"))
 
     if not payload.nota_fiscal_id:
         raise HTTPException(status_code=400, detail="nota_fiscal_id é obrigatório para atualização")

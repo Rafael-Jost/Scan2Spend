@@ -1,6 +1,6 @@
 import perfilIcon from '../assets/perfil.png'
 
-function PerfilDespesas({nomeUsuario, usuarioID, insights, topProdutos, dadosPerfilDespesas}) {
+function PerfilDespesas({nomeUsuario, insights, topProdutos, dadosPerfilDespesas}) {
 
     function ListaInsights(insights) {
         const dicionarioCores = {"info": "#52a6ff61", "warning": "#ffe79661", "success": "#adffc061", "danger": "#ff899361"}

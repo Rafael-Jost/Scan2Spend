@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useState } from 'react';
 
-function PopUpNotasFiscais({notasFiscais, fncFechar, display, usuarioId, setPopUpInformacoesAberto, setConteudo }, ref) {
+function PopUpNotasFiscais({notasFiscais, fncFechar, display, setPopUpInformacoesAberto, setConteudo }, ref) {
 
     return (
     <>

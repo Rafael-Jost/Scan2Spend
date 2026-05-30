@@ -2,7 +2,7 @@ import CardEdicao from './CardsEdicao.jsx'
 import { useState } from 'react'
 import Swal from 'sweetalert2'
 
-function PopUpDeInformacoes({conteudo, popupAberto, setPopupAberto, atualizarGraficos, usuarioId}) {
+function PopUpDeInformacoes({conteudo, popupAberto, setPopupAberto, atualizarGraficos}) {
     const [notaFiscalId, setNotaFiscalId] = useState(null);
 
     return (
@@ -20,7 +20,7 @@ function PopUpDeInformacoes({conteudo, popupAberto, setPopupAberto, atualizarGra
         <button
           style={{ marginTop: '20px', marginLeft: '10px', backgroundColor: '#4CAF50', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '5px' }}
           onClick={async () => {
-            const status_salvamento = await SalvarPayload(usuarioId, notaFiscalId);
+            const status_salvamento = await SalvarPayload(notaFiscalId);
             Swal.fire({
               toast: true,
               position: 'top-start',
@@ -42,7 +42,7 @@ function PopUpDeInformacoes({conteudo, popupAberto, setPopupAberto, atualizarGra
   
 }
 
-export async function SalvarPayload(usuarioId, notaFiscalId) {
+export async function SalvarPayload(notaFiscalId) {
 
     if (notaFiscalId) {
         console.log('Editando nota fiscal existente com ID:', notaFiscalId);
@@ -76,7 +76,6 @@ export async function SalvarPayload(usuarioId, notaFiscalId) {
 
     const payloadAtualizado = {
         nota_fiscal_id: notaFiscalId,
-        usuario_id: usuarioId,
         data_compra: dataCompraInputs[0].value,
         preco_final_pago: parseFloat(precoFinalPagoInputs[0].value),
         desconto_total: parseFloat(descontoTotalInput.value),
@@ -92,7 +91,7 @@ export async function SalvarPayload(usuarioId, notaFiscalId) {
           headers: {
               'Content-Type': 'application/json'
           },
-          // credentials: 'include',
+          credentials: 'include',
           body: JSON.stringify(payloadAtualizado)
       })
     }else{

@@ -1,7 +1,7 @@
 import React, { forwardRef, use, useEffect, useState } from 'react';
 import Swal from 'sweetalert2'
 
-function PopUpConfigurações({notasFiscais, fncFechar, display, usuarioId, setConteudo, nomeUsuario, sobrenomeUsuario, orcamentoMensal, emailUsuario, carregaUsuario }, ref) {
+function PopUpConfigurações({notasFiscais, fncFechar, display, setConteudo, nomeUsuario, sobrenomeUsuario, orcamentoMensal, emailUsuario, carregaUsuario }, ref) {
 
      const formatarOrcamento = (valor) => {
         if (valor == null || valor === '') return ''
@@ -15,7 +15,6 @@ function PopUpConfigurações({notasFiscais, fncFechar, display, usuarioId, setC
     }
 
     const [payload, setPayload] = useState({
-        usuario_id: usuarioId,
         nome: nomeUsuario,
         sobrenome: sobrenomeUsuario,
         email: emailUsuario,
