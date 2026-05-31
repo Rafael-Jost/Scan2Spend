@@ -1,12 +1,12 @@
 import asyncio
 from pathlib import Path
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Depends
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 from openai import OpenAI
 from deepdiff import DeepDiff
 
-from database import makeDBconnection
+from database import get_db
 from models.schemas import (
     NotaFiscalGet, NotaFiscalDetalhes, ItemNota,
     InsertItemResponse, ReceiptExpenses, MessageResponse
@@ -27,15 +27,8 @@ def get_openai_client():
     return _openai_client
 
 
-def busca_payload_nota_fiscal(nota_fiscal_id: int):
-    connection = None
-    cursor = None
+def busca_payload_nota_fiscal(nota_fiscal_id: int, connection):
     try:
-        connection = makeDBconnection()
-        if 'Erro' in str(connection):
-            connection = None
-            raise Exception(connection)
-
         cursor = connection.cursor()
         cursor.execute("""
             SELECT
@@ -90,24 +83,13 @@ def busca_payload_nota_fiscal(nota_fiscal_id: int):
             preco_final_pago=float(primeiro_registro[3]) if primeiro_registro[3] else 0.0,
             desconto_total=float(primeiro_registro[4]) if primeiro_registro[4] else 0.0,
         )
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
 
 
 @router.get("/nota_fiscal", response_model=list[NotaFiscalGet])
-async def busca_nota_fiscal(request: Request):
-    connection = None
-    cursor = None
+async def busca_nota_fiscal(request: Request, connection=Depends(get_db)):
+
     try:
         usuario_id, _ = validar_token_login(request.cookies.get("token"))
-
-        connection = makeDBconnection()
-        if 'Erro' in str(connection):
-            connection = None
-            raise Exception(connection)
 
         cursor = connection.cursor()
         cursor.execute("""
@@ -146,24 +128,13 @@ async def busca_nota_fiscal(request: Request):
         raise HTTPException(status_code=503, detail="Erro ao buscar notas fiscais")
     else:
         return notas_fiscais
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
 
 
 @router.post("/nota_fiscal", response_model=InsertItemResponse)
-def insert_item(request: Request, payload: NotaFiscalDetalhes):
-    connection = None
-    cursor = None
+def insert_item(request: Request, payload: NotaFiscalDetalhes, connection=Depends(get_db)):
+
     try:
         usuario_id, _ = validar_token_login(request.cookies.get("token"))
-
-        connection = makeDBconnection()
-        if 'Erro' in str(connection):
-            connection = None
-            raise Exception(connection)
 
         cursor = connection.cursor()
         id_var = cursor.var(int)
@@ -202,22 +173,17 @@ def insert_item(request: Request, payload: NotaFiscalDetalhes):
         return {"text": f"Erro ao inserir itens no banco de dados. {e}"}
     else:
         return {"text": "Itens inserido com sucesso no banco de dados."}
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
 
 
 @router.put("/nota_fiscal", response_model=MessageResponse)
-def update_nota_fiscal(request: Request, payload: NotaFiscalDetalhes):
+def update_nota_fiscal(request: Request, payload: NotaFiscalDetalhes, connection=Depends(get_db)):
     usuario_id, _ = validar_token_login(request.cookies.get("token"))
 
     if not payload.nota_fiscal_id:
         raise HTTPException(status_code=400, detail="nota_fiscal_id é obrigatório para atualização")
 
     nota_fiscal_id = payload.nota_fiscal_id
-    payload_banco = busca_payload_nota_fiscal(nota_fiscal_id)
+    payload_banco = busca_payload_nota_fiscal(nota_fiscal_id, connection)
     payload_banco_dict = payload_banco.model_dump(mode="json")
     payload_dict = payload.model_dump(mode="json")
     diff = DeepDiff(payload_banco_dict, payload_dict, ignore_order=True)
@@ -273,14 +239,7 @@ def update_nota_fiscal(request: Request, payload: NotaFiscalDetalhes):
             if key.startswith("root['itens']"):
                 itens_removidos.append(value['nota_fiscal_item_id'])
 
-    connection = None
-    cursor = None
     try:
-        connection = makeDBconnection()
-        if 'Erro' in str(connection):
-            connection = None
-            raise Exception(connection)
-
         cursor = connection.cursor()
 
         cursor.execute("""
@@ -331,17 +290,12 @@ def update_nota_fiscal(request: Request, payload: NotaFiscalDetalhes):
         raise HTTPException(status_code=500, detail="Erro ao atualizar nota fiscal: " + str(e))
     else:
         return MessageResponse(msg="Nota fiscal atualizada com sucesso.")
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
 
 
 @router.get("/nota_fiscal/{nota_fiscal_id}", response_model=NotaFiscalDetalhes)
-async def busca_iten_nota_fiscal(nota_fiscal_id: int):
+async def busca_iten_nota_fiscal(nota_fiscal_id: int, connection=Depends(get_db)):
     try:
-        return busca_payload_nota_fiscal(nota_fiscal_id)
+        return busca_payload_nota_fiscal(nota_fiscal_id, connection)
     except HTTPException:
         raise
     except Exception as e:

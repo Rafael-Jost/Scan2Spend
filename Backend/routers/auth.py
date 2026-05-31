@@ -2,9 +2,9 @@ import os
 import jwt
 import oracledb
 from datetime import datetime, timedelta, timezone
-from fastapi import APIRouter, HTTPException, Request, Response
+from fastapi import APIRouter, HTTPException, Request, Response, Depends
 
-from database import makeDBconnection
+from database import get_db
 from models.schemas import (
     Login, LoginResponse, CadastroUsuario, AtualizarUsuario,
     CadastroUsuarioResponse, MeResponse, ValidadeTokenResponse, MessageResponse
@@ -39,15 +39,8 @@ def validar_token_login(token):
 
 
 @router.post('/cadastrarUsuario/', response_model=CadastroUsuarioResponse)
-def cadastroUsuario(dados_usuario: CadastroUsuario):
-    connection = None
-    cursor = None
+def cadastroUsuario(dados_usuario: CadastroUsuario, connection=Depends(get_db)):
     try:
-        connection = makeDBconnection()
-        if 'Erro' in str(connection):
-            connection = None
-            raise HTTPException(status_code=503, detail="Erro ao estabelecer conexão com o banco de dados")
-
         cursor = connection.cursor()
         cursor.execute(
             "INSERT INTO usuarios(nome, sobrenome, email, senha, orcamento_mensal) "
@@ -69,24 +62,12 @@ def cadastroUsuario(dados_usuario: CadastroUsuario):
         raise HTTPException(status_code=500, detail="Erro interno ao cadastrar usuário")
     else:
         return CadastroUsuarioResponse(msg="Usuário cadastrado com sucesso")
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
 
 
 @router.put('/usuario', response_model=MessageResponse)
-def atualizarUsuario(request: Request, dados_usuario: AtualizarUsuario):
-    connection = None
-    cursor = None
+def atualizarUsuario(request: Request, dados_usuario: AtualizarUsuario, connection=Depends(get_db)):
     try:
         usuario_id, _ = validar_token_login(request.cookies.get("token"))
-
-        connection = makeDBconnection()
-        if 'Erro' in str(connection):
-            connection = None
-            raise HTTPException(status_code=503, detail="Erro ao estabelecer conexão com o banco de dados")
 
         cursor = connection.cursor()
         cursor.execute("""
@@ -112,23 +93,12 @@ def atualizarUsuario(request: Request, dados_usuario: AtualizarUsuario):
         raise HTTPException(status_code=500, detail="Erro interno ao atualizar usuário")
     else:
         return MessageResponse(msg="Usuário atualizado com sucesso")
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
 
 
 @router.post('/login', response_model=LoginResponse)
-def login(credenciais: Login, response: Response):
-    connection = None
-    cursor = None
-    try:
-        connection = makeDBconnection()
-        if 'Erro' in str(connection):
-            connection = None
-            raise HTTPException(status_code=503, detail="Erro ao estabelecer conexão com o banco de dados")
+def login(credenciais: Login, response: Response, connection=Depends(get_db)):
 
+    try:
         cursor = connection.cursor()
         usuario_id_var = cursor.var(int)
         cursor.execute("""
@@ -168,11 +138,6 @@ def login(credenciais: Login, response: Response):
             expires=datetime.now(timezone.utc) + timedelta(minutes=30)
         )
         return LoginResponse(msg="Login realizado com sucesso")
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
 
 
 @router.get('/validarToken', response_model=ValidadeTokenResponse)
@@ -190,17 +155,11 @@ def validar_token(request: Request):
 
 
 @router.get('/me', response_model=MeResponse)
-def me(request: Request):
-    connection = None
-    cursor = None
+def me(request: Request, connection=Depends(get_db)):
     try:
         token = request.cookies.get("token")
         usuario_id, _ = validar_token_login(token)
 
-        connection = makeDBconnection()
-        if 'Erro' in str(connection):
-            connection = None
-            raise HTTPException(status_code=503, detail="Erro ao estabelecer conexão com o banco de dados")
         cursor = connection.cursor()
 
         nome_var = cursor.var(str)
@@ -236,23 +195,12 @@ def me(request: Request):
         raise HTTPException(status_code=500, detail="Erro interno ao buscar informações do usuário")
     else:
         return MeResponse(nome=nome, sobrenome=sobrenome, email=email, orcamento_mensal=orcamento)
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
 
 
 @router.post("/redefinir_senha", response_model=MessageResponse)
-def redefinir_senha(email_destino: str):
-    connection = None
-    cursor = None
-    try:
-        connection = makeDBconnection()
-        if 'Erro' in str(connection):
-            connection = None
-            raise Exception(connection)
+def redefinir_senha(email_destino: str, connection=Depends(get_db)):
 
+    try:
         cursor = connection.cursor()
         cursor.execute("SELECT usuario_id FROM usuarios WHERE email = :email", {"email": email_destino})
         result = cursor.fetchone()
@@ -263,11 +211,6 @@ def redefinir_senha(email_destino: str):
     except Exception as e:
         print(f"Erro ao gerar token de redefinição de senha: {e}")
         raise HTTPException(status_code=500, detail=f"Erro ao gerar token de redefinição de senha: {e}")
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
 
     SECRET_KEY = os.getenv("SECRET_KEY")
     try:
@@ -285,7 +228,7 @@ def redefinir_senha(email_destino: str):
 
 
 @router.put("/redefinir_senha", response_model=MessageResponse)
-def atualizar_senha(token: str, nova_senha: str):
+def atualizar_senha(token: str, nova_senha: str, connection=Depends(get_db)):
     SECRET_KEY = os.getenv("SECRET_KEY")
 
     try:
@@ -300,15 +243,11 @@ def atualizar_senha(token: str, nova_senha: str):
         raise HTTPException(status_code=404, detail="Token inválido")
     except HTTPException:
         raise
+    except Exception as e:
+        print(f"Erro ao validar token JWT: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao validar token JWT: {e}")
 
-    connection = None
-    cursor = None
     try:
-        connection = makeDBconnection()
-        if 'Erro' in str(connection):
-            connection = None
-            raise Exception(connection)
-
         cursor = connection.cursor()
         cursor.execute("SELECT usuario_id FROM usuarios WHERE email = :email", {"email": email})
         result = cursor.fetchone()
@@ -329,8 +268,3 @@ def atualizar_senha(token: str, nova_senha: str):
         raise HTTPException(status_code=500, detail=f"Erro ao atualizar senha: {e}")
     else:
         return MessageResponse(msg="Senha atualizada com sucesso.")
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()

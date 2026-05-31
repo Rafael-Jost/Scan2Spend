@@ -1,6 +1,6 @@
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 
-from database import makeDBconnection
+from database import get_db
 from models.schemas import (
     DespesasResponse, DescontosResponse, PerfilDespesasResponse,
     DespesasCategoriasResponse, InsightResponse, topProdutosResponse
@@ -11,16 +11,9 @@ router = APIRouter()
 
 
 @router.get('/despesas/', response_model=list[DespesasResponse])
-def busca_despesas(request: Request, dt_inicio: str, dt_fim: str, tipo_agrupamento: str):
-    connection = None
-    cursor = None
+def busca_despesas(request: Request, dt_inicio: str, dt_fim: str, tipo_agrupamento: str, connection=Depends(get_db)):
     try:
         usuario_id, _ = validar_token_login(request.cookies.get("token"))
-
-        connection = makeDBconnection()
-        if 'Erro' in str(connection):
-            connection = None
-            raise Exception(connection)
 
         cursor = connection.cursor()
         cursor.execute("""
@@ -67,27 +60,15 @@ def busca_despesas(request: Request, dt_inicio: str, dt_fim: str, tipo_agrupamen
         raise HTTPException(status_code=500, detail=f"Erro ao buscar despesas: {e}")
     else:
         return despesas
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
 
 
 @router.get('/despesas/categorias', response_model=list[DespesasCategoriasResponse])
-def busca_despesas_categorias(request: Request, dt_inicio: str, dt_fim: str, tipo_agrupamento: str = None):
-    connection = None
-    cursor = None
+def busca_despesas_categorias(request: Request, dt_inicio: str, dt_fim: str, tipo_agrupamento: str = None, connection=Depends(get_db)):
     try:
         usuario_id, _ = validar_token_login(request.cookies.get("token"))
 
         if not tipo_agrupamento:
             tipo_agrupamento = 'ANO'
-
-        connection = makeDBconnection()
-        if 'Erro' in str(connection):
-            connection = None
-            raise Exception(connection)
 
         cursor = connection.cursor()
         cursor.execute("""
@@ -139,29 +120,17 @@ def busca_despesas_categorias(request: Request, dt_inicio: str, dt_fim: str, tip
         raise HTTPException(status_code=500, detail=f"Erro ao buscar despesas: {e}")
     else:
         return despesas
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
 
 
 @router.get('/despesas/categorias/periodo', response_model=list[dict])
-def busca_despesas_categorias_periodo(request: Request, dt_inicio: str, dt_fim: str, tipo_agrupamento: str = None):
+def busca_despesas_categorias_periodo(request: Request, dt_inicio: str, dt_fim: str, tipo_agrupamento: str = None, connection=Depends(get_db)):
     CATEGORIAS = ['Alimentação', 'Bebidas', 'Higiene Pessoal', 'Lanches & Conveniência', 'Limpeza', 'Outros', 'Pets', 'Utilidades']
 
-    connection = None
-    cursor = None
     try:
         usuario_id, _ = validar_token_login(request.cookies.get("token"))
 
         if not tipo_agrupamento:
             tipo_agrupamento = 'ANO'
-
-        connection = makeDBconnection()
-        if 'Erro' in str(connection):
-            connection = None
-            raise Exception(connection)
 
         cursor = connection.cursor()
         cursor.execute("""
@@ -215,24 +184,12 @@ def busca_despesas_categorias_periodo(request: Request, dt_inicio: str, dt_fim: 
         raise HTTPException(status_code=500, detail=f"Erro ao buscar despesas: {e}")
     else:
         return despesas
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
 
 
 @router.get('/descontos/', response_model=list[DescontosResponse])
-def busca_descontos(request: Request, dt_inicio: str, dt_fim: str, tipo_agrupamento: str):
-    connection = None
-    cursor = None
+def busca_descontos(request: Request, dt_inicio: str, dt_fim: str, tipo_agrupamento: str = None, connection=Depends(get_db)):
     try:
         usuario_id, _ = validar_token_login(request.cookies.get("token"))
-
-        connection = makeDBconnection()
-        if 'Erro' in str(connection):
-            connection = None
-            raise Exception(connection)
 
         cursor = connection.cursor()
         cursor.execute("""
@@ -279,24 +236,12 @@ def busca_descontos(request: Request, dt_inicio: str, dt_fim: str, tipo_agrupame
         raise HTTPException(status_code=500, detail=f"Erro ao buscar descontos: {e}")
     else:
         return descontos
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
 
 
 @router.get('/despesas/topProdutos', response_model=list[topProdutosResponse])
-def busca_top_produtos(request: Request, dt_inicio: str, dt_fim: str):
-    connection = None
-    cursor = None
+def busca_top_produtos(request: Request, dt_inicio: str, dt_fim: str, connection=Depends(get_db)):
     try:
         usuario_id, _ = validar_token_login(request.cookies.get("token"))
-
-        connection = makeDBconnection()
-        if 'Erro' in str(connection):
-            connection = None
-            raise Exception(connection)
 
         cursor = connection.cursor()
         cursor.execute("""
@@ -333,29 +278,17 @@ def busca_top_produtos(request: Request, dt_inicio: str, dt_fim: str):
         raise HTTPException(status_code=500, detail=f"Erro ao buscar top produtos: {e}")
     else:
         return top_produtos
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
 
 
 @router.get('/despesas/insights', response_model=list[InsightResponse])
-def busca_insights(request: Request):
+def busca_insights(request: Request, connection=Depends(get_db)):
     usuario_id, _ = validar_token_login(request.cookies.get("token"))
 
     def formatar_moeda(v):
         return f"R$ {v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
     insights = []
-    connection = None
-    cursor = None
     try:
-        connection = makeDBconnection()
-        if 'Erro' in str(connection):
-            connection = None
-            raise Exception(connection)
-
         cursor = connection.cursor()
 
         cursor.execute("""
@@ -489,24 +422,13 @@ def busca_insights(request: Request):
         raise HTTPException(status_code=500, detail=f"Erro ao buscar insights: {e}")
     else:
         return insights
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
 
 
 @router.get('/despesas/perfil', response_model=PerfilDespesasResponse)
-def busca_perfil_despesas(request: Request):
+def busca_perfil_despesas(request: Request, connection=Depends(get_db)):
     usuario_id, _ = validar_token_login(request.cookies.get("token"))
-    connection = None
-    cursor = None
-    try:
-        connection = makeDBconnection()
-        if 'Erro' in str(connection):
-            connection = None
-            raise Exception(connection)
 
+    try:
         cursor = connection.cursor()
         cursor.execute("""
             WITH Despesas_Mes_Anterior As (
@@ -561,8 +483,3 @@ def busca_perfil_despesas(request: Request):
     except Exception as e:
         print(f"Erro ao buscar perfil de despesas: {e}")
         raise HTTPException(status_code=500, detail=f"Erro ao buscar perfil de despesas: {e}")
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()

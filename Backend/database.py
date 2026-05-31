@@ -38,3 +38,11 @@ def makeDBconnection():
     
     else:
         return connection
+
+def get_db():
+    connection = makeDBconnection()
+    try:
+        yield connection
+    finally:
+        if connection and not isinstance(connection, str):
+            connection.close()
