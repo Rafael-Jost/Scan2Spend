@@ -19,7 +19,7 @@ def enviar_redefinicao_senha(email_destino, token):
 
     msg.attach(MIMEText(html, "html"))
 
-    logo_path = '../Frontend/src/assets/Scan2Spend_logo.png'
+    logo_path = os.path.join(os.path.dirname(__file__), '..', 'Frontend', 'src', 'assets', 'Scan2Spend_logo.png')
     with open(logo_path, 'rb') as f:
         img = MIMEImage(f.read())
         img.add_header('Content-ID', '<logo_scan2spend>')
