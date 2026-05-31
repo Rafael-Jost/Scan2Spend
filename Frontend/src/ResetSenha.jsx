@@ -26,11 +26,12 @@ function ResetSenha() {
             })
             return
         }
-        const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/redefinir_senha?token=' + token + '&nova_senha=' + senha, {
+        const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/redefinir_senha', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
+            body: JSON.stringify({ token, nova_senha: senha })
         });
 
         if (!response.ok) {

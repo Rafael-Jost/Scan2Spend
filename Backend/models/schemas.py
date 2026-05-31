@@ -101,3 +101,7 @@ class ValidadeTokenResponse(BaseModel):
 
 class MessageResponse(BaseModel):
     msg: str = None
+
+class RedefinirSenhaRequest(BaseModel):
+    token: str
+    nova_senha: str

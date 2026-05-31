@@ -7,7 +7,8 @@ from fastapi import APIRouter, HTTPException, Request, Response, Depends
 from database import get_db
 from models.schemas import (
     Login, LoginResponse, CadastroUsuario, AtualizarUsuario,
-    CadastroUsuarioResponse, MeResponse, ValidadeTokenResponse, MessageResponse
+    CadastroUsuarioResponse, MeResponse, ValidadeTokenResponse, MessageResponse,
+    RedefinirSenhaRequest
 )
 from functions import enviar_redefinicao_senha
 
@@ -228,11 +229,11 @@ def redefinir_senha(email_destino: str, connection=Depends(get_db)):
 
 
 @router.put("/redefinir_senha", response_model=MessageResponse)
-def atualizar_senha(token: str, nova_senha: str, connection=Depends(get_db)):
+def atualizar_senha(payload: RedefinirSenhaRequest, connection=Depends(get_db)):
     SECRET_KEY = os.getenv("SECRET_KEY")
 
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        payload = jwt.decode(payload.token, SECRET_KEY, algorithms=["HS256"])
         email = payload.get("email")
         if not email:
             raise HTTPException(status_code=404, detail="Token inválido")
@@ -257,7 +258,7 @@ def atualizar_senha(token: str, nova_senha: str, connection=Depends(get_db)):
         usuario_id = result[0]
         cursor.execute(
             "UPDATE usuarios SET senha = pkg_auth.encrypt_pwd(:senha) WHERE usuario_id = :usuario_id",
-            {"senha": nova_senha, "usuario_id": usuario_id}
+            {"senha": payload.nova_senha, "usuario_id": usuario_id}
         )
         connection.commit()
 
