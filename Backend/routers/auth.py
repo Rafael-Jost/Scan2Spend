@@ -229,11 +229,14 @@ def redefinir_senha(email_destino: str, connection=Depends(get_db)):
 
 
 @router.put("/redefinir_senha", response_model=MessageResponse)
-def atualizar_senha(payload: RedefinirSenhaRequest, connection=Depends(get_db)):
+def atualizar_senha(body: RedefinirSenhaRequest, connection=Depends(get_db)):
     SECRET_KEY = os.getenv("SECRET_KEY")
 
     try:
-        payload = jwt.decode(payload.token, SECRET_KEY, algorithms=["HS256"])
+        if not body.nova_senha:
+            raise HTTPException(status_code=400, detail="Nova senha é obrigatória")
+        
+        payload = jwt.decode(body.token, SECRET_KEY, algorithms=["HS256"])
         email = payload.get("email")
         if not email:
             raise HTTPException(status_code=404, detail="Token inválido")
@@ -258,7 +261,7 @@ def atualizar_senha(payload: RedefinirSenhaRequest, connection=Depends(get_db)):
         usuario_id = result[0]
         cursor.execute(
             "UPDATE usuarios SET senha = pkg_auth.encrypt_pwd(:senha) WHERE usuario_id = :usuario_id",
-            {"senha": payload.nova_senha, "usuario_id": usuario_id}
+            {"senha": body.nova_senha, "usuario_id": usuario_id}
         )
         connection.commit()
 

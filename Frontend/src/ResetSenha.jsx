@@ -44,7 +44,7 @@ function ResetSenha() {
             toast: true,
             position: 'top-start',
             title: 'Sucesso!',
-            text: 'Senha redefinida com sucesso!',
+            text: 'Email de redefinição de senha enviado!',
             icon: 'success',
             showConfirmButton: false,
             timer: 2000,
