@@ -162,6 +162,16 @@ function App() {
         }
       } catch (error) {
         console.error('Erro ao verificar token:', error)
+        Swal.fire({
+                    toast: true,
+                    position: 'top-start',
+                    title: 'Algo deu errado :(',
+                    text: 'Ocorreu um erro ao verificar o token. Tente novamente mais tarde.',
+                    icon: 'error',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                })
       }
     }
 
@@ -193,16 +203,30 @@ function App() {
       tipo_agrupamento: tipo_agrupamento
     }).toString();
 
-    const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/?${params}`, {
-      method: 'GET',
-      credentials: 'include'
-    })
+    try {
+      const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/?${params}`, {
+        method: 'GET',
+        credentials: 'include'
+      })
 
-    if (response.ok) {
-      const data = await response.json();
-      setDespesasTotais(data);
-    } else {
-      console.error('Erro ao buscar dados.');
+      if (response.ok) {
+        const data = await response.json();
+        setDespesasTotais(data);
+      } else {
+        console.error('Erro ao buscar dados.');
+      }
+    } catch (error) {
+      console.error('Erro ao buscar dados:', error)
+      Swal.fire({
+                  toast: true,
+                  position: 'top-start',
+                  title: 'Algo deu errado :(',
+                  text: 'Ocorreu um erro ao buscar despesas totais. Tente novamente mais tarde.',
+                  icon: 'error',
+                  showConfirmButton: false,
+                  timer: 2000,
+                  timerProgressBar: true
+              })
     }
   }, []);
 
@@ -222,18 +246,31 @@ function App() {
       dt_fim: dt_fim
     }).toString();
 
-    const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/categorias?${params}`, {
-      method: 'GET',
-      credentials: 'include'
-    })
+    try {
+      const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/categorias?${params}`, {
+        method: 'GET',
+        credentials: 'include'
+      })
 
-    if (response.ok) {
-      const data = await response.json();
-      setDespesasCategorias(data);
-    } else {
-      console.error('Erro ao buscar dados.');
+      if (response.ok) {
+        const data = await response.json();
+        setDespesasCategorias(data);
+      } else {
+        console.error('Erro ao buscar dados.');
+      }
+    } catch (error) {
+      console.error('Erro ao buscar dados:', error)
+      Swal.fire({
+                  toast: true,
+                  position: 'top-start',
+                  title: 'Algo deu errado :(',
+                  text: 'Ocorreu um erro ao buscar despesas por categoria. Tente novamente mais tarde.',
+                  icon: 'error',
+                  showConfirmButton: false,
+                  timer: 2000,
+                  timerProgressBar: true
+              })
     }
-
   }, [])
 
   // ------------------------------------------------------
@@ -247,17 +284,33 @@ function App() {
     }
 
     const params = new URLSearchParams({ dt_inicio, dt_fim, tipo_agrupamento }).toString();
-    const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/categorias/periodo?${params}`, {
-      method: 'GET',
-      credentials: 'include'
-    });
 
-    if (response.ok) {
-      const data = await response.json();
-      console.log('Dados de despesas por categoria e período recebidos:', data);
-      setDespesasCategoriasPeriodo(data);
-    } else {
-      console.error('Erro ao buscar dados.');
+    try {
+      const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/categorias/periodo?${params}`, {
+        method: 'GET',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Dados de despesas por categoria e período recebidos:', data);
+        setDespesasCategoriasPeriodo(data);
+      } else {
+        console.error('Erro ao buscar dados.');
+      }
+    }
+    catch (error) {
+      console.error('Erro ao buscar dados:', error)
+      Swal.fire({
+                  toast: true,
+                  position: 'top-start',
+                  title: 'Algo deu errado :(',
+                  text: 'Ocorreu um erro ao buscar despesas por categoria e período. Tente novamente mais tarde.',
+                  icon: 'error',
+                  showConfirmButton: false,
+                  timer: 2000,
+                  timerProgressBar: true
+              })
     }
   }, [])
 
@@ -274,19 +327,33 @@ function App() {
     }
 
     const params = new URLSearchParams({ dt_inicio, dt_fim, tipo_agrupamento }).toString();
-    const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/descontos/?${params}`, {
-      method: 'GET',
-      credentials: 'include'
-    });
 
-    if (response.ok) {
-      const data = await response.json();
-      console.log('Descontos recebidos:', data);
-      setDescontos(data);
-    } else {
-      console.error('Erro ao buscar descontos.');
+    try {
+      const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/descontos/?${params}`, {
+        method: 'GET',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Descontos recebidos:', data);
+        setDescontos(data);
+      } else {
+        console.error('Erro ao buscar descontos.');
+      }
+    } catch (error) {
+      console.error('Erro ao buscar descontos:', error)
+      Swal.fire({
+                  toast: true,
+                  position: 'top-start',
+                  title: 'Algo deu errado :(',
+                  text: 'Ocorreu um erro ao buscar descontos. Tente novamente mais tarde.',
+                  icon: 'error',
+                  showConfirmButton: false,
+                  timer: 2000,
+                  timerProgressBar: true
+              })
     }
-
   }, [])
 
   // ------------------------------------------------------
@@ -294,17 +361,32 @@ function App() {
   // ------------------------------------------------------
   const buscarInsights = useCallback( async () => {
     if (usuarioLogado == false || usuarioLogado == '') { return }
-    const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/insights', {
-      method: 'GET',
-      credentials: 'include'
-    });
 
-    if (response.ok) {
-      const data = await response.json();
-      console.log('Insights recebidos:', data);
-      setInsights(data);
-    }else {
-      console.error('Erro ao buscar insights.');
+    try {
+      const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/insights', {
+        method: 'GET',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Insights recebidos:', data);
+        setInsights(data);
+      }else {
+        console.error('Erro ao buscar insights.');
+      }
+    } catch (error) {
+      console.error('Erro ao buscar insights:', error)
+      Swal.fire({
+                  toast: true,
+                  position: 'top-start',
+                  title: 'Algo deu errado :(',
+                  text: 'Ocorreu um erro ao buscar insights. Tente novamente mais tarde.',
+                  icon: 'error',
+                  showConfirmButton: false,
+                  timer: 2000,
+                  timerProgressBar: true
+              })
     }
   }, [])
 
@@ -325,32 +407,62 @@ function App() {
       dt_fim = `${String(ultimoDiaMes).padStart(2, '0')}/${mes}/${ano}`
     }
     const params = new URLSearchParams({ dt_inicio, dt_fim }).toString();
-    const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/topProdutos?${params}`, {
-      method: 'GET',
-      credentials: 'include'
-    });
 
-    if (response.ok) {
-      const data = await response.json();
-      console.log('Top produtos recebidos:', data);
-      setTopProdutos(data);
-    } else {
-      console.error('Erro ao buscar top produtos.');
+    try {
+      const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/topProdutos?${params}`, {
+        method: 'GET',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Top produtos recebidos:', data);
+        setTopProdutos(data);
+      } else {
+        console.error('Erro ao buscar top produtos.');
+      }
+    } catch (error) {
+      console.error('Erro ao buscar top produtos:', error)
+      Swal.fire({
+                    toast: true,
+                    position: 'top-start',
+                    title: 'Algo deu errado :(',
+                    text: 'Ocorreu um erro ao buscar os top produtos. Tente novamente mais tarde.',
+                    icon: 'error',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                })
     }
   }, [])
 
   const buscarDadosPerfilDespesas = useCallback(async () =>{
-    const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/perfil', {
-      method: 'GET',
-      credentials: 'include'
-    });
 
-    if (response.ok) {
-      const data = await response.json();
-      console.log('Dados de perfil de despesas recebidos:', data);
-      setDadosPerfilDespesas(data);
-    } else {
-      console.error('Erro ao buscar Dados de perfil de despesas.');
+    try{
+      const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/perfil', {
+        method: 'GET',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Dados de perfil de despesas recebidos:', data);
+        setDadosPerfilDespesas(data);
+      } else {
+        console.error('Erro ao buscar Dados de perfil de despesas.');
+      }
+    } catch (error) {
+      console.error('Erro ao buscar Dados de perfil de despesas:', error)
+      Swal.fire({
+                  toast: true,
+                  position: 'top-start',
+                  title: 'Algo deu errado :(',
+                  text: 'Ocorreu um erro ao buscar Dados de perfil de despesas. Tente novamente mais tarde.',
+                  icon: 'error',
+                  showConfirmButton: false,
+                  timer: 2000,
+                  timerProgressBar: true
+              })
     }
   }, [])
 
@@ -447,28 +559,42 @@ function App() {
       setClasseMensagem("carregando")
       setTextoMensagem("Analisando...")
 
-      const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/analisar_nf/?QRurl=${encodeURIComponent(url)}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include'
-      })
+      try {
+        const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/analisar_nf/?QRurl=${encodeURIComponent(url)}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
+        })
 
-      if (response.ok) {
-        const data = await response.json()
-          setTextoRecibo(data.text)
-          setClasseMensagem("sucesso")
-          setTextoMensagem("Análise Completa!")
+        if (response.ok) {
+          const data = await response.json()
+            setTextoRecibo(data.text)
+            setClasseMensagem("sucesso")
+            setTextoMensagem("Análise Completa!")
 
-        setTimeout(() => {
-            setPopupAberto(true)
-          }
-      , 1000)
-      }else {
-          setTextoRecibo("Erro ao analisar recibo")
-          setClasseMensagem("erro")
-          setTextoMensagem("Erro ao analisar")
+          setTimeout(() => {
+              setPopupAberto(true)
+            }
+        , 1000)
+        }else {
+            setTextoRecibo("Erro ao analisar recibo")
+            setClasseMensagem("erro")
+            setTextoMensagem("Erro ao analisar")
+        }
+      } catch (error) {
+        console.error('Erro ao analisar recibo:', error)
+        Swal.fire({
+                    toast: true,
+                    position: 'top-start',
+                    title: 'Algo deu errado :(',
+                    text: 'Ocorreu um erro ao analisar o recibo. Tente novamente mais tarde.',
+                    icon: 'error',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                })
       }
   }
 
@@ -505,6 +631,16 @@ function App() {
             })));
         } catch (error) {
             console.error('Erro ao buscar notas fiscais do usuário:', error);
+            Swal.fire({
+                        toast: true,
+                        position: 'top-start',
+                        title: 'Algo deu errado :(',
+                        text: 'Ocorreu um erro ao buscar as notas fiscais. Tente novamente mais tarde.',
+                        icon: 'error',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    })
             setNotasFiscais([]);
         }
     }, [nomeUsuario]);
