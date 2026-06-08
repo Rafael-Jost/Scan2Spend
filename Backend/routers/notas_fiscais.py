@@ -74,7 +74,7 @@ def busca_payload_nota_fiscal(nota_fiscal_id: int, connection):
         raise
     except Exception as e:
         print(f"Erro ao buscar itens da nota fiscal: {e}")
-        raise HTTPException(status_code=503, detail="Erro ao buscar itens da nota fiscal: " + str(e))
+        raise HTTPException(status_code=503, detail="Erro ao buscar itens da nota fiscal")
     else:
         return NotaFiscalDetalhes(
             nota_fiscal_id=primeiro_registro[0],
@@ -170,7 +170,7 @@ def insert_item(request: Request, payload: NotaFiscalDetalhes, connection=Depend
 
     except Exception as e:
         print(f"Erro ao inserir item: {e}")
-        return {"text": f"Erro ao inserir itens no banco de dados. {e}"}
+        return {"text": f"Erro ao inserir itens no banco de dados."}
     else:
         return {"text": "Itens inserido com sucesso no banco de dados."}
 
@@ -287,7 +287,7 @@ def update_nota_fiscal(request: Request, payload: NotaFiscalDetalhes, connection
 
     except Exception as e:
         print(f"Erro ao atualizar nota fiscal: {e}")
-        raise HTTPException(status_code=500, detail="Erro ao atualizar nota fiscal: " + str(e))
+        raise HTTPException(status_code=500, detail="Erro ao atualizar nota fiscal.")
     else:
         return MessageResponse(msg="Nota fiscal atualizada com sucesso.")
 
@@ -300,7 +300,7 @@ async def busca_iten_nota_fiscal(nota_fiscal_id: int, connection=Depends(get_db)
         raise
     except Exception as e:
         print(f"Erro ao buscar detalhes da nota fiscal: {e}")
-        raise HTTPException(status_code=503, detail="Erro ao buscar detalhes da nota fiscal: " + str(e))
+        raise HTTPException(status_code=503, detail="Erro ao buscar detalhes da nota fiscal.")
 
 
 @router.get("/analisar_nf/", response_model=ReceiptExpenses)

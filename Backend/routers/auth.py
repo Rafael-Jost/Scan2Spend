@@ -212,7 +212,7 @@ def redefinir_senha(email_destino: str, connection=Depends(get_db)):
         raise
     except Exception as e:
         print(f"Erro ao gerar token de redefinição de senha: {e}")
-        raise HTTPException(status_code=500, detail=f"Erro ao gerar token de redefinição de senha: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao gerar token de redefinição de senha.")
 
     
     try:
@@ -224,7 +224,7 @@ def redefinir_senha(email_destino: str, connection=Depends(get_db)):
         enviar_redefinicao_senha(email_destino, token)
     except Exception as e:
         print(f"Erro ao enviar email de redefinição de senha: {e}")
-        raise HTTPException(status_code=500, detail=f"Erro ao enviar email de redefinição de senha: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao enviar email de redefinição de senha.")
     else:
         return MessageResponse(msg="Email de redefinição de senha enviado com sucesso.")
 
@@ -250,7 +250,7 @@ def atualizar_senha(body: RedefinirSenhaRequest, connection=Depends(get_db)):
         raise
     except Exception as e:
         print(f"Erro ao validar token JWT: {e}")
-        raise HTTPException(status_code=500, detail=f"Erro ao validar token JWT: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao validar token JWT.")
 
     try:
         cursor = connection.cursor()
@@ -270,6 +270,6 @@ def atualizar_senha(body: RedefinirSenhaRequest, connection=Depends(get_db)):
         raise
     except Exception as e:
         print(f"Erro ao atualizar senha: {e}")
-        raise HTTPException(status_code=500, detail=f"Erro ao atualizar senha: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao atualizar senha.")
     else:
         return MessageResponse(msg="Senha atualizada com sucesso.")

@@ -57,7 +57,7 @@ def busca_despesas(request: Request, dt_inicio: str, dt_fim: str, tipo_agrupamen
 
     except Exception as e:
         print(f"Erro ao buscar despesas: {e}")
-        raise HTTPException(status_code=500, detail=f"Erro ao buscar despesas: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar despesas.")
     else:
         return despesas
 
@@ -117,7 +117,7 @@ def busca_despesas_categorias(request: Request, dt_inicio: str, dt_fim: str, tip
 
     except Exception as e:
         print(f"Erro ao buscar despesas: {e}")
-        raise HTTPException(status_code=500, detail=f"Erro ao buscar despesas: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar despesas.")
     else:
         return despesas
 
@@ -181,7 +181,7 @@ def busca_despesas_categorias_periodo(request: Request, dt_inicio: str, dt_fim: 
 
     except Exception as e:
         print(f"Erro ao buscar despesas: {e}")
-        raise HTTPException(status_code=500, detail=f"Erro ao buscar despesas: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar despesas.")
     else:
         return despesas
 
@@ -233,7 +233,7 @@ def busca_descontos(request: Request, dt_inicio: str, dt_fim: str, tipo_agrupame
 
     except Exception as e:
         print(f"Erro ao buscar descontos: {e}")
-        raise HTTPException(status_code=500, detail=f"Erro ao buscar descontos: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar descontos.")
     else:
         return descontos
 
@@ -275,7 +275,7 @@ def busca_top_produtos(request: Request, dt_inicio: str, dt_fim: str, connection
 
     except Exception as e:
         print(f"Erro ao buscar top produtos: {e}")
-        raise HTTPException(status_code=500, detail=f"Erro ao buscar top produtos: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar top produtos.")
     else:
         return top_produtos
 
@@ -419,7 +419,7 @@ def busca_insights(request: Request, connection=Depends(get_db)):
 
     except Exception as e:
         print(f"Erro ao buscar insights: {e}")
-        raise HTTPException(status_code=500, detail=f"Erro ao buscar insights: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar insights.")
     else:
         return insights
 
@@ -482,4 +482,4 @@ def busca_perfil_despesas(request: Request, connection=Depends(get_db)):
         raise
     except Exception as e:
         print(f"Erro ao buscar perfil de despesas: {e}")
-        raise HTTPException(status_code=500, detail=f"Erro ao buscar perfil de despesas: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar perfil de despesas.")
