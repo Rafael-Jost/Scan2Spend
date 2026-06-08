@@ -14,9 +14,10 @@ from functions import enviar_redefinicao_senha
 
 router = APIRouter()
 
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 def gerar_token_login(usuario_id):
-    SECRET_KEY = os.getenv("SECRET_KEY")
+    
     payload = {
         "usuario_id": usuario_id,
         "exp": datetime.now(timezone.utc) + timedelta(minutes=30)
@@ -25,7 +26,7 @@ def gerar_token_login(usuario_id):
 
 
 def validar_token_login(token):
-    SECRET_KEY = os.getenv("SECRET_KEY")
+    
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
         fuso_brasil = timezone(timedelta(hours=-3))
@@ -213,7 +214,7 @@ def redefinir_senha(email_destino: str, connection=Depends(get_db)):
         print(f"Erro ao gerar token de redefinição de senha: {e}")
         raise HTTPException(status_code=500, detail=f"Erro ao gerar token de redefinição de senha: {e}")
 
-    SECRET_KEY = os.getenv("SECRET_KEY")
+    
     try:
         token = jwt.encode(
             {"email": email_destino, "exp": datetime.now(tz=timezone.utc) + timedelta(hours=1)},
@@ -230,7 +231,7 @@ def redefinir_senha(email_destino: str, connection=Depends(get_db)):
 
 @router.put("/redefinir_senha", response_model=MessageResponse)
 def atualizar_senha(body: RedefinirSenhaRequest, connection=Depends(get_db)):
-    SECRET_KEY = os.getenv("SECRET_KEY")
+    
 
     try:
         if not body.nova_senha:
