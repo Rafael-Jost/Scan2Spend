@@ -43,7 +43,7 @@ function PerfilDespesas({nomeUsuario, insights, topProdutos, dadosPerfilDespesas
                     }
                     <p><span style={{color: "#888"}}>Maior Compra:</span> <strong>R$ {dadosPerfilDespesas.maior_compra}</strong></p>
                     <p><span style={{color: "#888"}}>Nº de compras:</span> <strong>{dadosPerfilDespesas.qtd_compras}</strong></p>
-                    <p><span style={{color: "#888"}}>Compra média:</span> <strong>R$ {dadosPerfilDespesas.compra_media}</strong></p>
+                    <p><span style={{color: "#888"}}>Compra média:</span> <strong>R$ {parseFloat(dadosPerfilDespesas.compra_media).toFixed(2)}</strong></p>
                 </div>
             </div>
 

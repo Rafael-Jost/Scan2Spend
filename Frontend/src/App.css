@@ -683,6 +683,7 @@
   align-items: center;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 .top-produtos-lista {
@@ -768,6 +769,42 @@
 .top-produto-item--bronze .top-produto-qtd {
   background: #ff7043;
   color: #333;
+}
+
+@media (max-width: 768px) {
+  #root.modo-despesas {
+    padding: 12px;
+  }
+
+  .perfil-despesas {
+    flex-direction: column;
+  }
+
+  .perfil-despesas-col {
+    padding: 16px;
+  }
+
+  .top-produto-nome {
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .botao-menu.perfil,
+  .botao-menu.pagina-inicial,
+  .botao-menu.despesas {
+    right: 12px;
+  }
+
+  .tab-switch {
+    display: inline-flex;
+    margin: 12px 0 16px 0;
+    padding: 4px;
+  }
+
+  .tab-btn {
+    padding: 7px 14px;
+    font-size: 0.8rem;
+  }
 }
 
 /* Ensure SweetAlert2 toasts appear above app popups */
