@@ -34,13 +34,9 @@ export default function QrScanner({ funcAnalisarRecibo }) {
     }, []);
 
     return (
-
-        <div>
+        <div className="qr-scanner-card">
             <h3>Escaneie o QR da sua nota fiscal</h3>
             <div id="reader"></div>
-            {/* <div>
-                {url && <p>URL escaneada: {url}</p>}
-            </div> */}
         </div>
     );
 }

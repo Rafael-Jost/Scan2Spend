@@ -38,17 +38,35 @@
 .card-sem-link {
   text-align: center;
   align-items: center;
-  border-radius: 15px;
-  border: 2px solid rgba(0, 0, 0, 0.616);
+  border-radius: 22px;
+  border: 1.5px solid color-mix(in srgb, #4ab0d8 30%, transparent);
   display: flex;
   flex-direction: column;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
+  padding: 32px 28px 26px;
+  background: color-mix(in srgb, Canvas 80%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.card-sem-link-titulo {
+  background: linear-gradient(135deg, #4ab0d8 0%, #66d4ca 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 12px 0 10px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
 }
 
 .descricao-card {
   text-align: center;
-  width: 60%;
-  margin-bottom: 10px;
+  width: 65%;
+  margin-bottom: 4px;
+  color: color-mix(in srgb, CanvasText 68%, transparent);
+  font-size: 0.95rem;
+  line-height: 1.55;
 }
 
 .span-msg-erro {
@@ -325,6 +343,7 @@
 
 .botao-menu{
   position: fixed;
+  z-index: 100;
   width: 50px;
   height: 50px;
   border-radius: 10%;
@@ -738,6 +757,96 @@
   transform: translateY(-50%);
   cursor: pointer;
   color: #888;
+}
+
+.qr-scanner-card {
+  text-align: center;
+  align-items: center;
+  border-radius: 22px;
+  border: 1.5px solid color-mix(in srgb, #4ab0d8 30%, transparent);
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+  padding: 28px 28px 24px;
+  background: color-mix(in srgb, Canvas 80%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* Overrides html5-qrcode */
+#reader {
+  width: 100% !important;
+  border: none !important;
+}
+
+#reader video {
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+#reader__scan_region {
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+#reader__scan_region img {
+  filter: invert(0);
+}
+
+@media (prefers-color-scheme: dark) {
+  #reader__scan_region img {
+    filter: invert(1);
+  }
+}
+
+#reader__dashboard {
+  padding-top: 12px !important;
+}
+
+#reader__dashboard_section_swaplink,
+#reader__dashboard_section_csr button,
+#reader__dashboard_section_fsr button,
+#html5-qrcode-button-camera-permission,
+#html5-qrcode-button-camera-start,
+#html5-qrcode-button-camera-stop,
+#html5-qrcode-button-file-selection {
+  background: color-mix(in srgb, CanvasText 10%, transparent) !important;
+  color: CanvasText !important;
+  border: 1px solid color-mix(in srgb, CanvasText 18%, transparent) !important;
+  border-radius: 10px !important;
+  padding: 9px 18px !important;
+  font-size: 0.88rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: background 0.2s !important;
+}
+
+#html5-qrcode-button-camera-permission:hover,
+#html5-qrcode-button-camera-start:hover,
+#html5-qrcode-button-camera-stop:hover,
+#html5-qrcode-button-file-selection:hover,
+#reader__dashboard_section_swaplink:hover {
+  background: color-mix(in srgb, CanvasText 17%, transparent) !important;
+}
+
+#reader__dashboard select {
+  border: 1.5px solid color-mix(in srgb, #4ab0d8 40%, transparent) !important;
+  border-radius: 10px !important;
+  padding: 8px 12px !important;
+  background: color-mix(in srgb, Canvas 90%, transparent) !important;
+  color: CanvasText !important;
+  font-size: 0.88rem !important;
+}
+
+#reader__status_span {
+  font-size: 0.82rem !important;
+  color: color-mix(in srgb, CanvasText 60%, transparent) !important;
+}
+
+#reader__dashboard_section_csr span,
+#reader__dashboard_section_fsr span {
+  font-size: 0.82rem !important;
+  color: color-mix(in srgb, CanvasText 60%, transparent) !important;
 }
 
 .s2s-logo {
