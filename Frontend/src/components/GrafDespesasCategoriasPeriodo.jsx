@@ -1,18 +1,19 @@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { RechartsDevtools } from '@recharts/devtools';
+import { TbChartPie } from 'react-icons/tb';
 
 function GrafDespesasCategoriasPeriodo({ dados, buscarDespesasCategoriasPeriodo, setTipoGrafDespesasCategorias}) {
 
   return (
     <div style={{ width: '100%', maxWidth: '600px', margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-          <h2>Gráfico de Despesas por Categoria</h2>
-          <button onClick={() => setTipoGrafDespesasCategorias('default')} style={{ backgroundColor: '#3b82f6', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer' }}>
-            Mudar Visualização
+          <h2>Despesas por Categoria</h2>
+          <button onClick={() => setTipoGrafDespesasCategorias('default')} style={{ background: 'linear-gradient(135deg, #4ab0d8, #66d4ca)', color: '#fff', border: 'none', padding: '8px', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <TbChartPie size={22} />
           </button>
         </div>
       <AreaChart
-      style={{ width: '100%', maxWidth: '700px', maxHeight: '70vh', aspectRatio: 1.618 }}
+      style={{ width: '100%', maxWidth: '700px', maxHeight: '70vh', aspectRatio: 1.38 }}
       responsive
       data={dados}
       margin={{

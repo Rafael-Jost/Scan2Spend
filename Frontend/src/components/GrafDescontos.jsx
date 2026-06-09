@@ -1,4 +1,4 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { RechartsDevtools } from '@recharts/devtools';
 
 
@@ -26,8 +26,7 @@ const GrafDescontos = ({ dados = [] }) => {
       <XAxis dataKey="data" />
       <YAxis width="auto" />
       <Tooltip />
-      <Legend />
-      <Bar dataKey="desconto" name="Descontos" fill="#8884d8" activeBar={{ fill: 'pink', stroke: 'blue' }} radius={[10, 10, 0, 0]} />
+      <Bar dataKey="desconto" name="Descontos" fill="#4ab0d8" activeBar={{ fill: '#66d4ca', stroke: '#4ab0d8' }} radius={[10, 10, 0, 0]} />
       <RechartsDevtools />
     </BarChart>
     </div>

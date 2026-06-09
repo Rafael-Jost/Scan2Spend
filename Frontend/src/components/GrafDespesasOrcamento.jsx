@@ -28,12 +28,12 @@ const GrafDespesasOrcamento = ({ orcamentoMensal, despesasTotais }) => {
       }}
     >
       <CartesianGrid stroke="#f5f5f51c" />
-      <XAxis dataKey="data" label={{ value: 'Pages', position: 'insideBottomRight', offset: 0 }} scale="band" />
+      <XAxis dataKey="data" scale="band" />
       <YAxis label={{ value: 'R$', angle: -90, position: 'insideLeft' }} width="auto" />
       <Tooltip />
       <Legend />
-      <Bar dataKey="despesa" name="Despesas" barSize={70} fill="#413ea0" />
-      <Line type="monotone" dataKey="orcamento" name="Orçamento Mensal" stroke="#ff7300" strokeWidth={3} />
+      <Bar dataKey="despesa" name="Despesas" barSize={70} fill="#4ab0d8" />
+      <Line type="monotone" dataKey="orcamento" name="Orçamento Mensal" stroke="#ef4444" strokeWidth={3} />
       <RechartsDevtools />
     </ComposedChart>
     </div>

@@ -6,7 +6,7 @@ function GrafDespesasTotais({ dados, buscarDespesasTotais}) {
 
     var dt_inicio;
     var dt_fim;
-    var tipo_agrupamento; 
+    var tipo_agrupamento;
 
     if(opcao == 'EA'){
       dt_inicio = '01/01/' + new Date().getFullYear();
@@ -39,21 +39,21 @@ function GrafDespesasTotais({ dados, buscarDespesasTotais}) {
   return (
     <div style={{ width: '100%', maxWidth: '750px', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-        <h2>Gráfico de Despesas Totais</h2> 
+        <h2>Despesas Totais</h2>
         <select id="filtro-despesas-totais" defaultValue={"EA"} onChange={(e) => filtraGrafico(e.target.value)}>
             <option value="EA">Este Ano</option>
             <option value="EM">Este Mes</option>
-            <option value="UM">Últimos 6 Meses</option> 
+            <option value="UM">Últimos 6 Meses</option>
             <option value="UA">Últimos 12 Meses</option>
         </select>
       </div>
-      <ResponsiveContainer width="100%" height={400}>
+      <ResponsiveContainer width="100%" aspect={1.7}>
         <AreaChart
           data={dados}
           margin={{
-              top: 20,
-              right: 30,
-              left: 0,
+              top: 10,
+              right: 5,
+              left: -10,
               bottom: 0,
           }}
           >
@@ -61,7 +61,7 @@ function GrafDespesasTotais({ dados, buscarDespesasTotais}) {
           <XAxis dataKey="data" />
           <YAxis />
           <Tooltip />
-          <Area type="monotone" dataKey="despesa" stroke="#8884d8" fill="#8884d8" />
+          <Area type="monotone" dataKey="despesa" stroke="#4ab0d8" fill="#4ab0d8" />
         </AreaChart>
       </ResponsiveContainer>
     </div>
