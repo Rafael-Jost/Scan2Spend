@@ -671,7 +671,7 @@ function App() {
         <BotaoSimples className="botao-menu despesas" icone={despesasIcon} onClick={() => {
           setEstadoTela('despesas')
         }}></BotaoSimples>
-        <CardSemLink titulo="Bem-vindo ao Scan2Spend!" descricao="Faça upload dos seus recibos, rastreie seus gastos e receba dicas de economia." img={S2S_logo} />
+        <CardSemLink titulo="Bem-vindo ao Scan2Spend!" descricao="Escaneie seus recibos, rastreie seus gastos e receba dicas de economia." img={S2S_logo} />
         <QrScanner funcAnalisarRecibo={AnalisarRecibo} />
         <PopUpDeInformacoes conteudo={parseRecibo(textoRecibo)} popupAberto={popupAberto} setPopupAberto={setPopupAberto} atualizarGraficos={atualizarGraficos}/>
         <BotaoSimples id="botao-upload" texto={textoMensagem} className={classeMensagem} onClick={() => {

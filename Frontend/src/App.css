@@ -510,6 +510,70 @@
   margin: 0;
 }
 
+.popup-notas-titulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.popup-notas-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: color-mix(in srgb, CanvasText 12%, transparent);
+  color: CanvasText;
+  font-size: 0.72rem;
+  font-weight: 600;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+}
+
+.popup-fechar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: CanvasText;
+  font-size: 1rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.15s;
+}
+
+.popup-fechar-btn:hover {
+  background-color: color-mix(in srgb, CanvasText 10%, transparent);
+}
+
+.popup-notas-lista {
+  border-top: 1px solid color-mix(in srgb, CanvasText 15%, transparent);
+}
+
+.popup-notas-vazio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 48px 20px;
+  text-align: center;
+  color: color-mix(in srgb, CanvasText 55%, transparent);
+}
+
+.popup-notas-vazio-icone {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.popup-notas-vazio p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
 @media (max-width: 768px) {
   #popup-notas-fiscais, #popup-configuracoes{
     width: 90%;
@@ -522,9 +586,26 @@
   grid-template-columns: 1fr auto;
   align-items: center;
   gap: 12px;
-  border-top: 1px solid color-mix(in srgb, CanvasText 22%, transparent);
-  border-bottom: 1px solid color-mix(in srgb, CanvasText 22%, transparent);
-  padding: 12px 0;
+  width: 100%;
+  box-sizing: border-box;
+  border: none;
+  border-bottom: 1px solid color-mix(in srgb, CanvasText 15%, transparent);
+  padding: 14px 10px;
+  border-radius: 6px;
+  background: transparent;
+  color: CanvasText;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.popup-nota-fiscal-row:hover {
+  background-color: color-mix(in srgb, CanvasText 5%, transparent);
+}
+
+.popup-nota-fiscal-row:last-child {
+  border-bottom: none;
 }
 
 .nota-info {
@@ -534,17 +615,15 @@
 }
 
 .nota-data {
-  align-content: start;
   font-size: 0.9rem;
-  /* width: fit-content; */
+  font-weight: 600;
 }
 
-.nota-itens {
+.nota-n-itens {
   font-size: 0.8rem;
-  padding: 2px 8px;
-  border: 1px solid color-mix(in srgb, CanvasText 24%, transparent);
-  border-radius: 999px;
+  color: color-mix(in srgb, CanvasText 55%, transparent);
 }
+
 
 @media (max-width: 1024px) {
   #cards-edicao-container,
@@ -621,9 +700,6 @@
   }
 }
 
-.nota-itens:hover{
-  background-color: color-mix(in srgb, CanvasText 10%, transparent);
-}
 
 .nota-valores {
   display: flex;
@@ -638,7 +714,7 @@
 }
 
 .nota-desconto {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: #1e8c4f;
 }
 
@@ -650,6 +726,8 @@
 
   .nota-valores {
     align-items: flex-start;
+    flex-direction: row;
+    gap: 12px;
   }
 }
 
