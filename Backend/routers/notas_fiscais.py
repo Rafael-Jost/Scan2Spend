@@ -110,6 +110,8 @@ async def busca_nota_fiscal(request: Request, connection=Depends(get_db)):
                 nf.data,
                 nf.valor_total,
                 nf.desconto
+            ORDER BY
+                nf.data DESC
         """, {"usuario_id": usuario_id})
 
         result = cursor.fetchall()
@@ -123,6 +125,8 @@ async def busca_nota_fiscal(request: Request, connection=Depends(get_db)):
                 quantidade_itens=row[4]
             ))
 
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"Erro ao buscar notas fiscais: {e}")
         raise HTTPException(status_code=503, detail="Erro ao buscar notas fiscais")
