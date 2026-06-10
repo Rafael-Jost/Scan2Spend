@@ -4,25 +4,25 @@ import {useState} from 'react'
 import Cookies from 'js-cookie'
 import S2S_logo from '../assets/Scan2Spend_logo.png'
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? ''
+
 function Login({ setUsuarioLogado, setCadastrandoUsuario}) {
     const [email, setEmail] = useState(Cookies.get('email') || '')
     const [senha, setSenha] = useState('')
     const [lembrarMe, setLembrarMe] = useState(Cookies.get('email') ? true : false)
     const [senhaVisivel, setSenhaVisivel] = useState(false)
 
-    // const [token, setToken] = useState('')
     const [erroLogin, setErroLogin] = useState(null)
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         setErroLogin(null)
 
-        const response = await fetch('/api/login', {
+        const response = await fetch(`${API_BASE}/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            credentials: 'include',
             body: JSON.stringify({ login: email, senha })
         })
 
