@@ -136,7 +136,7 @@ def login(credenciais: Login, response: Response, connection=Depends(get_db)):
             value=token,
             httponly=True,
             secure=True,
-            samesite="none",
+            samesite="lax",
             expires=datetime.now(timezone.utc) + timedelta(minutes=30)
         )
         return LoginResponse(msg="Login realizado com sucesso")
