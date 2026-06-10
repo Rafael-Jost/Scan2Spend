@@ -85,8 +85,8 @@ export async function SalvarPayload(notaFiscalId) {
     let response;
 
     if (notaFiscalId) {
-        console.log('URL final:', `https://scan2spend-backend-97637633938.southamerica-east1.run.app/nota_fiscal`)
-        response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/nota_fiscal`, {
+        console.log('URL final:', `/api/nota_fiscal`)
+        response = await fetch(`/api/nota_fiscal`, {
           method: 'PUT',
           headers: {
               'Content-Type': 'application/json'
@@ -95,7 +95,7 @@ export async function SalvarPayload(notaFiscalId) {
           body: JSON.stringify(payloadAtualizado)
       })
     }else{
-      response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/nota_fiscal`, {
+      response = await fetch(`/api/nota_fiscal`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'

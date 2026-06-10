@@ -17,7 +17,7 @@ function Login({ setUsuarioLogado, setCadastrandoUsuario}) {
         e.preventDefault()
         setErroLogin(null)
 
-        const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/login', {
+        const response = await fetch('/api/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

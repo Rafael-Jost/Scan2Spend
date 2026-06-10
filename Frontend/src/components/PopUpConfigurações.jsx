@@ -25,7 +25,7 @@ function PopUpConfigurações({notasFiscais, fncFechar, display, setConteudo, no
 
     async function salvarConfigurações() {
         console.log(JSON.stringify(payload))
-        const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/usuario', {
+        const response = await fetch('/api/usuario', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -47,7 +47,7 @@ function PopUpConfigurações({notasFiscais, fncFechar, display, setConteudo, no
                 zIndex: 9999
             })
             //busca os dados atualizados do usuário para atualizar o estado global
-            const dados_usuario_response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/me`, {
+            const dados_usuario_response = await fetch(`/api/me`, {
                 method: 'GET',
                 credentials: 'include'
             })

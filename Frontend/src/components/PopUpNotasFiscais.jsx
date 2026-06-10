@@ -14,7 +14,7 @@ function PopUpNotasFiscais({ notasFiscais, fncFechar, display, setPopUpInformaco
     const abrirDetalhes = async (id) => {
         try {
             const response = await fetch(
-                `https://scan2spend-backend-97637633938.southamerica-east1.run.app/nota_fiscal/${id}`,
+                `/api/nota_fiscal/${id}`,
                 { method: 'GET', headers: { 'Content-Type': 'application/json' }, credentials: 'include' }
             );
             if (!response.ok) return;

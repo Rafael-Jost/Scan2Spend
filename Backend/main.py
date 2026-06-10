@@ -12,6 +12,8 @@ origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://127.0.0.1:8000",
+    "https://scan2spend.web.app",
+    "https://scan2spend.firebaseapp.com",
 ]
 
 app.add_middleware(
@@ -22,9 +24,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth.router)
-app.include_router(despesas.router)
-app.include_router(notas_fiscais.router)
+app.include_router(auth.router, prefix="/api")
+app.include_router(despesas.router, prefix="/api")
+app.include_router(notas_fiscais.router, prefix="/api")
 
 
 @app.get("/")

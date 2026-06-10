@@ -39,7 +39,7 @@ export default function PaginaInicial({
     setTextoMensagem("Analisando...")
 
     try {
-      const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/analisar_nf/?QRurl=${encodeURIComponent(url)}`, {
+      const response = await fetch(`/api/analisar_nf/?QRurl=${encodeURIComponent(url)}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'

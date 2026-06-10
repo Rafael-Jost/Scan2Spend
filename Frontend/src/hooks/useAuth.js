@@ -40,7 +40,7 @@ export function useAuth(estadoTela, setEstadoTela) {
     }
 
     ;(async () => {
-      const dados_usuario_response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/me`, {
+      const dados_usuario_response = await fetch(`/api/me`, {
         method: 'GET',
         credentials: 'include'
       })
@@ -76,7 +76,7 @@ export function useAuth(estadoTela, setEstadoTela) {
 
     const verificarToken = async () => {
       try {
-        const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/validarToken', {
+        const response = await fetch('/api/validarToken', {
           method: 'GET',
           credentials: 'include'
         })

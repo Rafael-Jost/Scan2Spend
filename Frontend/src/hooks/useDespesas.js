@@ -26,7 +26,7 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
     }).toString()
 
     try {
-      const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/?${params}`, {
+      const response = await fetch(`/api/despesas/?${params}`, {
         method: 'GET',
         credentials: 'include'
       })
@@ -65,7 +65,7 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
     }).toString()
 
     try {
-      const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/categorias?${params}`, {
+      const response = await fetch(`/api/despesas/categorias?${params}`, {
         method: 'GET',
         credentials: 'include'
       })
@@ -101,7 +101,7 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
     const params = new URLSearchParams({ dt_inicio, dt_fim, tipo_agrupamento }).toString()
 
     try {
-      const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/categorias/periodo?${params}`, {
+      const response = await fetch(`/api/despesas/categorias/periodo?${params}`, {
         method: 'GET',
         credentials: 'include'
       })
@@ -139,7 +139,7 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
     const params = new URLSearchParams({ dt_inicio, dt_fim, tipo_agrupamento }).toString()
 
     try {
-      const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/descontos/?${params}`, {
+      const response = await fetch(`/api/descontos/?${params}`, {
         method: 'GET',
         credentials: 'include'
       })
@@ -170,7 +170,7 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
     if (usuarioLogado == false || usuarioLogado == '') { return }
 
     try {
-      const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/insights', {
+      const response = await fetch('/api/despesas/insights', {
         method: 'GET',
         credentials: 'include'
       })
@@ -212,7 +212,7 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
     const params = new URLSearchParams({ dt_inicio, dt_fim }).toString()
 
     try {
-      const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/topProdutos?${params}`, {
+      const response = await fetch(`/api/despesas/topProdutos?${params}`, {
         method: 'GET',
         credentials: 'include'
       })
@@ -241,7 +241,7 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
 
   const buscarDadosPerfilDespesas = useCallback(async () => {
     try {
-      const response = await fetch('https://scan2spend-backend-97637633938.southamerica-east1.run.app/despesas/perfil', {
+      const response = await fetch('/api/despesas/perfil', {
         method: 'GET',
         credentials: 'include'
       })
@@ -274,7 +274,7 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
       return
     }
     try {
-      const response = await fetch(`https://scan2spend-backend-97637633938.southamerica-east1.run.app/nota_fiscal`, {
+      const response = await fetch(`/api/nota_fiscal`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
