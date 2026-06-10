@@ -44,7 +44,7 @@ function ResetSenha() {
             toast: true,
             position: 'top-start',
             title: 'Sucesso!',
-            text: 'Email de redefinição de senha enviado!',
+            text: 'Senha redefinida com sucesso!',
             icon: 'success',
             showConfirmButton: false,
             timer: 2000,
@@ -72,8 +72,18 @@ function ResetSenha() {
             if (response.status === 404) {
                 setErroReset('Email não encontrado!')
                 return
-            } 
+            }
             setErroReset(erroData?.detail || 'Erro ao redefinir senha!')
+            swal.fire({
+                toast: true,
+                position: 'top-start',
+                title: 'Atenção!',
+                text: 'Ocorreu um erro ao solicitar a redefinição de senha. Tente novamente mais tarde.',
+                icon: 'error',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true
+            })
             return
         }
         setErroReset(null)
@@ -81,7 +91,7 @@ function ResetSenha() {
             toast: true,
             position: 'top-start',
             title: 'Sucesso!',
-            text: 'Senha redefinida com sucesso!',
+            text: 'Email de redefinição de senha enviado!',
             icon: 'success',
             showConfirmButton: false,
             timer: 2000,
@@ -150,7 +160,7 @@ function ResetSenha() {
                             type="email"
                             placeholder="Email"
                             onChange={(e) => setEmail(e.target.value)} />
-                        
+
                     </div>
                     <span className={erroReset ? 'span-msg-erro' : 'span-msg-erro oculto'}>{erroReset}</span>
                     <button id="btn-login" type="submit">Redefinir Senha</button>
@@ -158,7 +168,7 @@ function ResetSenha() {
             </div>
         );
     }
-                
+
 }
 
 export default ResetSenha;
