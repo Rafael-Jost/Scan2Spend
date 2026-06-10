@@ -1,4 +1,5 @@
 import React, { forwardRef } from 'react';
+import { authFetch } from '../utils/authFetch'
 
 const formatarData = (data) => {
     if (!data) return '';
@@ -13,10 +14,7 @@ function PopUpNotasFiscais({ notasFiscais, fncFechar, display, setPopUpInformaco
 
     const abrirDetalhes = async (id) => {
         try {
-            const response = await fetch(
-                `/api/nota_fiscal/${id}`,
-                { method: 'GET', headers: { 'Content-Type': 'application/json' }, credentials: 'include' }
-            );
+            const response = await authFetch(`/api/nota_fiscal/${id}`, { method: 'GET' });
             if (!response.ok) return;
             const data = await response.json();
             setPopUpInformacoesAberto(true);

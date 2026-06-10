@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import Cookies from 'js-cookie'
 import Swal from 'sweetalert2'
+import { authFetch } from '../utils/authFetch'
 
 export function useAuth(estadoTela, setEstadoTela) {
   const [usuarioLogado, setUsuarioLogado] = useState(Cookies.get('usuarioLogado') === 'true' || false)
@@ -21,6 +22,7 @@ export function useAuth(estadoTela, setEstadoTela) {
   }, [estadoTela])
 
   const logoutUsuario = useCallback(() => {
+    localStorage.removeItem('jwt')
     Cookies.remove('usuarioLogado')
     setUsuarioLogado(false)
     Cookies.remove('estadoTela')
@@ -40,9 +42,8 @@ export function useAuth(estadoTela, setEstadoTela) {
     }
 
     ;(async () => {
-      const dados_usuario_response = await fetch(`/api/me`, {
-        method: 'GET',
-        credentials: 'include'
+      const dados_usuario_response = await authFetch(`/api/me`, {
+        method: 'GET'
       })
 
       if (!dados_usuario_response.ok) {
@@ -76,9 +77,8 @@ export function useAuth(estadoTela, setEstadoTela) {
 
     const verificarToken = async () => {
       try {
-        const response = await fetch('/api/validarToken', {
-          method: 'GET',
-          credentials: 'include'
+        const response = await authFetch('/api/validarToken', {
+          method: 'GET'
         })
 
         if (response.ok) {

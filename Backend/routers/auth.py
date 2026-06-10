@@ -2,7 +2,8 @@ import os
 import jwt
 import oracledb
 from datetime import datetime, timedelta, timezone
-from fastapi import APIRouter, HTTPException, Request, Response, Depends
+from typing import Optional
+from fastapi import APIRouter, HTTPException, Depends, Header
 
 from database import get_db
 from models.schemas import (
@@ -40,6 +41,12 @@ def validar_token_login(token):
         raise HTTPException(status_code=401, detail="Token inválido")
 
 
+def get_token(authorization: Optional[str] = Header(None)):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Token não fornecido")
+    return authorization[7:]
+
+
 @router.post('/cadastrarUsuario/', response_model=CadastroUsuarioResponse)
 def cadastroUsuario(dados_usuario: CadastroUsuario, connection=Depends(get_db)):
     try:
@@ -67,9 +74,9 @@ def cadastroUsuario(dados_usuario: CadastroUsuario, connection=Depends(get_db)):
 
 
 @router.put('/usuario', response_model=MessageResponse)
-def atualizarUsuario(request: Request, dados_usuario: AtualizarUsuario, connection=Depends(get_db)):
+def atualizarUsuario(dados_usuario: AtualizarUsuario, token: str = Depends(get_token), connection=Depends(get_db)):
     try:
-        usuario_id, _ = validar_token_login(request.cookies.get("__session"))
+        usuario_id, _ = validar_token_login(token)
 
         cursor = connection.cursor()
         cursor.execute("""
@@ -98,7 +105,7 @@ def atualizarUsuario(request: Request, dados_usuario: AtualizarUsuario, connecti
 
 
 @router.post('/login', response_model=LoginResponse)
-def login(credenciais: Login, response: Response, connection=Depends(get_db)):
+def login(credenciais: Login, connection=Depends(get_db)):
 
     try:
         cursor = connection.cursor()
@@ -131,21 +138,12 @@ def login(credenciais: Login, response: Response, connection=Depends(get_db)):
         raise HTTPException(status_code=500, detail="Erro interno ao fazer login")
     else:
         token = gerar_token_login(usuario_id)
-        response.set_cookie(
-            key="__session",
-            value=token,
-            httponly=True,
-            secure=True,
-            samesite="none",
-            expires=datetime.now(timezone.utc) + timedelta(minutes=30)
-        )
-        return LoginResponse(msg="Login realizado com sucesso")
+        return LoginResponse(msg="Login realizado com sucesso", token=token)
 
 
 @router.get('/validarToken', response_model=ValidadeTokenResponse)
-def validar_token(request: Request):
+def validar_token(token: str = Depends(get_token)):
     try:
-        token = request.cookies.get("__session")
         _, hora_expiracao = validar_token_login(token)
     except HTTPException:
         raise
@@ -157,9 +155,8 @@ def validar_token(request: Request):
 
 
 @router.get('/me', response_model=MeResponse)
-def me(request: Request, connection=Depends(get_db)):
+def me(token: str = Depends(get_token), connection=Depends(get_db)):
     try:
-        token = request.cookies.get("__session")
         usuario_id, _ = validar_token_login(token)
 
         cursor = connection.cursor()

@@ -72,6 +72,7 @@ class Login(BaseModel):
 
 class LoginResponse(BaseModel):
     msg: str
+    token: str
 
 class CadastroUsuario(BaseModel):
     nome: str

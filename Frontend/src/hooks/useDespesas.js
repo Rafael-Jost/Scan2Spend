@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import Swal from 'sweetalert2'
+import { authFetch } from '../utils/authFetch'
 
 export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
   const [despesasTotais, setDespesasTotais] = useState([])
@@ -26,9 +27,8 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
     }).toString()
 
     try {
-      const response = await fetch(`/api/despesas/?${params}`, {
-        method: 'GET',
-        credentials: 'include'
+      const response = await authFetch(`/api/despesas/?${params}`, {
+        method: 'GET'
       })
 
       if (response.ok) {
@@ -65,9 +65,8 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
     }).toString()
 
     try {
-      const response = await fetch(`/api/despesas/categorias?${params}`, {
-        method: 'GET',
-        credentials: 'include'
+      const response = await authFetch(`/api/despesas/categorias?${params}`, {
+        method: 'GET'
       })
 
       if (response.ok) {
@@ -101,9 +100,8 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
     const params = new URLSearchParams({ dt_inicio, dt_fim, tipo_agrupamento }).toString()
 
     try {
-      const response = await fetch(`/api/despesas/categorias/periodo?${params}`, {
-        method: 'GET',
-        credentials: 'include'
+      const response = await authFetch(`/api/despesas/categorias/periodo?${params}`, {
+        method: 'GET'
       })
 
       if (response.ok) {
@@ -139,9 +137,8 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
     const params = new URLSearchParams({ dt_inicio, dt_fim, tipo_agrupamento }).toString()
 
     try {
-      const response = await fetch(`/api/descontos/?${params}`, {
-        method: 'GET',
-        credentials: 'include'
+      const response = await authFetch(`/api/descontos/?${params}`, {
+        method: 'GET'
       })
 
       if (response.ok) {
@@ -170,9 +167,8 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
     if (usuarioLogado == false || usuarioLogado == '') { return }
 
     try {
-      const response = await fetch('/api/despesas/insights', {
-        method: 'GET',
-        credentials: 'include'
+      const response = await authFetch('/api/despesas/insights', {
+        method: 'GET'
       })
 
       if (response.ok) {
@@ -212,9 +208,8 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
     const params = new URLSearchParams({ dt_inicio, dt_fim }).toString()
 
     try {
-      const response = await fetch(`/api/despesas/topProdutos?${params}`, {
-        method: 'GET',
-        credentials: 'include'
+      const response = await authFetch(`/api/despesas/topProdutos?${params}`, {
+        method: 'GET'
       })
 
       if (response.ok) {
@@ -241,9 +236,8 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
 
   const buscarDadosPerfilDespesas = useCallback(async () => {
     try {
-      const response = await fetch('/api/despesas/perfil', {
-        method: 'GET',
-        credentials: 'include'
+      const response = await authFetch('/api/despesas/perfil', {
+        method: 'GET'
       })
 
       if (response.ok) {
@@ -274,12 +268,8 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
       return
     }
     try {
-      const response = await fetch(`/api/nota_fiscal`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include'
+      const response = await authFetch(`/api/nota_fiscal`, {
+        method: 'GET'
       })
 
       if (!response.ok) {

@@ -1,19 +1,19 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException
 
 from database import get_db
 from models.schemas import (
     DespesasResponse, DescontosResponse, PerfilDespesasResponse,
     DespesasCategoriasResponse, InsightResponse, topProdutosResponse
 )
-from routers.auth import validar_token_login
+from routers.auth import validar_token_login, get_token
 
 router = APIRouter()
 
 
 @router.get('/despesas/', response_model=list[DespesasResponse])
-def busca_despesas(request: Request, dt_inicio: str, dt_fim: str, tipo_agrupamento: str, connection=Depends(get_db)):
+def busca_despesas(dt_inicio: str, dt_fim: str, tipo_agrupamento: str, token: str = Depends(get_token), connection=Depends(get_db)):
     try:
-        usuario_id, _ = validar_token_login(request.cookies.get("__session"))
+        usuario_id, _ = validar_token_login(token)
 
         cursor = connection.cursor()
         cursor.execute("""
@@ -63,9 +63,9 @@ def busca_despesas(request: Request, dt_inicio: str, dt_fim: str, tipo_agrupamen
 
 
 @router.get('/despesas/categorias', response_model=list[DespesasCategoriasResponse])
-def busca_despesas_categorias(request: Request, dt_inicio: str, dt_fim: str, tipo_agrupamento: str = None, connection=Depends(get_db)):
+def busca_despesas_categorias(dt_inicio: str, dt_fim: str, tipo_agrupamento: str = None, token: str = Depends(get_token), connection=Depends(get_db)):
     try:
-        usuario_id, _ = validar_token_login(request.cookies.get("__session"))
+        usuario_id, _ = validar_token_login(token)
 
         if not tipo_agrupamento:
             tipo_agrupamento = 'ANO'
@@ -123,11 +123,11 @@ def busca_despesas_categorias(request: Request, dt_inicio: str, dt_fim: str, tip
 
 
 @router.get('/despesas/categorias/periodo', response_model=list[dict])
-def busca_despesas_categorias_periodo(request: Request, dt_inicio: str, dt_fim: str, tipo_agrupamento: str = None, connection=Depends(get_db)):
+def busca_despesas_categorias_periodo(dt_inicio: str, dt_fim: str, tipo_agrupamento: str = None, token: str = Depends(get_token), connection=Depends(get_db)):
     CATEGORIAS = ['Alimentação', 'Bebidas', 'Higiene Pessoal', 'Lanches & Conveniência', 'Limpeza', 'Outros', 'Pets', 'Utilidades']
 
     try:
-        usuario_id, _ = validar_token_login(request.cookies.get("__session"))
+        usuario_id, _ = validar_token_login(token)
 
         if not tipo_agrupamento:
             tipo_agrupamento = 'ANO'
@@ -187,9 +187,9 @@ def busca_despesas_categorias_periodo(request: Request, dt_inicio: str, dt_fim: 
 
 
 @router.get('/descontos/', response_model=list[DescontosResponse])
-def busca_descontos(request: Request, dt_inicio: str, dt_fim: str, tipo_agrupamento: str = None, connection=Depends(get_db)):
+def busca_descontos(dt_inicio: str, dt_fim: str, tipo_agrupamento: str = None, token: str = Depends(get_token), connection=Depends(get_db)):
     try:
-        usuario_id, _ = validar_token_login(request.cookies.get("__session"))
+        usuario_id, _ = validar_token_login(token)
 
         cursor = connection.cursor()
         cursor.execute("""
@@ -239,9 +239,9 @@ def busca_descontos(request: Request, dt_inicio: str, dt_fim: str, tipo_agrupame
 
 
 @router.get('/despesas/topProdutos', response_model=list[topProdutosResponse])
-def busca_top_produtos(request: Request, dt_inicio: str, dt_fim: str, connection=Depends(get_db)):
+def busca_top_produtos(dt_inicio: str, dt_fim: str, token: str = Depends(get_token), connection=Depends(get_db)):
     try:
-        usuario_id, _ = validar_token_login(request.cookies.get("__session"))
+        usuario_id, _ = validar_token_login(token)
 
         cursor = connection.cursor()
         cursor.execute("""
@@ -281,8 +281,8 @@ def busca_top_produtos(request: Request, dt_inicio: str, dt_fim: str, connection
 
 
 @router.get('/despesas/insights', response_model=list[InsightResponse])
-def busca_insights(request: Request, connection=Depends(get_db)):
-    usuario_id, _ = validar_token_login(request.cookies.get("__session"))
+def busca_insights(token: str = Depends(get_token), connection=Depends(get_db)):
+    usuario_id, _ = validar_token_login(token)
 
     def formatar_moeda(v):
         return f"R$ {v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
@@ -425,8 +425,8 @@ def busca_insights(request: Request, connection=Depends(get_db)):
 
 
 @router.get('/despesas/perfil', response_model=PerfilDespesasResponse)
-def busca_perfil_despesas(request: Request, connection=Depends(get_db)):
-    usuario_id, _ = validar_token_login(request.cookies.get("__session"))
+def busca_perfil_despesas(token: str = Depends(get_token), connection=Depends(get_db)):
+    usuario_id, _ = validar_token_login(token)
 
     try:
         cursor = connection.cursor()

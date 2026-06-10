@@ -34,6 +34,7 @@ function Login({ setUsuarioLogado, setCadastrandoUsuario}) {
         }
 
         const token_data = await response.json()
+        localStorage.setItem('jwt', token_data.token)
         setUsuarioLogado(true)
         console.log('Login bem-sucedido! msg:', token_data.msg)
 

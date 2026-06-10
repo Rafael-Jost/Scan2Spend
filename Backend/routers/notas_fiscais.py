@@ -1,6 +1,6 @@
 import asyncio
 from pathlib import Path
-from fastapi import APIRouter, HTTPException, Request, Depends
+from fastapi import APIRouter, HTTPException, Depends
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 from openai import OpenAI
@@ -11,7 +11,7 @@ from models.schemas import (
     NotaFiscalGet, NotaFiscalDetalhes, ItemNota,
     InsertItemResponse, ReceiptExpenses, MessageResponse
 )
-from routers.auth import validar_token_login
+from routers.auth import validar_token_login, get_token
 
 router = APIRouter()
 
@@ -86,10 +86,10 @@ def busca_payload_nota_fiscal(nota_fiscal_id: int, connection):
 
 
 @router.get("/nota_fiscal", response_model=list[NotaFiscalGet])
-async def busca_nota_fiscal(request: Request, connection=Depends(get_db)):
+async def busca_nota_fiscal(token: str = Depends(get_token), connection=Depends(get_db)):
 
     try:
-        usuario_id, _ = validar_token_login(request.cookies.get("__session"))
+        usuario_id, _ = validar_token_login(token)
 
         cursor = connection.cursor()
         cursor.execute("""
@@ -135,10 +135,10 @@ async def busca_nota_fiscal(request: Request, connection=Depends(get_db)):
 
 
 @router.post("/nota_fiscal", response_model=InsertItemResponse)
-def insert_item(request: Request, payload: NotaFiscalDetalhes, connection=Depends(get_db)):
+def insert_item(payload: NotaFiscalDetalhes, token: str = Depends(get_token), connection=Depends(get_db)):
 
     try:
-        usuario_id, _ = validar_token_login(request.cookies.get("__session"))
+        usuario_id, _ = validar_token_login(token)
 
         cursor = connection.cursor()
         id_var = cursor.var(int)
@@ -180,8 +180,8 @@ def insert_item(request: Request, payload: NotaFiscalDetalhes, connection=Depend
 
 
 @router.put("/nota_fiscal", response_model=MessageResponse)
-def update_nota_fiscal(request: Request, payload: NotaFiscalDetalhes, connection=Depends(get_db)):
-    usuario_id, _ = validar_token_login(request.cookies.get("__session"))
+def update_nota_fiscal(payload: NotaFiscalDetalhes, token: str = Depends(get_token), connection=Depends(get_db)):
+    usuario_id, _ = validar_token_login(token)
 
     if not payload.nota_fiscal_id:
         raise HTTPException(status_code=400, detail="nota_fiscal_id é obrigatório para atualização")

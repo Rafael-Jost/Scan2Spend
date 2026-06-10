@@ -1,5 +1,6 @@
 import React, { forwardRef, use, useEffect, useState } from 'react';
 import Swal from 'sweetalert2'
+import { authFetch } from '../utils/authFetch'
 
 function PopUpConfigurações({notasFiscais, fncFechar, display, setConteudo, nomeUsuario, sobrenomeUsuario, orcamentoMensal, emailUsuario, carregaUsuario }, ref) {
 
@@ -25,12 +26,9 @@ function PopUpConfigurações({notasFiscais, fncFechar, display, setConteudo, no
 
     async function salvarConfigurações() {
         console.log(JSON.stringify(payload))
-        const response = await fetch('/api/usuario', {
+        const response = await authFetch('/api/usuario', {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         })
 
@@ -47,9 +45,8 @@ function PopUpConfigurações({notasFiscais, fncFechar, display, setConteudo, no
                 zIndex: 9999
             })
             //busca os dados atualizados do usuário para atualizar o estado global
-            const dados_usuario_response = await fetch(`/api/me`, {
-                method: 'GET',
-                credentials: 'include'
+            const dados_usuario_response = await authFetch(`/api/me`, {
+                method: 'GET'
             })
 
             if(dados_usuario_response.status === 200){

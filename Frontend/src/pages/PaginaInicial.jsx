@@ -5,6 +5,7 @@ import BotaoSimples from '../components/BotaoSimples.jsx'
 import BotaoPerfil from '../components/BotaoPerfil.jsx'
 import CardSemLink from '../components/CardSemLink.jsx'
 import parseRecibo from '../utils/parseRecibo.js'
+import { authFetch } from '../utils/authFetch'
 import despesasIcon from '../assets/despesas.png'
 import S2S_logo from '../assets/Scan2Spend_logo.png'
 import Swal from 'sweetalert2'
@@ -39,12 +40,8 @@ export default function PaginaInicial({
     setTextoMensagem("Analisando...")
 
     try {
-      const response = await fetch(`/api/analisar_nf/?QRurl=${encodeURIComponent(url)}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include'
+      const response = await authFetch(`/api/analisar_nf/?QRurl=${encodeURIComponent(url)}`, {
+        method: 'GET'
       })
 
       if (response.ok) {

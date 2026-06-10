@@ -1,6 +1,7 @@
 import CardEdicao from './CardsEdicao.jsx'
 import { useState } from 'react'
 import Swal from 'sweetalert2'
+import { authFetch } from '../utils/authFetch'
 
 function PopUpDeInformacoes({conteudo, popupAberto, setPopupAberto, atualizarGraficos}) {
     const [notaFiscalId, setNotaFiscalId] = useState(null);
@@ -86,21 +87,15 @@ export async function SalvarPayload(notaFiscalId) {
 
     if (notaFiscalId) {
         console.log('URL final:', `/api/nota_fiscal`)
-        response = await fetch(`/api/nota_fiscal`, {
+        response = await authFetch(`/api/nota_fiscal`, {
           method: 'PUT',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payloadAtualizado)
       })
     }else{
-      response = await fetch(`/api/nota_fiscal`, {
+      response = await authFetch(`/api/nota_fiscal`, {
           method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payloadAtualizado)
       })
     }
