@@ -69,7 +69,7 @@ def cadastroUsuario(dados_usuario: CadastroUsuario, connection=Depends(get_db)):
 @router.put('/usuario', response_model=MessageResponse)
 def atualizarUsuario(request: Request, dados_usuario: AtualizarUsuario, connection=Depends(get_db)):
     try:
-        usuario_id, _ = validar_token_login(request.cookies.get("token"))
+        usuario_id, _ = validar_token_login(request.cookies.get("__session"))
 
         cursor = connection.cursor()
         cursor.execute("""
@@ -132,7 +132,7 @@ def login(credenciais: Login, response: Response, connection=Depends(get_db)):
     else:
         token = gerar_token_login(usuario_id)
         response.set_cookie(
-            key="token",
+            key="__session",
             value=token,
             httponly=True,
             secure=True,
@@ -145,7 +145,7 @@ def login(credenciais: Login, response: Response, connection=Depends(get_db)):
 @router.get('/validarToken', response_model=ValidadeTokenResponse)
 def validar_token(request: Request):
     try:
-        token = request.cookies.get("token")
+        token = request.cookies.get("__session")
         _, hora_expiracao = validar_token_login(token)
     except HTTPException:
         raise
@@ -159,7 +159,7 @@ def validar_token(request: Request):
 @router.get('/me', response_model=MeResponse)
 def me(request: Request, connection=Depends(get_db)):
     try:
-        token = request.cookies.get("token")
+        token = request.cookies.get("__session")
         usuario_id, _ = validar_token_login(token)
 
         cursor = connection.cursor()

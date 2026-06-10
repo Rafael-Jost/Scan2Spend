@@ -89,7 +89,7 @@ def busca_payload_nota_fiscal(nota_fiscal_id: int, connection):
 async def busca_nota_fiscal(request: Request, connection=Depends(get_db)):
 
     try:
-        usuario_id, _ = validar_token_login(request.cookies.get("token"))
+        usuario_id, _ = validar_token_login(request.cookies.get("__session"))
 
         cursor = connection.cursor()
         cursor.execute("""
@@ -138,7 +138,7 @@ async def busca_nota_fiscal(request: Request, connection=Depends(get_db)):
 def insert_item(request: Request, payload: NotaFiscalDetalhes, connection=Depends(get_db)):
 
     try:
-        usuario_id, _ = validar_token_login(request.cookies.get("token"))
+        usuario_id, _ = validar_token_login(request.cookies.get("__session"))
 
         cursor = connection.cursor()
         id_var = cursor.var(int)
@@ -181,7 +181,7 @@ def insert_item(request: Request, payload: NotaFiscalDetalhes, connection=Depend
 
 @router.put("/nota_fiscal", response_model=MessageResponse)
 def update_nota_fiscal(request: Request, payload: NotaFiscalDetalhes, connection=Depends(get_db)):
-    usuario_id, _ = validar_token_login(request.cookies.get("token"))
+    usuario_id, _ = validar_token_login(request.cookies.get("__session"))
 
     if not payload.nota_fiscal_id:
         raise HTTPException(status_code=400, detail="nota_fiscal_id é obrigatório para atualização")
