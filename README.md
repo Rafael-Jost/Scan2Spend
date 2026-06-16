@@ -2,11 +2,22 @@
 
 **Scan2Spend** é um aplicativo de controle financeiro que permite escanear o QR Code de notas fiscais eletrônicas (NFC-e) e, automaticamente, extrair os produtos comprados usando inteligência artificial. A ideia é simples: você vai ao mercado, escaneia a nota, e o app já categoriza o que você gastou e mostra tudo em gráficos.
 
+<p align="center">
+  <img src="Frontend/src/assets/s2s_gif1.gif" width="30%" />
+  &nbsp;&nbsp;&nbsp;
+  <img src="Frontend/src/assets/s2s_gif2.gif" width="30%" />
+  &nbsp;&nbsp;&nbsp;
+  <img src="Frontend/src/assets/s2s_gif3.gif" width="30%" />
+</p>
+
+**Acesse o app:** [scan2spend.web.app](https://scan2spend.web.app/)
+> A primeira requisição pode demorar alguns segundos — o backend fica inativo quando não há uso e precisa subir o container antes de responder.
+
 ---
 
 ## Por que esse projeto existe?
 
-Sempre tive interesse em aprender React e FastAPI, mas prefiro aprender fazendo. Em vez de ficar assistindo curso, resolvi me jogar em um projeto real — várias coisas aqui poderiam ser feitas de forma diferente, ou melhor, mas faz parte do processo.
+Sempre tive interesse em aprender React e FastAPI, mas prefiro aprender fazendo. Em vez de ficar assistindo curso, resolvi me jogar em um projeto real com a intenção de passar por todas as etapas do desenvolvimento: modelar o banco, construir a API, fazer o frontend, colocar tudo em produção. Várias coisas aqui poderiam ser feitas de forma diferente, ou melhor, mas faz parte do processo.
 
 ---
 
@@ -214,4 +225,4 @@ Scan2Spend/
 
 ## Considerações finais
 
-Esse projeto foi construído com o objetivo de aprender, não de ser perfeito. Cada bug resolvido, cada feature implementada, cada tecnologia nova integrada foi uma aula prática. Se você está começando em desenvolvimento e se identificou com essa abordagem — de aprender jogando — espero que esse repositório sirva de referência ou inspiração.
+Esse projeto foi construído com o objetivo de aprender, não de ser perfeito. Cada bug resolvido, cada feature implementada, cada tecnologia nova integrada foi uma aula prática.
