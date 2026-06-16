@@ -10,8 +10,8 @@ function PopUpDeInformacoes({conteudo, popupAberto, setPopupAberto, atualizarGra
     <div id="popup-informacoes" style={{ display: popupAberto ? 'flex' : 'none' }}>
       <div id="painel-de-informacoes">
         <CardEdicao json={conteudo} setNotaFiscalId={setNotaFiscalId} />
+        <div className="popup-informacoes-botoes">
         <button
-          style={{ marginTop: '20px' }}
           onClick={() => {
             setPopupAberto(false)
           }}
@@ -19,7 +19,7 @@ function PopUpDeInformacoes({conteudo, popupAberto, setPopupAberto, atualizarGra
           Fechar
         </button>
         <button
-          style={{ marginTop: '20px', marginLeft: '10px', backgroundColor: '#4CAF50', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '5px' }}
+          style={{ marginLeft: '10px', backgroundColor: '#4CAF50', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '5px' }}
           onClick={async () => {
             const status_salvamento = await SalvarPayload(notaFiscalId);
             Swal.fire({
@@ -39,8 +39,9 @@ function PopUpDeInformacoes({conteudo, popupAberto, setPopupAberto, atualizarGra
         </button>
       </div>
     </div>
+  </div>
   );
-  
+
 }
 
 export async function SalvarPayload(notaFiscalId) {

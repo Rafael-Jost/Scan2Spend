@@ -134,8 +134,8 @@ function PopUpConfigurações({notasFiscais, fncFechar, display, setConteudo, no
                 }}></input>
             </div>
 
-            <button style={{position: 'absolute', bottom: '20px', left: '5%', width: '90%', display: erroSalvamento ? 'none' : 'block'}} onClick={salvarConfigurações}>Salvar Alterações</button>
-            <button style={{position: 'absolute', bottom: '20px', left: '5%', width: '90%', backgroundColor: 'red', display: erroSalvamento ? 'block' : 'none'}} onClick={() => Swal.fire({ toast: true, position: 'top-start', title: 'Erro!', text: 'Não foi possível salvar as configurações.', icon: 'info', showConfirmButton: false })}>Erro ao Salvar</button>
+            <button style={{marginTop: '20px', width: '100%', display: erroSalvamento ? 'none' : 'block'}} onClick={salvarConfigurações}>Salvar Alterações</button>
+            <button style={{marginTop: '20px', width: '100%', backgroundColor: 'red', display: erroSalvamento ? 'block' : 'none'}} onClick={() => Swal.fire({ toast: true, position: 'top-start', title: 'Erro!', text: 'Não foi possível salvar as configurações.', icon: 'info', showConfirmButton: false })}>Erro ao Salvar</button>
 
         </div>
     </>

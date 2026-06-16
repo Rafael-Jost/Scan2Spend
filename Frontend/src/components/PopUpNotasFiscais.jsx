@@ -48,7 +48,7 @@ function PopUpNotasFiscais({ notasFiscais, fncFechar, display, setPopUpInformaco
                             type="button"
                             className="popup-nota-fiscal-row"
                             key={`${notaFiscal.data}-${index}`}
-                            onClick={() => abrirDetalhes(notaFiscal.nota_fiscal_id)}
+                            onClick={() => {abrirDetalhes(notaFiscal.nota_fiscal_id); fncFechar();}}
                         >
                             <div className="nota-info">
                                 <span className="nota-data">{formatarData(notaFiscal.data)}</span>

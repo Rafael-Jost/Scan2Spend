@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import BotaoSimples from './BotaoSimples.jsx'
 import PopUpPerfil from './PopUpPerfil.jsx'
 import perfilIcon from '../assets/perfil.png'
@@ -15,11 +15,12 @@ export default function BotaoPerfil({
   carregaUsuario
 }) {
   const [exibirPopUpPerfil, setExibirPopUpPerfil] = useState(false)
+  const botaoRef = useRef(null)
 
   return (
     <>
-      <BotaoSimples className="botao-menu perfil" icone={perfilIcon} onClick={() => {
-        setExibirPopUpPerfil((valorAtual) => !valorAtual)
+      <BotaoSimples ref={botaoRef} className="botao-menu perfil" icone={perfilIcon} onClick={() => {
+        setExibirPopUpPerfil(!exibirPopUpPerfil)
       }}></BotaoSimples>
       {exibirPopUpPerfil ? (
         <PopUpPerfil
@@ -33,6 +34,7 @@ export default function BotaoPerfil({
           setPopUpInformacoesAberto={setPopupAberto}
           setConteudo={setTextoRecibo}
           carregaUsuario={carregaUsuario}
+          botaoRef={botaoRef}
         />
       ) : null}
     </>

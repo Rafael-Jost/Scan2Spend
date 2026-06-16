@@ -174,12 +174,16 @@
   width: fit-content;
 }
 
+.popup-informacoes-botoes {
+  margin-top: 20px;
+}
+
 #cards-edicao-container{
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
   overflow-y: auto;
-  height: 65vh;
+  height: 65dvh;
   width: 60vw;
   max-width: 1250px;
   margin: 0 auto;
@@ -238,6 +242,7 @@
   padding: 10px 12px;
   font-size: 0.95rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  color-scheme: light;
 }
 
 .input-data-compra:focus,
@@ -656,31 +661,67 @@
 }
 
 @media (max-width: 768px) {
+  #root {
+    padding: 0.5rem;
+  }
+
+  #painel-de-informacoes {
+    padding: 12px;
+    margin: 8px;
+    width: calc(100dvw - 16px);
+    max-height: calc(100dvh - 16px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .popup-informacoes-botoes {
+    margin-top: 12px;
+    flex-shrink: 0;
+  }
+
   #cards-edicao-container {
     grid-template-columns: 1fr;
     gap: 14px;
-    height: 62vh;
+    flex: 1;
+    height: auto;
   }
 
   .edicao-resumo-container {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-    margin-bottom: 12px;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  .edicao-resumo-container > p:first-child {
+    grid-column: 1 / -1;
   }
 
   .edicao-resumo-item {
-    gap: 4px;
+    gap: 3px;
   }
 
   .edicao-resumo-item span {
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     line-height: 1.2;
   }
 
   .card-edicao {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     border-radius: 12px;
-    padding: 12px;
-    gap: 10px;
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .card-edicao > div:first-child,
+  .card-edicao > p:nth-child(2),
+  .card-edicao > p:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .campo-label {
+    font-size: 0.75rem;
   }
 
   .input-data-compra,
@@ -692,26 +733,39 @@
   .input-desconto,
   .input-preco_total,
   .input-categoria {
-    min-height: 40px;
-    font-size: 15px;
-    padding: 8px 10px;
+    min-height: 34px;
+    font-size: 13px;
+    padding: 5px 8px;
   }
 
   .titulo-nota-fiscal {
-    margin-top: 16px;
-    margin-bottom: 12px;
-    font-size: 1.35rem;
+    margin-top: 4px;
+    margin-bottom: 8px;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .edicao-resumo-container {
+    flex-shrink: 0;
   }
 }
 
 @media (max-width: 420px) {
   .edicao-resumo-container {
-    grid-template-columns: repeat(3, minmax(90px, 1fr));
-    gap: 6px;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
   }
 
   .edicao-resumo-item span {
-    font-size: 0.74rem;
+    font-size: 0.68rem;
+  }
+
+  .input-data-compra,
+  .input-preco-final-pago,
+  .input-desconto-total {
+    font-size: 12px;
+    padding: 5px 4px;
+    min-height: 34px;
   }
 
   .titulo-nota-fiscal {
