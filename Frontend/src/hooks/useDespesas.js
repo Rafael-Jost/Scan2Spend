@@ -13,8 +13,6 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
   const [notasFiscais, setNotasFiscais] = useState([])
 
   const buscarDespesasTotais = useCallback(async (dt_inicio, dt_fim, tipo_agrupamento) => {
-    if (usuarioLogado == false || usuarioLogado == '') { return }
-
     if (!dt_inicio || !dt_fim || !tipo_agrupamento) {
       dt_inicio = '01/01/' + new Date().getFullYear()
       dt_fim = '31/12/' + new Date().getFullYear()
@@ -53,8 +51,6 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
   }, [])
 
   const buscarDespesasCategorias = useCallback(async (dt_inicio, dt_fim) => {
-    if (usuarioLogado == false || usuarioLogado == '') { return }
-
     if (!dt_inicio || !dt_fim) {
       dt_inicio = '01/01/' + new Date().getFullYear()
       dt_fim = '31/12/' + new Date().getFullYear()
@@ -127,7 +123,6 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
   }, [])
 
   const buscarDescontos = useCallback(async (dt_inicio, dt_fim, tipo_agrupamento) => {
-    if (usuarioLogado == false || usuarioLogado == '') { return }
     if (!dt_inicio || !dt_fim || !tipo_agrupamento) {
       dt_inicio = '01/01/' + new Date().getFullYear()
       dt_fim = '31/12/' + new Date().getFullYear()
@@ -164,8 +159,6 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
   }, [])
 
   const buscarInsights = useCallback(async () => {
-    if (usuarioLogado == false || usuarioLogado == '') { return }
-
     try {
       const response = await authFetch('/api/despesas/insights', {
         method: 'GET'
@@ -194,8 +187,6 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
   }, [])
 
   const buscarTopProdutos = useCallback(async (dt_inicio, dt_fim) => {
-    if (usuarioLogado == false || usuarioLogado == '') { return }
-
     if (!dt_inicio || !dt_fim) {
       const hoje = new Date()
       const ano = hoje.getFullYear()
