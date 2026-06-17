@@ -1,13 +1,17 @@
+<p align="center">
+  <img src="Frontend/src/assets/Scan2Spend_logo.png" width="180px" />
+</p>
+
 # Scan2Spend
 
 **Scan2Spend** é um aplicativo de controle financeiro que permite escanear o QR Code de notas fiscais eletrônicas (NFC-e) e, automaticamente, extrair os produtos comprados usando inteligência artificial. A ideia é simples: você vai ao mercado, escaneia a nota, e o app já categoriza o que você gastou e mostra tudo em gráficos.
 
 <p align="center">
-  <img src="Frontend/src/assets/s2s_gif1.gif" width="30%" />
+  <img src="assets/s2s_gif1.gif" width="30%" />
   &nbsp;&nbsp;&nbsp;
-  <img src="Frontend/src/assets/s2s_gif2.gif" width="30%" />
+  <img src="assets/s2s_gif2.gif" width="30%" />
   &nbsp;&nbsp;&nbsp;
-  <img src="Frontend/src/assets/s2s_gif3.gif" width="30%" />
+  <img src="assets/s2s_gif3.gif" width="30%" />
 </p>
 
 **Acesse o app:** [scan2spend.web.app](https://scan2spend.web.app/)
@@ -70,6 +74,24 @@ O schema do banco foi modelado do zero — tabelas, relacionamentos, sequences e
 ## Hospedagem
 
 O frontend está hospedado no **Firebase Hosting** e o backend no **Google Cloud Run**, ambos serviços do Google. O Firebase serve a interface pro usuário e redireciona as chamadas de API pro Cloud Run, que é onde o FastAPI roda. O banco de dados fica na **Oracle Cloud**.
+
+---
+
+## Autenticação e redefinição de senha
+
+O login usa **JWT** — ao entrar, o backend gera um token que o frontend guarda e envia em toda requisição. O token expira em 30 minutos e o app avisa o usuário antes disso acontecer.
+
+O fluxo de redefinição de senha é completo: o usuário solicita o reset, recebe um e-mail com um link único e com prazo de validade, clica no link e define a nova senha. O envio do e-mail é feito via SMTP com uma conta Gmail, e o token do link é gerado e validado pelo backend.
+
+<p align="center">
+  <img src="assets/print_auth_s2s_1.png" width="22%" />
+  &nbsp;&nbsp;
+  <img src="assets/print_auth_s2s_2.png" width="22%" />
+  &nbsp;&nbsp;
+  <img src="assets/print_auth_s2s_3.png" width="22%" />
+  &nbsp;&nbsp;
+  <img src="assets/print_auth_s2s_4.png" width="22%" />
+</p>
 
 ---
 
