@@ -1,6 +1,8 @@
 import { FaArrowLeft } from 'react-icons/fa'
 import { useState } from 'react'
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? ''
+
 function CadastroUsuario({setCadastrandoUsuario}) {
     const [nome, setNome] = useState('')
     const [sobrenome, setSobrenome] = useState('')
@@ -34,7 +36,7 @@ function CadastroUsuario({setCadastrandoUsuario}) {
         }else{
             setErroCadastro('')
 
-            const response = await fetch('/api/cadastrarUsuario/', {
+            const response = await fetch(`${API_BASE}/cadastrarUsuario/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

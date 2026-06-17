@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { FaLock, FaEye, FaEyeSlash } from 'react-icons/fa'
 import Swal from 'sweetalert2'
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? ''
+
 function ResetSenha() {
     const [senhaVisivel, setSenhaVisivel] = useState(false)
     const [confirmarSenhaVisivel, setConfirmarSenhaVisivel] = useState(false)
@@ -26,7 +28,7 @@ function ResetSenha() {
             })
             return
         }
-        const response = await fetch('/api/redefinir_senha', {
+        const response = await fetch(`${API_BASE}/redefinir_senha`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -58,7 +60,7 @@ function ResetSenha() {
     const handleSubmitNoToken = async (e) => {
         e.preventDefault()
 
-        const response = await fetch('/api/redefinir_senha?email_destino=' + email , {
+        const response = await fetch(`${API_BASE}/redefinir_senha?email_destino=${email}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
