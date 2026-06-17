@@ -40,7 +40,7 @@ export default function PaginaInicial({
     setTextoMensagem("Analisando...")
 
     try {
-      const response = await authFetch(`/api/analisar_nf/?QRurl=${encodeURIComponent(url)}`, {
+      const response = await authFetch(`/analisar_nf/?QRurl=${encodeURIComponent(url)}`, {
         method: 'GET'
       })
 

@@ -42,7 +42,7 @@ export function useAuth(estadoTela, setEstadoTela) {
     }
 
     ;(async () => {
-      const dados_usuario_response = await authFetch(`/api/me`, {
+      const dados_usuario_response = await authFetch(`/me`, {
         method: 'GET'
       })
 
@@ -77,7 +77,7 @@ export function useAuth(estadoTela, setEstadoTela) {
 
     const verificarToken = async () => {
       try {
-        const response = await authFetch('/api/validarToken', {
+        const response = await authFetch('/validarToken', {
           method: 'GET'
         })
 

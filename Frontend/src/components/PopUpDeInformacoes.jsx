@@ -87,14 +87,14 @@ export async function SalvarPayload(notaFiscalId) {
     let response;
 
     if (notaFiscalId) {
-        console.log('URL final:', `/api/nota_fiscal`)
-        response = await authFetch(`/api/nota_fiscal`, {
+        console.log('URL final:', `/nota_fiscal`)
+        response = await authFetch(`/nota_fiscal`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payloadAtualizado)
       })
     }else{
-      response = await authFetch(`/api/nota_fiscal`, {
+      response = await authFetch(`/nota_fiscal`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payloadAtualizado)

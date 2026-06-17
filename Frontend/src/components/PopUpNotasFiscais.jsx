@@ -14,7 +14,7 @@ function PopUpNotasFiscais({ notasFiscais, fncFechar, display, setPopUpInformaco
 
     const abrirDetalhes = async (id) => {
         try {
-            const response = await authFetch(`/api/nota_fiscal/${id}`, { method: 'GET' });
+            const response = await authFetch(`/nota_fiscal/${id}`, { method: 'GET' });
             if (!response.ok) return;
             const data = await response.json();
             setPopUpInformacoesAberto(true);

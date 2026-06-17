@@ -26,7 +26,7 @@ function PopUpConfigurações({notasFiscais, fncFechar, display, setConteudo, no
 
     async function salvarConfigurações() {
         console.log(JSON.stringify(payload))
-        const response = await authFetch('/api/usuario', {
+        const response = await authFetch('/usuario', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -45,7 +45,7 @@ function PopUpConfigurações({notasFiscais, fncFechar, display, setConteudo, no
                 zIndex: 9999
             })
             //busca os dados atualizados do usuário para atualizar o estado global
-            const dados_usuario_response = await authFetch(`/api/me`, {
+            const dados_usuario_response = await authFetch(`/me`, {
                 method: 'GET'
             })
 

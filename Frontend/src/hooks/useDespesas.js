@@ -25,7 +25,7 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
     }).toString()
 
     try {
-      const response = await authFetch(`/api/despesas/?${params}`, {
+      const response = await authFetch(`/despesas/?${params}`, {
         method: 'GET'
       })
 
@@ -61,7 +61,7 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
     }).toString()
 
     try {
-      const response = await authFetch(`/api/despesas/categorias?${params}`, {
+      const response = await authFetch(`/despesas/categorias?${params}`, {
         method: 'GET'
       })
 
@@ -96,7 +96,7 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
     const params = new URLSearchParams({ dt_inicio, dt_fim, tipo_agrupamento }).toString()
 
     try {
-      const response = await authFetch(`/api/despesas/categorias/periodo?${params}`, {
+      const response = await authFetch(`/despesas/categorias/periodo?${params}`, {
         method: 'GET'
       })
 
@@ -132,7 +132,7 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
     const params = new URLSearchParams({ dt_inicio, dt_fim, tipo_agrupamento }).toString()
 
     try {
-      const response = await authFetch(`/api/descontos/?${params}`, {
+      const response = await authFetch(`/descontos/?${params}`, {
         method: 'GET'
       })
 
@@ -160,7 +160,7 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
 
   const buscarInsights = useCallback(async () => {
     try {
-      const response = await authFetch('/api/despesas/insights', {
+      const response = await authFetch('/despesas/insights', {
         method: 'GET'
       })
 
@@ -199,7 +199,7 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
     const params = new URLSearchParams({ dt_inicio, dt_fim }).toString()
 
     try {
-      const response = await authFetch(`/api/despesas/topProdutos?${params}`, {
+      const response = await authFetch(`/despesas/topProdutos?${params}`, {
         method: 'GET'
       })
 
@@ -227,7 +227,7 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
 
   const buscarDadosPerfilDespesas = useCallback(async () => {
     try {
-      const response = await authFetch('/api/despesas/perfil', {
+      const response = await authFetch('/despesas/perfil', {
         method: 'GET'
       })
 
@@ -259,7 +259,7 @@ export function useDespesas(usuarioLogado, nomeUsuario, estadoTela) {
       return
     }
     try {
-      const response = await authFetch(`/api/nota_fiscal`, {
+      const response = await authFetch(`/nota_fiscal`, {
         method: 'GET'
       })
 
